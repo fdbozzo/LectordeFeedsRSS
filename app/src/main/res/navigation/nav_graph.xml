@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/loginFragment">
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.login.LoginFragment"
+        android:label="login_fragment"
+        tools:layout="@layout/login_fragment">
+        <action
+            android:id="@+id/action_loginFragment_to_feedContentsFragment"
+            app:destination="@id/feedContentsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/contentsFragment"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.contents.ContentsFragment"
+        android:label="contents_fragment"
+        tools:layout="@layout/contents_fragment" />
+    <fragment
+        android:id="@+id/feedContentsFragment"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.FeedContentsFragment"
+        android:label="FeedContentsFragment" />
+</navigation>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.contents.item.ContentsItemFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- ESTRUCTURA DEL ITEM:
+        <Título-Noticia>      | <ima-
+        <Nombre-Feed y Fecha> |  gen>
+        -->
+
+        <!-- Título de la noticia o artículo -->
+        <TextView
+            android:id="@+id/textContentsTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_margin"
+            android:layout_marginEnd="8dp"
+            android:text="@{contributor.login}"
+            app:layout_constraintEnd_toStartOf="@id/imageView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/imageView"
+            tools:text="Título noticia" />
+
+        <!-- Nombre del Feed y Fecha -->
+        <TextView
+            android:id="@+id/textFeed"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_margin"
+            android:layout_marginTop="@dimen/default_margin"
+            android:layout_marginEnd="8dp"
+            android:text="Nombre Feed / Fecha"
+            app:layout_constraintBottom_toBottomOf="@id/imageView"
+            app:layout_constraintEnd_toStartOf="@id/imageView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textContentsTitle"
+            tools:text="Nombre Feed" />
+
+        <!-- Primera imagen de la noticia -->
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="@dimen/photo_size"
+            android:layout_height="@dimen/photo_size"
+            android:layout_marginTop="@dimen/default_margin"
+            android:layout_marginEnd="@dimen/default_margin"
+            android:layout_marginBottom="@dimen/default_margin"
+            android:adjustViewBounds="false"
+            android:contentDescription="@string/content_picture"
+            android:cropToPadding="false"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>
