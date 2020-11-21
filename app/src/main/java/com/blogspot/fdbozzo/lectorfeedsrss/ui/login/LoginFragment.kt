@@ -17,8 +17,11 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
+import com.blogspot.fdbozzo.lectorfeedsrss.MainViewModel
 import com.blogspot.fdbozzo.lectorfeedsrss.R
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.LoginFragmentBinding
+import com.blogspot.fdbozzo.lectorfeedsrss.ui.FeedContentsFragment
+import com.blogspot.fdbozzo.lectorfeedsrss.util.hideKeyboard
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -38,11 +41,14 @@ class LoginFragment : Fragment(), View.OnClickListener {
     private lateinit var lnkSignup: TextView
     private lateinit var navController: NavController
     private lateinit var navGraph: NavGraph
+    private lateinit var mainViewModel: MainViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
 
         // Inflate the layout for this fragment
         val binding: LoginFragmentBinding =
@@ -80,7 +86,14 @@ class LoginFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Timber.i("mainViewModel.fragmento: %s", mainViewModel.fragmento)
+        mainViewModel.fragmento = LoginFragment::class.java.canonicalName
 
+        /**
+         * Como al login se llega desde el destino principal (feed_contents),
+         * se debe quitar del back stack para poder salir sin problemas.
+         */
+        navController.popBackStack(R.id.nav_feed_contents, true)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -88,17 +101,6 @@ class LoginFragment : Fragment(), View.OnClickListener {
         viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
         // TODO: Use the ViewModel
 
-
-        /**
-         * Si el usuario ya está validado, ir directo a ventana principal
-         */
-        if (mAuth.currentUser != null) {
-            //navController.navigate(R.id.action_loginFragment_to_feedContentsFragment)
-
-            //navGraph.startDestination = R.id.nav_feed_contents
-            //navController.popBackStack(R.id.navigation_login, true)
-            //navController.navigate(R.id.action_loginFragment_to_feedContentsFragment)
-        }
 
     }
 
@@ -116,8 +118,9 @@ class LoginFragment : Fragment(), View.OnClickListener {
                     navController.popBackStack(R.id.navigation_login, true)
                      */
                     //navController.navigate(R.id.action_loginFragment_to_feedContentsFragment)
-                    //navController.navigate(R.id.nav_feed_contents)
-                    navController.popBackStack()
+                    navController.popBackStack(R.id.nav_login, true)
+                    navController.navigate(R.id.nav_feed_contents)
+                    //navController.popBackStack()
 
                     Toast.makeText(
                         requireContext(), getString(R.string.create_user_with_email_success),
@@ -172,8 +175,9 @@ class LoginFragment : Fragment(), View.OnClickListener {
                     navController.popBackStack(R.id.navigation_login, true)
                      */
                     //navController.navigate(R.id.action_loginFragment_to_feedContentsFragment)
-                    //navController.navigate(R.id.nav_feed_contents)
-                    navController.popBackStack()
+                    navController.popBackStack(R.id.nav_login, true)
+                    navController.navigate(R.id.nav_feed_contents)
+                    //navController.popBackStack()
 
                     Toast.makeText(
                         requireContext(), getString(R.string.login_user_with_email_success),
@@ -196,6 +200,7 @@ class LoginFragment : Fragment(), View.OnClickListener {
         when (p0?.id) {
 
             R.id.link_signup -> {
+                hideKeyboard()
                 if (viewModel.compruebaConexion(requireContext())) {
                     signUpFirebase(emailUsuario.text.toString(), passUsuario.text.toString())
                 } else {
@@ -208,6 +213,7 @@ class LoginFragment : Fragment(), View.OnClickListener {
             }
 
             R.id.btn_login -> {
+                hideKeyboard()
                 if (viewModel.compruebaConexion(requireContext())) {
                     signInFirebase(emailUsuario.text.toString(), passUsuario.text.toString())
                 } else {

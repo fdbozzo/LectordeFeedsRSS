@@ -12,12 +12,14 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
+import com.blogspot.fdbozzo.lectorfeedsrss.MainViewModel
 import com.blogspot.fdbozzo.lectorfeedsrss.R
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.FeedContentsFragmentBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.LoginFragmentBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import timber.log.Timber
 
 class FeedContentsFragment : Fragment() {
 
@@ -30,6 +32,7 @@ class FeedContentsFragment : Fragment() {
     private lateinit var navGraph: NavGraph
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var mAuth: FirebaseAuth
+    private lateinit var mainViewModel: MainViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,6 +40,8 @@ class FeedContentsFragment : Fragment() {
     ): View? {
         val binding: FeedContentsFragmentBinding =
             DataBindingUtil.inflate(inflater, R.layout.feed_contents_fragment, container, false)
+
+        mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
 
         mAuth = Firebase.auth
 
@@ -60,6 +65,8 @@ class FeedContentsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Timber.i("mainViewModel.fragmento: %s", mainViewModel.fragmento)
+        mainViewModel.fragmento = FeedContentsFragment::class.java.canonicalName
 
         /**
          * Si el usuario no está validado, enviarlo al login
