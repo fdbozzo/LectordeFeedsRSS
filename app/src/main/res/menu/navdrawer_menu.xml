@@ -8,32 +8,22 @@
         android:visible="false" />
 
     <item
-        android:id="@+id/navigation_contents"
+        android:id="@+id/nav_feed_contents"
         android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/title_contents" />
+        android:title="@string/title_feed_contents" />
 
     <item
-        android:id="@+id/navigation_notifications"
-        android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/title_notifications" />
-
-    <item
-        android:id="@+id/navigation_favorites"
-        android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/title_favorites" />
-
-    <item
-        android:id="@+id/navigation_read_later"
+        android:id="@+id/nav_read_later"
         android:icon="@drawable/ic_dashboard_black_24dp"
         android:title="@string/title_read_later" />
 
     <item
-        android:id="@+id/navigation_settings"
+        android:id="@+id/nav_settings"
         android:icon="@drawable/ic_dashboard_black_24dp"
         android:title="@string/title_settings" />
 
     <item
-        android:id="@+id/navigation_logout"
+        android:id="@+id/nav_logout"
         android:icon="@drawable/ic_dashboard_black_24dp"
         android:title="@string/title_logout" />
 

@@ -12,9 +12,11 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.NavigationUI
 import com.blogspot.fdbozzo.lectorfeedsrss.R
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.LoginFragmentBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -47,15 +49,18 @@ class LoginFragment : Fragment(), View.OnClickListener {
             DataBindingUtil.inflate(inflater, R.layout.login_fragment, container, false)
         mAuth = Firebase.auth
 
+        navController = findNavController()
 
+        /*
         val navHostFragment =
             parentFragmentManager.findFragmentById(R.id.fragmentContainerView)
 
         if (navHostFragment != null) {
             navController = navHostFragment.findNavController()
-            val graphInflater = navController.navInflater
-            navGraph = graphInflater.inflate(R.navigation.nav_graph)
+            //val graphInflater = navController.navInflater
+            //navGraph = graphInflater.inflate(R.navigation.nav_graph)
         }
+         */
 
         /**
          * Datos de login
@@ -69,9 +74,13 @@ class LoginFragment : Fragment(), View.OnClickListener {
         btnLogin.setOnClickListener(this)
         lnkSignup.setOnClickListener(this)
 
-
         //return inflater.inflate(R.layout.login_fragment, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -84,8 +93,13 @@ class LoginFragment : Fragment(), View.OnClickListener {
          * Si el usuario ya está validado, ir directo a ventana principal
          */
         if (mAuth.currentUser != null) {
-            navController.navigate(R.id.action_loginFragment_to_feedContentsFragment)
+            //navController.navigate(R.id.action_loginFragment_to_feedContentsFragment)
+
+            //navGraph.startDestination = R.id.nav_feed_contents
+            //navController.popBackStack(R.id.navigation_login, true)
+            //navController.navigate(R.id.action_loginFragment_to_feedContentsFragment)
         }
+
     }
 
     fun signUpFirebase(email: String, password: String) {
@@ -101,7 +115,9 @@ class LoginFragment : Fragment(), View.OnClickListener {
                     navGraph.startDestination = R.id.navigation_contents
                     navController.popBackStack(R.id.navigation_login, true)
                      */
-                    navController.navigate(R.id.action_loginFragment_to_feedContentsFragment)
+                    //navController.navigate(R.id.action_loginFragment_to_feedContentsFragment)
+                    //navController.navigate(R.id.nav_feed_contents)
+                    navController.popBackStack()
 
                     Toast.makeText(
                         requireContext(), getString(R.string.create_user_with_email_success),
@@ -155,7 +171,9 @@ class LoginFragment : Fragment(), View.OnClickListener {
                     navGraph.startDestination = R.id.navigation_contents
                     navController.popBackStack(R.id.navigation_login, true)
                      */
-                    navController.navigate(R.id.action_loginFragment_to_feedContentsFragment)
+                    //navController.navigate(R.id.action_loginFragment_to_feedContentsFragment)
+                    //navController.navigate(R.id.nav_feed_contents)
+                    navController.popBackStack()
 
                     Toast.makeText(
                         requireContext(), getString(R.string.login_user_with_email_success),
