@@ -105,16 +105,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/btn_login" />
 
-            <!-- com.google.android.gms.common.SignInButton
-                android:id="@+id/boton_login_google"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="50dp"
-                android:textAlignment="center"
-                app:buttonSize="wide"
-                app:colorScheme="auto"
-                app:layout_constraintTop_toBottomOf="@id/link_signup" /-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

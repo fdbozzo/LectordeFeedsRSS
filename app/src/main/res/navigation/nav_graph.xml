@@ -14,12 +14,37 @@
             app:destination="@id/feedContentsFragment" />
     </fragment>
     <fragment
-        android:id="@+id/contentsFragment"
-        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.contents.ContentsFragment"
-        android:label="contents_fragment"
-        tools:layout="@layout/contents_fragment" />
-    <fragment
         android:id="@+id/feedContentsFragment"
         android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.FeedContentsFragment"
-        android:label="FeedContentsFragment" />
+        android:label="FeedContentsFragment"
+        tools:layout="@layout/feed_contents_fragment">
+        <action
+            android:id="@+id/action_feedContentsFragment_to_contentsFragment"
+            app:destination="@id/contentsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/contentsFragment"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.contents.ContentsFragment"
+        android:label="ContentsFragment"
+        tools:layout="@layout/contents_fragment" />
+    <fragment
+        android:id="@+id/feedListSelectionFragment2"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.FeedListSelectionFragment"
+        android:label="FeedListSelectionFragment"
+        tools:layout="@layout/feed_list_selection_fragment" />
+    <fragment
+        android:id="@+id/addContentsFragment"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.AddContentsFragment"
+        android:label="add_contents_fragment"
+        tools:layout="@layout/add_contents_fragment" />
+    <fragment
+        android:id="@+id/readLaterFragment"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.ReadLaterFragment"
+        android:label="read_later_fragment"
+        tools:layout="@layout/read_later_fragment" />
+    <fragment
+        android:id="@+id/newFeedGroupFragment"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.NewFeedGroupFragment"
+        android:label="new_feed_group_fragment"
+        tools:layout="@layout/new_feed_group_fragment" />
 </navigation>

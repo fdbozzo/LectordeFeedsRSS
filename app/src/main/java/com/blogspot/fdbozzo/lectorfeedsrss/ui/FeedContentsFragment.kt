@@ -23,7 +23,8 @@ class FeedContentsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding: FeedContentsFragmentBinding = DataBindingUtil.inflate(inflater, R.layout.feed_contents_fragment, container, false)
+        val binding: FeedContentsFragmentBinding =
+            DataBindingUtil.inflate(inflater, R.layout.feed_contents_fragment, container, false)
 
 
         return binding.root

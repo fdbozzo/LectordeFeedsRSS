@@ -20,7 +20,7 @@ class FeedListSelectionFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.contents_list_selection_fragment, container, false)
+        return inflater.inflate(R.layout.feed_list_selection_fragment, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
