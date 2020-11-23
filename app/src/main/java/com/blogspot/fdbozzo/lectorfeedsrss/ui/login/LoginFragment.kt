@@ -12,15 +12,11 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.NavigationUI
 import com.blogspot.fdbozzo.lectorfeedsrss.MainViewModel
 import com.blogspot.fdbozzo.lectorfeedsrss.R
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.LoginFragmentBinding
-import com.blogspot.fdbozzo.lectorfeedsrss.ui.FeedContentsFragment
 import com.blogspot.fdbozzo.lectorfeedsrss.util.hideKeyboard
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -40,7 +36,7 @@ class LoginFragment : Fragment(), View.OnClickListener {
     private lateinit var btnLogin: Button
     private lateinit var lnkSignup: TextView
     private lateinit var navController: NavController
-    private lateinit var navGraph: NavGraph
+    //private lateinit var navGraph: NavGraph
     private lateinit var mainViewModel: MainViewModel
 
     override fun onCreateView(
@@ -48,11 +44,13 @@ class LoginFragment : Fragment(), View.OnClickListener {
         savedInstanceState: Bundle?
     ): View? {
 
-        mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
-
         // Inflate the layout for this fragment
         val binding: LoginFragmentBinding =
             DataBindingUtil.inflate(inflater, R.layout.login_fragment, container, false)
+
+        mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+
+        binding.lifecycleOwner = this // Para que LiveData sea consciente del LifeCycle y se actualice la uI
         mAuth = Firebase.auth
 
         navController = findNavController()

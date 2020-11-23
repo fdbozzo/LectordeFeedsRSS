@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
         //setContentView(R.layout.activity_main)
 
         mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        binding.lifecycleOwner = this // Para que LiveData sea consciente del LifeCycle y se actualice la uI
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment

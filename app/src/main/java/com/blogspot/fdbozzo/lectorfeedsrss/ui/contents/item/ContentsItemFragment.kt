@@ -20,7 +20,7 @@ class ContentsItemFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.contents_item_fragment, container, false)
+        return inflater.inflate(R.layout.feed_contents_item_fragment, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

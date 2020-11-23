@@ -8,10 +8,10 @@
         android:id="@+id/nav_login"
         android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.login.LoginFragment"
         android:label="@string/title_login"
-        tools:layout="@layout/login_fragment"/>
+        tools:layout="@layout/login_fragment" />
     <fragment
         android:id="@+id/nav_feed_contents"
-        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.FeedContentsFragment"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.contents.FeedContentsFragment"
         android:label="@string/title_feed_contents"
         tools:layout="@layout/feed_contents_fragment">
         <action
@@ -24,28 +24,13 @@
         android:label="@string/title_contents"
         tools:layout="@layout/contents_fragment" />
     <fragment
-        android:id="@+id/nav_feed_list_select"
-        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.FeedListSelectionFragment"
-        android:label="@string/title_nav_feed_list_select"
-        tools:layout="@layout/feed_list_selection_fragment" />
+        android:id="@+id/nav_add_group_fragment"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.group.AddGroupFragment"
+        android:label="@string/title_add_group"
+        tools:layout="@layout/add_group_fragment" />
     <fragment
-        android:id="@+id/nav_add_contents"
-        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.AddContentsFragment"
-        android:label="@string/title_add_contents"
-        tools:layout="@layout/add_contents_fragment" />
-    <fragment
-        android:id="@+id/nav_read_later"
-        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.ReadLaterFragment"
-        android:label="@string/title_read_later"
-        tools:layout="@layout/read_later_fragment" />
-    <fragment
-        android:id="@+id/nav_new_feed_group"
-        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.NewFeedGroupFragment"
-        android:label="@string/title_new_feed_group"
-        tools:layout="@layout/new_feed_group_fragment" />
-    <fragment
-        android:id="@+id/nav_settings"
-        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.SettingsFragment"
-        android:label="@string/title_settings"
-        tools:layout="@layout/settings_fragment" />
+        android:id="@+id/nav_add_feed"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.AddFeedFragment"
+        android:label="@string/title_add_feed"
+        tools:layout="@layout/add_feed_fragment" />
 </navigation>
