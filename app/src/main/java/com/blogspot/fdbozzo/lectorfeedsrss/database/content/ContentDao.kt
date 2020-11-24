@@ -13,7 +13,7 @@ import androidx.room.Update
 interface ContentDao {
 
     @Insert
-    suspend fun insert(content: Content)
+    suspend fun insert(content: Content): Long
 
     /**
      * Cuando se actualiza una fila con un valor existente en la columna,
@@ -22,7 +22,7 @@ interface ContentDao {
      * @param content nuevo valor a escribir
      */
     @Update
-    suspend fun update(content: Content)
+    suspend fun update(content: Content): Int
 
     /**
      * Selecciona y retorna la fila que coincide con la clave indicada

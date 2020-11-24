@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph
@@ -19,7 +18,6 @@ import com.blogspot.fdbozzo.lectorfeedsrss.databinding.FeedContentsFragmentBindi
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.feed_contents_fragment.*
 
 class FeedContentsFragment : Fragment() {
 
@@ -27,6 +25,10 @@ class FeedContentsFragment : Fragment() {
         fun newInstance() = FeedContentsFragment()
     }
 
+    private var _binding: FeedContentsFragmentBinding? = null
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
     private lateinit var viewModelFeed: FeedContentsViewModel
     private lateinit var navController: NavController
     private lateinit var navGraph: NavGraph
@@ -50,8 +52,7 @@ class FeedContentsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding: FeedContentsFragmentBinding =
-            DataBindingUtil.inflate(inflater, R.layout.feed_contents_fragment, container, false)
+        _binding = FeedContentsFragmentBinding.inflate(inflater, container, false)
 
         mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
 
@@ -78,7 +79,7 @@ class FeedContentsFragment : Fragment() {
             navController.navigate(R.id.nav_login)
         }
 
-        val feedContents: RecyclerView = feed_contents
+        val feedContents: RecyclerView = binding.feedContents
         feedContents.layoutManager = LinearLayoutManager(requireContext())
         feedContents.adapter = FeedContentsAdapter(items)
 

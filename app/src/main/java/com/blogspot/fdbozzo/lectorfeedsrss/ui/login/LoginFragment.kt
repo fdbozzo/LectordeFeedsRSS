@@ -1,9 +1,7 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.ui.login
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.text.TextUtils
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +9,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.blogspot.fdbozzo.lectorfeedsrss.MainViewModel
@@ -23,12 +22,16 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import timber.log.Timber
 
-
 class LoginFragment : Fragment(), View.OnClickListener {
+
     companion object {
         fun newInstance() = LoginFragment()
     }
 
+    private var _binding: LoginFragmentBinding? = null
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
     private lateinit var mAuth: FirebaseAuth
     private lateinit var viewModel: LoginViewModel
     private lateinit var emailUsuario: EditText
@@ -45,8 +48,7 @@ class LoginFragment : Fragment(), View.OnClickListener {
     ): View? {
 
         // Inflate the layout for this fragment
-        val binding: LoginFragmentBinding =
-            DataBindingUtil.inflate(inflater, R.layout.login_fragment, container, false)
+        _binding = LoginFragmentBinding.inflate(inflater, container, false)
 
         mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
 

@@ -8,13 +8,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.Feed
  */
 @Entity(
     tableName = "group_table",
-    indices = [Index(name = "groupname__group_table", value = ["group_name"], unique = true)],
-    foreignKeys = [ForeignKey(
-        entity = Feed::class,
-        parentColumns = arrayOf("id"),
-        childColumns = arrayOf("id"),
-        onDelete = ForeignKey.CASCADE
-    )]
+    indices = [Index(name = "group_name__group_table", value = ["group_name"], unique = true)]
 )
 data class Group(
     @PrimaryKey(autoGenerate = true)

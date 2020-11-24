@@ -13,7 +13,7 @@ import androidx.room.Update
 interface GroupDao {
 
     @Insert
-    suspend fun insert(group: Group)
+    suspend fun insert(group: Group): Long
 
     /**
      * Actualiza el group indicado
@@ -21,7 +21,7 @@ interface GroupDao {
      * @param group nuevo valor a escribir
      */
     @Update
-    suspend fun update(group: Group)
+    suspend fun update(group: Group): Int
 
     /**
      * Selecciona y retorna la fila que coincide con la clave indicada

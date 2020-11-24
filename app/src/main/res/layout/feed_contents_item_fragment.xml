@@ -10,7 +10,7 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.contents.item.ContentsItemFragment">
+        tools:context=".ui.feed.contents.item.FeedContentsItemFragment">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

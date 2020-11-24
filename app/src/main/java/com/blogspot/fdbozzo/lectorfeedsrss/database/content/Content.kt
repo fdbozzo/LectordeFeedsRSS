@@ -2,19 +2,28 @@ package com.blogspot.fdbozzo.lectorfeedsrss.database.content
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.Feed
 
 /**
  * Representa un contenido (noticia).
  */
-@Entity(tableName = "content_table")
+@Entity(tableName = "content_table",
+    foreignKeys = [ForeignKey(
+        entity = Feed::class,
+        parentColumns = ["id"],
+        childColumns = ["feed_id"],
+        onDelete = ForeignKey.CASCADE
+    )]
+)
 data class Content(
 
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
 
     @ColumnInfo(name = "feed_id", index = true)
-    val feedId: Long = 0L,
+    var feedId: Long = 0L,
 
     var title: String = "",
 

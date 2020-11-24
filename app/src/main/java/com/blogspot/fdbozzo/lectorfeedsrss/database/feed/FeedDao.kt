@@ -13,7 +13,7 @@ import androidx.room.Update
 interface FeedDao {
 
     @Insert
-    suspend fun insert(feed: Feed)
+    suspend fun insert(feed: Feed): Long
 
     /**
      * Cuando se actualiza una fila con un valor existente en la columna,
@@ -22,7 +22,7 @@ interface FeedDao {
      * @param feed nuevo valor a escribir
      */
     @Update
-    suspend fun update(feed: Feed)
+    suspend fun update(feed: Feed): Int
 
     /**
      * Selecciona y retorna la fila que coincide con la clave indicada
