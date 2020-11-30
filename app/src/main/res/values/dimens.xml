@@ -40,5 +40,6 @@
 
     <dimen name="photo_size">64dp</dimen>
     <dimen name="default_margin">8dp</dimen>
+    <dimen name="photo_width">120dp</dimen>
 
 </resources>

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">LectorFeedsRSS</string>
-    <string name="pubdate_format">%1$tA, %1$td %1$tB %1$tY - %1$tH:%1$tM</string>
+    <!-- string name="pubdate_format">%1$tA, %1$td %1$tB %1$tY - %1$tH:%1$tM</string -->
+    <string name="pubdate_format">%1$tY/%1$tm/%1$td %1$tH:%1$tM</string>
     <string name="label_forgot_password">Forgot your password?</string>
     <string name="label_create_account">No account yet? Create one</string>
     <string name="create_user_with_email_success">Create user with email: Success!</string>
