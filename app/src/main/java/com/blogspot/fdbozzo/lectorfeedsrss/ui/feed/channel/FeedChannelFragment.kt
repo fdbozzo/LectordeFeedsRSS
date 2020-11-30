@@ -125,48 +125,6 @@ class FeedChannelFragment : Fragment() {
 
 
 
-        /*
-        /**
-         * Usando corrutinas
-         */
-        CoroutineScope(Dispatchers.IO).launch {
-            Timber.d("Usando Corrutinas")
-            //val response = service.getPosts()
-            val response = service.getRss()
-            try {
-                withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        response.body()?.let {
-                            val articles = it.channel!!.channelItems
-                            Timber.d(articles.size.toString())
-
-                            for (i in articles.indices) {
-                                Timber.d("index %i %s ", i, articles[i].title)
-                                Timber.d("index %i %s ", i, articles[i].link)
-                                Timber.d("index %i %s ", i, articles[i].pubDate)
-                                //Timber.d("index %i %s ", i, articles[i].guid)
-                            }
-
-                            //initRecyclerView(articles)
-                            //viewModel.items = articles
-                            binding.recyclerView.adapter = FeedChannelAdapter(articles, requireContext())
-                        }
-                    } else {
-                        Toast.makeText(
-                            requireContext(),
-                            "Error network operation failed with ${response.code()}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            } catch (e: HttpException) {
-                Timber.e("Exception ${e.message}")
-            } catch (e: Throwable) {
-                Timber.e("Ooops: Something else went wrong")
-            }
-        }
-         */
-
         return binding.root
         //return inflater.inflate(R.layout.feed_channel_fragment, container, false)
     }
