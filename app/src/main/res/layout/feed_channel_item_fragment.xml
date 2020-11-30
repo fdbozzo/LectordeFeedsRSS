@@ -78,6 +78,7 @@
                 android:cropToPadding="false"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_dashboard_black_24dp"
+                app:imageUrl="@{channelItem.description}"
                 app:layout_constraintBottom_toBottomOf="@id/text_height_max"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/text_height_max" />
