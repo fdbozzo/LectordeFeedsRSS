@@ -1,10 +1,7 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.database.feed
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 
 /**
  * Define los métodos para usar la clase Feed con Room.
@@ -12,7 +9,7 @@ import androidx.room.Update
 @Dao
 interface FeedDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(feed: Feed): Long
 
     /**

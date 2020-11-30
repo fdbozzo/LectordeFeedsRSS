@@ -9,6 +9,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.ActivityMainBinding
+import com.blogspot.fdbozzo.lectorfeedsrss.network.RetrofitFactory
 import timber.log.Timber
 
 
@@ -58,6 +59,7 @@ class MainActivity : AppCompatActivity() {
         //setupActionBarWithNavController(navController, appBarConfiguration)
         NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)  // Para navegación y drawer
         NavigationUI.setupWithNavController(binding.navView, navController)
+
     }
 
     override fun onStart() {

@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.platform.app.InstrumentationRegistry
 import com.blogspot.fdbozzo.lectorfeedsrss.database.FeedDatabase
-import com.blogspot.fdbozzo.lectorfeedsrss.database.content.ContentDao
+import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.channel.item.FeedChannelItemDao
 import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.FeedDao
 import com.blogspot.fdbozzo.lectorfeedsrss.database.group.Group
@@ -24,7 +24,7 @@ class FeedDaoTableTests {
 
     private lateinit var groupDao: GroupDao
     private lateinit var feedDao: FeedDao
-    private lateinit var contentDao: ContentDao
+    private lateinit var feedChannelItemDao: FeedChannelItemDao
     private lateinit var db: FeedDatabase
 
     @get:Rule
@@ -40,9 +40,9 @@ class FeedDaoTableTests {
             // Allowing main thread queries, just for testing.
             .allowMainThreadQueries()
             .build()
-        groupDao = db.groupDao
-        feedDao = db.feedDao
-        contentDao = db.contentDao
+        groupDao = db.getGroupDao()
+        feedDao = db.getFeedDao()
+        feedChannelItemDao = db.getFeedChannelItemDao()
     }
 
     @After

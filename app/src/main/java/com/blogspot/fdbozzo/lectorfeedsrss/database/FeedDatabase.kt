@@ -4,26 +4,32 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.blogspot.fdbozzo.lectorfeedsrss.database.content.Content
+import androidx.room.TypeConverters
+import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.channel.item.FeedChannelItem
 import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.database.group.Group
-import com.blogspot.fdbozzo.lectorfeedsrss.database.content.ContentDao
+import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.channel.item.FeedChannelItemDao
 import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.FeedDao
+import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.channel.FeedChannel
+import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.channel.FeedChannelDao
 import com.blogspot.fdbozzo.lectorfeedsrss.database.group.GroupDao
+import com.blogspot.fdbozzo.lectorfeedsrss.util.DateConverter
 
 /**
  * Base de datos que guarda información de feeds
  * y un método global para acceder a los datos de la misma.
  */
-@Database(entities = [Feed::class, Group::class, Content::class], version = 1, exportSchema = false)
+@Database(entities = [Group::class, Feed::class, FeedChannel::class, FeedChannelItem::class], version = 1, exportSchema = false)
+@TypeConverters(DateConverter::class)
 abstract class FeedDatabase : RoomDatabase() {
 
     /**
      * Conecta la base de datos al DAO.
      */
-    abstract val groupDao: GroupDao
-    abstract val feedDao: FeedDao
-    abstract val contentDao: ContentDao
+    abstract fun getGroupDao(): GroupDao
+    abstract fun getFeedDao(): FeedDao
+    abstract fun getFeedChannelDao(): FeedChannelDao
+    abstract fun getFeedChannelItemDao(): FeedChannelItemDao
 
     /**
      * Define el objeto companion, esto nos permite agregar funciones  en la clase FeedDatabase.

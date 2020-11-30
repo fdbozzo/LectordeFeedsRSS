@@ -6,8 +6,8 @@ import androidx.room.Room
 //import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.blogspot.fdbozzo.lectorfeedsrss.database.FeedDatabase
-import com.blogspot.fdbozzo.lectorfeedsrss.database.content.Content
-import com.blogspot.fdbozzo.lectorfeedsrss.database.content.ContentDao
+import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.channel.item.FeedChannelItem
+import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.channel.item.FeedChannelItemDao
 import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.FeedDao
 import com.blogspot.fdbozzo.lectorfeedsrss.database.group.Group
@@ -21,14 +21,14 @@ import kotlin.test.*
 import java.io.IOException
 
 //@RunWith(AndroidJUnit4::class)
-class ContentDaoTableTests {
+class FeedChannelItemDaoTableTests {
 
     @get:Rule
     val instantTaskExecutorRule: TestRule = InstantTaskExecutorRule()
 
     private lateinit var groupDao: GroupDao
     private lateinit var feedDao: FeedDao
-    private lateinit var contentDao: ContentDao
+    private lateinit var feedChannelItemDao: FeedChannelItemDao
     private lateinit var db: FeedDatabase
 
     @Before
@@ -40,9 +40,9 @@ class ContentDaoTableTests {
             // Allowing main thread queries, just for testing.
             .allowMainThreadQueries()
             .build()
-        groupDao = db.groupDao
-        feedDao = db.feedDao
-        contentDao = db.contentDao
+        groupDao = db.getGroupDao()
+        feedDao = db.getFeedDao()
+        feedChannelItemDao = db.getFeedChannelItemDao()
     }
 
     @After
@@ -66,11 +66,11 @@ class ContentDaoTableTests {
         val lastFeed = feedDao.getLastFeed() ?: throw Exception("lastFeed es null")
 
         // Ahora inserto un content
-        val content = Content()
+        val content = FeedChannelItem()
         content.title = "title"
         content.feedId = lastFeed.id
-        contentDao.insert(content)
-        val lastContent = contentDao.getLastContent() ?: throw Exception("lastContent es null")
+        feedChannelItemDao.insert(content)
+        val lastContent = feedChannelItemDao.getLastFeedItem() ?: throw Exception("lastContent es null")
 
         Assert.assertEquals("title", lastContent.title)
     }
@@ -80,8 +80,8 @@ class ContentDaoTableTests {
     fun deberiaInsertarUnContentYObtenerUnError_SQLiteConstraintException(): Unit = runBlocking {
         assertFailsWith<SQLiteConstraintException> {
             // Inserto un Feed
-            val content = Content()
-            contentDao.insert(content)
+            val content = FeedChannelItem()
+            feedChannelItemDao.insert(content)
         }
     }
 
@@ -104,17 +104,17 @@ class ContentDaoTableTests {
         // Ahora inserto un content
 
         // contenido 1
-        var content = Content()
+        var content = FeedChannelItem()
         content.feedId = lastFeed.id
-        contentDao.insert(content)
+        feedChannelItemDao.insert(content)
 
         // contenido 2
-        content = Content()
+        content = FeedChannelItem()
         content.feedId = lastFeed.id
-        contentDao.insert(content)
+        feedChannelItemDao.insert(content)
 
         // Obtener toods
-        val allContent = contentDao.getAllContents() // LiveData<List<Content>>
+        val allContent = feedChannelItemDao.getAllFeedChannelItems() // LiveData<List<FeedChannelItem>>
 
         Assert.assertEquals(2, getValue(allContent).size)
     }

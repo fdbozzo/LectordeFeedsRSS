@@ -4,7 +4,7 @@ import androidx.room.*
 import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.Feed
 
 /**
- * Representa un grupo.
+ * Entidad Group - Agrupa los Feeds.
  */
 @Entity(
     tableName = "group_table",

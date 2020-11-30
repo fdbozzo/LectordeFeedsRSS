@@ -90,7 +90,7 @@ class LoginFragment : Fragment(), View.OnClickListener {
         mainViewModel.fragmento = LoginFragment::class.java.canonicalName
 
         /**
-         * Como al login se llega desde el destino principal (feed_contents),
+         * Como al login se llega desde el destino principal (recycler_view),
          * se debe quitar del back stack para poder salir sin problemas.
          */
         navController.popBackStack(R.id.nav_feed_contents, true)

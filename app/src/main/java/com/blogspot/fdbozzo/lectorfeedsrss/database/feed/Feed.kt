@@ -1,11 +1,14 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.database.feed
 
 import androidx.room.*
-import com.blogspot.fdbozzo.lectorfeedsrss.database.content.Content
+import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.channel.FeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.database.group.Group
+import org.simpleframework.xml.Element
+import org.simpleframework.xml.ElementList
+import org.simpleframework.xml.Root
 
 /**
- * Representa un feed.
+ * Entidad Feed - link y nombre del Feed a mostrar
  */
 @Entity(
     tableName = "feed_table",
@@ -16,9 +19,8 @@ import com.blogspot.fdbozzo.lectorfeedsrss.database.group.Group
         onDelete = ForeignKey.CASCADE
     )]
 )
-data class Feed(
-    @PrimaryKey(autoGenerate = true)
-    var id: Long = 0L,
+@Root(name = "rss", strict = false)
+data class Feed constructor(
 
     @ColumnInfo(name = "group_id", index = true)
     var groupId: Long = 0L,
@@ -28,5 +30,17 @@ data class Feed(
 
     var link: String = "",
 
-    var favorite: Int = 0
-)
+    var favorite: Int = 0,
+
+    @Ignore
+    @field:Element(name = "channel", required = false)
+    //@field:ElementList(name = "channel", inline = true, required = false)
+    var channel: FeedChannel? = null,
+
+    @Ignore
+    var version: String? = null
+) {
+
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0L
+}

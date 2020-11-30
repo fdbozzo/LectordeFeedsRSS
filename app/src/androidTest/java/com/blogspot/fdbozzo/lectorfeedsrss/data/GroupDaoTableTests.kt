@@ -6,7 +6,7 @@ import androidx.room.Room
 //import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.blogspot.fdbozzo.lectorfeedsrss.database.FeedDatabase
-import com.blogspot.fdbozzo.lectorfeedsrss.database.content.ContentDao
+import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.channel.item.FeedChannelItemDao
 import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.FeedDao
 import com.blogspot.fdbozzo.lectorfeedsrss.database.group.Group
 import com.blogspot.fdbozzo.lectorfeedsrss.database.group.GroupDao
@@ -26,7 +26,7 @@ class GroupDaoTableTests {
 
     private lateinit var groupDao: GroupDao
     private lateinit var feedDao: FeedDao
-    private lateinit var contentDao: ContentDao
+    private lateinit var feedChannelItemDao: FeedChannelItemDao
     private lateinit var db: FeedDatabase
 
     @Before
@@ -38,9 +38,9 @@ class GroupDaoTableTests {
             // Allowing main thread queries, just for testing.
             .allowMainThreadQueries()
             .build()
-        groupDao = db.groupDao
-        feedDao = db.feedDao
-        contentDao = db.contentDao
+        groupDao = db.getGroupDao()
+        feedDao = db.getFeedDao()
+        feedChannelItemDao = db.getFeedChannelItemDao()
     }
 
     @After
