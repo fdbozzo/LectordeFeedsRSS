@@ -33,6 +33,20 @@ class FeedChannelViewModel(private val daoChannel: FeedChannelItemDao) : ViewMod
     val status: LiveData<RssApiStatus>
         get() = _status
 
+    /**
+     * FLAGS Y MÉTODOS PARA NAVEGACIÓN A CONTENTS_FRAGMENT (la noticia)
+     */
+    private var _contentsUrl = MutableLiveData<String>()
+    val contentsUrl: LiveData<String>
+        get() = _contentsUrl
+
+    fun navigateToContentsWithUrl(url: String) {
+        _contentsUrl.value = url
+    }
+    fun navigateToContentsWithUrl_Done() {
+        _contentsUrl.value = null
+    }
+
 
     /**
      * Llamar a getRssFeedData() en el init para obtener los datos inmediatamente.

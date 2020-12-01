@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <!--variable
-            name="clickListener"
-            type="android.view.View.OnClickListener"/-->
+        <variable
+            name="viewModel"
+            type="com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.channel.FeedChannelViewModel"/>
         <variable
             name="channelItem"
             type="com.blogspot.fdbozzo.lectorfeedsrss.database.feed.channel.item.FeedChannelItem"/>
@@ -14,8 +14,9 @@
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <!-- tools:context=".ui.feed.channel.channelItem.FeedChannelItemFragment" -->
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> viewModel.navigateToContentsWithUrl(channelItem.link)}"
+        tools:context="com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.channel.channelItem.FeedChannelItemFragment">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -28,6 +29,20 @@
 
             <!-- Título de la noticia o artículo  @{channelItem.title} -->
             <TextView
+                android:id="@+id/text_height_max"
+                android:layout_width="1dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:lines="4"
+                android:text="TextView"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
                 android:id="@+id/textContentsTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -35,6 +50,8 @@
                 android:maxLines="3"
                 android:outlineProvider="none"
                 android:text="@{channelItem.title}"
+                android:textSize="18sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@id/imageView"
                 app:layout_constraintStart_toStartOf="@id/text_height_max"
                 app:layout_constraintTop_toTopOf="@id/imageView"
@@ -48,6 +65,8 @@
                 android:layout_marginEnd="8dp"
                 android:maxLines="1"
                 android:text=""
+                android:textColor="@android:color/darker_gray"
+                android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@id/imageView"
                 app:layout_constraintEnd_toStartOf="@+id/fechaFeed"
                 app:layout_constraintStart_toStartOf="@id/text_height_max"
@@ -62,6 +81,8 @@
                 android:layout_marginEnd="8dp"
                 android:maxLines="1"
                 android:text="@{@string/pubdate_format(channelItem.pubDate)}"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView"
                 app:layout_constraintEnd_toStartOf="@+id/imageView"
                 app:layout_constraintTop_toBottomOf="@+id/textContentsTitle"
@@ -82,19 +103,6 @@
                 app:layout_constraintBottom_toBottomOf="@id/text_height_max"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/text_height_max" />
-
-            <TextView
-                android:id="@+id/text_height_max"
-                android:layout_width="1dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:lines="4"
-                android:text="TextView"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

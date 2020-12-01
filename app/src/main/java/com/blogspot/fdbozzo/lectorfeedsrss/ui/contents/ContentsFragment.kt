@@ -26,6 +26,9 @@ class ContentsFragment : Fragment() {
     ): View? {
         _binding = ContentsFragmentBinding.inflate(inflater, container, false)
 
+        val arguments = ContentsFragmentArgs.fromBundle(requireArguments())
+        binding.webView.loadUrl(arguments.itemUrl)
+
         return binding.root
         //return inflater.inflate(R.layout.contents_fragment, container, false)
     }

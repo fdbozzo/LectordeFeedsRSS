@@ -11,7 +11,10 @@ import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.channel.item.FeedChanne
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.FeedChannelItemFragmentBinding
 import timber.log.Timber
 
-class FeedChannelAdapter(private val list: List<FeedChannelItem>, val context: Context) : RecyclerView.Adapter<FeedChannelAdapter.ViewHolder>() {
+class FeedChannelAdapter(
+    private val list: List<FeedChannelItem>,
+    private val viewModel: FeedChannelViewModel,
+    val context: Context) : RecyclerView.Adapter<FeedChannelAdapter.ViewHolder>() {
 //class FeedChannelAdapter: ListAdapter<FeedChannelItem, FeedChannelAdapter.ViewHolder>(FeedContentsDiff()) {
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -27,7 +30,7 @@ class FeedChannelAdapter(private val list: List<FeedChannelItem>, val context: C
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         //val item = getItem(position)
         val item = list[position]
-        holder.bind(item)
+        holder.bind(item, viewModel)
     }
 
     override fun getItemCount(): Int = list.size
@@ -37,10 +40,12 @@ class FeedChannelAdapter(private val list: List<FeedChannelItem>, val context: C
      * ViewHolder para los datos
      */
 
-    class ViewHolder private constructor(val binding: FeedChannelItemFragmentBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder private constructor(
+        val binding: FeedChannelItemFragmentBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(channelItem: FeedChannelItem) {
+        fun bind(channelItem: FeedChannelItem, viewModel: FeedChannelViewModel) {
             binding.channelItem = channelItem
+            binding.viewModel = viewModel
             //binding.clickListener = clickListener
             binding.executePendingBindings()
         }

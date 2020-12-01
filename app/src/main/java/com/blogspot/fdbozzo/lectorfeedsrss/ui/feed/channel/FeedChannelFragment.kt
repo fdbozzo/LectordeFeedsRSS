@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -13,21 +12,14 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.blogspot.fdbozzo.lectorfeedsrss.MainViewModel
 import com.blogspot.fdbozzo.lectorfeedsrss.R
 import com.blogspot.fdbozzo.lectorfeedsrss.database.FeedDatabase
 import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.channel.item.FeedChannelItem
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.FeedChannelFragmentBinding
-import com.blogspot.fdbozzo.lectorfeedsrss.network.RetrofitFactory
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.HttpException
 import timber.log.Timber
 
 class FeedChannelFragment : Fragment() {
@@ -91,22 +83,21 @@ class FeedChannelFragment : Fragment() {
                 //adapter.data = it   // Esto solo lo usa el RecyclerView.Adapter
                 //adapter.submitList(it)
                 //initRecyclerView(it)
-                binding.recyclerView.adapter = FeedChannelAdapter(it, requireContext())
+                binding.recyclerView.adapter = FeedChannelAdapter(it, viewModel, requireContext())
             }
         })
          //*/
 
         /** Observer para el navigateToFeedContentsItem **/
-        /*
-        viewModel.navigateToSleepQuality.observe(viewLifecycleOwner, Observer { night ->
-            night?.let {
-                val action = SleepTrackerFragmentDirections.actionSleepTrackerFragmentToSleepQualityFragment(night.nightId)
+        viewModel.contentsUrl.observe(viewLifecycleOwner, Observer { url ->
+            url?.let {
+                //val action = SleepTrackerFragmentDirections.actionSleepTrackerFragmentToSleepQualityFragment(night.nightId)
+                val action = FeedChannelFragmentDirections.actionFeedContentsFragmentToContentsFragment(url)
                 //NavHostFragment.findNavController(this).navigate(action)
                 findNavController().navigate(action)
-                sleepTrackerViewModel.doneNavigating()
+                viewModel.navigateToContentsWithUrl_Done()
             }
         })
-         */
 
         /** Observer para el Snackbar **/
         /*
@@ -160,7 +151,7 @@ class FeedChannelFragment : Fragment() {
     private fun initRecyclerView(list: List<FeedChannelItem>) {
         //val recyclerview: RecyclerView = findViewById(R.id.recycler_view)
         val recyclerview2 = binding.recyclerView
-        recyclerview2.adapter = FeedChannelAdapter(list, requireContext())
+        recyclerview2.adapter = FeedChannelAdapter(list, viewModel, requireContext())
     }
 
      //*/
