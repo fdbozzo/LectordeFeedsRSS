@@ -16,23 +16,20 @@
 
 package com.demo.rssfeedreader.utilities
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.blogspot.fdbozzo.lectorfeedsrss.database.FeedDatabase
-import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.FeedDao
-import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.channel.item.FeedChannelItemDao
-import com.blogspot.fdbozzo.lectorfeedsrss.database.group.GroupDao
+//import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedDao
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItemDao
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.GroupDao
 import com.blogspot.fdbozzo.lectorfeedsrss.util.getSrcImage
 import kotlinx.coroutines.runBlocking
 import org.junit.*
 import org.junit.rules.TestRule
-import timber.log.Timber
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 class FeedChannelItemDaoTableTests {
 
-    @get:Rule
-    val instantTaskExecutorRule: TestRule = InstantTaskExecutorRule()
+    //@get:Rule
+    //val instantTaskExecutorRule: TestRule = InstantTaskExecutorRule()
 
     private lateinit var groupDao: GroupDao
     private lateinit var feedDao: FeedDao

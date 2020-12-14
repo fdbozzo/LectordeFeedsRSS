@@ -11,7 +11,7 @@
         tools:layout="@layout/login_fragment" />
     <fragment
         android:id="@+id/nav_feed_contents"
-        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.channel.FeedChannelFragment"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.FeedChannelFragment"
         android:label="@string/title_feed_contents"
         tools:layout="@layout/feed_channel_fragment">
         <action

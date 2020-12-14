@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package com.demo.rssfeedreader.utilities
+package com.blogspot.fdbozzo.lectorfeedsrss.utilities
 
 import androidx.lifecycle.LiveData
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 

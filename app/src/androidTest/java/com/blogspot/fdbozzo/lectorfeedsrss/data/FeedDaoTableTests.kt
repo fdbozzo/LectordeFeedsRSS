@@ -1,25 +1,34 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data
 
 import android.database.sqlite.SQLiteConstraintException
-import androidx.room.Room
-//import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.room.Room
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
+//import androidx.test.ext.junit.runners.AndroidJUnit4
+//import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.platform.app.InstrumentationRegistry
-import com.blogspot.fdbozzo.lectorfeedsrss.database.FeedDatabase
-import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.channel.item.FeedChannelItemDao
-import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.Feed
-import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.FeedDao
-import com.blogspot.fdbozzo.lectorfeedsrss.database.group.Group
-import com.blogspot.fdbozzo.lectorfeedsrss.database.group.GroupDao
-import com.demo.rssfeedreader.utilities.getValue
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItemDao
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Feed
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedDao
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.GroupDao
+import com.blogspot.fdbozzo.lectorfeedsrss.utilities.CoroutinesTestRule
+import com.blogspot.fdbozzo.lectorfeedsrss.utilities.getValue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import org.junit.*
 import org.junit.Test
 import org.junit.rules.TestRule
+import org.junit.runner.RunWith
 import kotlin.test.*
 import java.io.IOException
 
-//@RunWith(AndroidJUnit4::class)
+@RunWith(AndroidJUnit4ClassRunner::class)
+@ExperimentalCoroutinesApi
 class FeedDaoTableTests {
 
     private lateinit var groupDao: GroupDao
@@ -29,6 +38,9 @@ class FeedDaoTableTests {
 
     @get:Rule
     val instantTaskExecutorRule: TestRule = InstantTaskExecutorRule()
+
+    @get:Rule
+    val coroutinesTestRule = CoroutinesTestRule()
 
 
     @Before
@@ -101,9 +113,14 @@ class FeedDaoTableTests {
         feedDao.insert(feed)
         feedDao.getLastFeed() ?: throw Exception("lastFeed(2) es null")
 
-        val allFeeds = feedDao.getAllFeeds() // LiveData<List<Feed>>
+        // Test
+        //val allFeeds = feedDao.getAllFeeds() // LiveData<List<Feed>>
+        val allFeeds = feedDao.getAllFeeds() // Flow<List<Feed>>
 
-        Assert.assertEquals(2, getValue(allFeeds).size)
+        // Verify
+        val valores = allFeeds.take(1).toList()
+
+        Assert.assertEquals(2, valores[0].size)
     }
 
 

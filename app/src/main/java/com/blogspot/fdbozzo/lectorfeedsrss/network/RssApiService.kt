@@ -1,13 +1,13 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.network
 
-import com.blogspot.fdbozzo.lectorfeedsrss.database.feed.Feed
+import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import retrofit2.Response
 import retrofit2.http.GET
 
 interface RssApiService {
     @GET("/feed")
     //fun feed(): Call<Rss>
-    suspend fun getRss(): Response<Feed>
+    suspend fun getRss(): Response<ServerFeed>
     //suspend fun getRss(): List<Feed>
 }
 
