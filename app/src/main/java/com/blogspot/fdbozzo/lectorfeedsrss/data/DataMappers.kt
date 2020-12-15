@@ -9,9 +9,12 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as DomainFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Group as DomainGroup
+import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
+import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannel as ServerFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannelItem as ServerFeedChannelItem
 
 
+/** ROOM BBDD **/
 fun RoomGroup.toDomainGroup(): DomainGroup =
     DomainGroup(id, groupName)
 
@@ -24,6 +27,7 @@ fun RoomFeedChannel.toDomainFeedChannel(): DomainFeedChannel =
 fun RoomFeedChannelItem.toDomainFeedChannelItem(): DomainFeedChannelItem =
     DomainFeedChannelItem(id, feedId, title, link, pubDate, description, read, readLater, imageLink)
 
+/** DOMAIN **/
 fun DomainGroup.toRoomGroup(): RoomGroup =
     RoomGroup(groupName)
 
@@ -35,6 +39,14 @@ fun DomainFeedChannel.toRoomFeedChannel(): RoomFeedChannel =
 
 fun DomainFeedChannelItem.toRoomFeedChannelItem(): RoomFeedChannelItem =
     RoomFeedChannelItem(feedId, title, link, pubDate, description, read, readLater, imageLink)
+
+/** SERVER **/
+fun ServerFeed.toDomainFeed(): DomainFeed =
+    DomainFeed(id, groupId, linkName, link, favorite, channel.toDomainFeedChannel(), version)
+
+fun ServerFeedChannel.toDomainFeedChannel(): DomainFeedChannel =
+    DomainFeedChannel(id, feedId, title, description, copyright, link, pubDate, (channelItems as List<ServerFeedChannelItem>).map {
+        it.toDomainFeedChannelItem() })
 
 fun ServerFeedChannelItem.toDomainFeedChannelItem(): DomainFeedChannelItem =
     DomainFeedChannelItem(id, feedId, title, link, DateParser.stringToDate(pubDate, "EEE, d MMM yyyy HH:mm:ss Z"), description, read, readLater, imageLink)

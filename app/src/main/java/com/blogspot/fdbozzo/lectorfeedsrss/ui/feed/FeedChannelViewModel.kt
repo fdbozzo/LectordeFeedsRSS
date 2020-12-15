@@ -7,6 +7,8 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as Domai
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItemDao
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
+import com.blogspot.fdbozzo.lectorfeedsrss.data.toDomainFeed
+import com.blogspot.fdbozzo.lectorfeedsrss.data.toDomainFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.data.toDomainFeedChannelItem
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssApi
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed
@@ -69,7 +71,19 @@ class FeedChannelViewModel(private val feedRepository: FeedRepository) : ViewMod
 
             when (rssApiResponse) {
                 is RssResponse.Success -> {
-                    _items.value = (rssApiResponse as RssResponse.Success<Feed>).data.channel?.get(0)?.channelItems?.map { it.toDomainFeedChannelItem() }
+
+                    val domainFeed = (rssApiResponse as RssResponse.Success<Feed>).data.toDomainFeed()
+                    val domainFeedChannels = (rssApiResponse as RssResponse.Success<Feed>).data.channel.toDomainFeedChannel()
+                    val domainFeedChannelItems = (rssApiResponse as RssResponse.Success<Feed>).data.channel.channelItems?.map {
+                        it.toDomainFeedChannelItem()
+                    }
+
+                    /** Con la respuesta ahora puedo guardar en BBDD */
+                    //feedRepository.saveNetworkFeeds(domainFeed)
+
+                    // TODO: Falta filtrar los items leidos antes de actualizar el LiveData
+                    _items.value = domainFeedChannelItems
+
                 }
                 is RssResponse.Error -> {
                     Timber.d("RssResponse.Error = ${(rssApiResponse as RssResponse.Error).exception.message}")

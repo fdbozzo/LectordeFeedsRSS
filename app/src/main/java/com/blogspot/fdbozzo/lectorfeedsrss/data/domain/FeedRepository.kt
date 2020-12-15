@@ -1,6 +1,7 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.domain
 
 import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
+import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannelItem
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withTimeout
@@ -35,11 +36,18 @@ class FeedRepository(
 
     suspend fun checkNetworkFeeds(): RssResponse<ServerFeed> {
         /**
-         * Primero buscar los datos en la red pare luego guardarlos
+         * Buscar los feeds en la red
          */
         val newFeeds = withTimeout(15_000) { remoteDataSource.getFeedInfo() }
         //localDataSource
         return newFeeds
+    }
+
+    suspend fun saveNetworkFeeds(domainFeed: DomainFeed): Unit {
+        /**
+         * Guardar los feeds en BBDD
+         */
+
     }
 
 }
@@ -59,7 +67,7 @@ interface LocalDataSource {
      */
     suspend fun feedIsEmpty(): Boolean
     suspend fun feedSize(): Int
-    //suspend fun saveFeed(feed: DomainFeed)
+    suspend fun saveFeed(feed: DomainFeed)
     fun getFeeds(): Flow<List<DomainFeed>>
 
     /**

@@ -7,6 +7,6 @@ data class Feed constructor(
     var linkName: String = "",
     var link: String = "",
     var favorite: Int = 0,
-    var channel: FeedChannel? = null,
+    var channel: FeedChannel = FeedChannel(),
     var version: String? = null
 )

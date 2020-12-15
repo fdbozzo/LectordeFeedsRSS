@@ -16,6 +16,7 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
     private val feedChannelItemDao = db.getFeedChannelItemDao()
     private val groupDao = db.getGroupDao()
 
+    /** GROUP **/
     override suspend fun groupIsEmpty(): Boolean {
         TODO("Not yet implemented")
     }
@@ -35,17 +36,16 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
             }
         }
 
+    /** FEED **/
     override suspend fun feedIsEmpty(): Boolean {
         TODO("Not yet implemented")
     }
 
     override suspend fun feedSize(): Int = feedDao.feedCount()
 
-    /*
     override suspend fun saveFeed(feed: DomainFeed) {
         feedDao.insert(feed.toRoomFeed())
     }
-     */
 
     override fun getFeeds(): Flow<List<DomainFeed>> =
         feedDao.getAllFeeds().map {
@@ -54,6 +54,7 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
             }
         }
 
+    /** FEED-CHANNEL **/
     override suspend fun feedChannelIsEmpty(): Boolean {
         TODO("Not yet implemented")
     }
@@ -77,6 +78,7 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
             }
         }
 
+    /** FEED-CHANNEL-ITEM **/
     override suspend fun feedChannelItemsIsEmpty(): Boolean {
         TODO("Not yet implemented")
     }

@@ -34,7 +34,7 @@ class RssFeedDataSource(): RemoteDataSource {
 
                         val feed = it
                         val feedChannel = feed.channel
-                        val feedChannelItem = feedChannel?.get(0)?.channelItems
+                        val feedChannelItem = feedChannel.channelItems
                         //val articles = it.channel!!.channelItems
                         //Timber.d("feed = $feed")
 

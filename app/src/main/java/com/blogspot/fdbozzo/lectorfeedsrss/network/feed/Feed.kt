@@ -1,5 +1,6 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.network.feed
 
+import org.simpleframework.xml.Element
 import org.simpleframework.xml.ElementList
 import org.simpleframework.xml.Root
 
@@ -16,8 +17,8 @@ data class Feed constructor(
 
     var favorite: Int = 0,
 
-    @field:ElementList(name = "channel", inline = true, required = false)
-    var channel: List<FeedChannel>? = null,
+    @field:Element(name = "channel", required = true)
+    var channel: FeedChannel = FeedChannel(),
 
     var version: String? = null
 )
