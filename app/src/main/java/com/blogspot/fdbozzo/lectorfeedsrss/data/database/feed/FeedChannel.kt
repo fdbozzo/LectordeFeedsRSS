@@ -1,8 +1,6 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed
 
 import androidx.room.*
-import org.simpleframework.xml.ElementList
-import org.simpleframework.xml.Root
 import java.util.*
 
 /**
@@ -22,7 +20,6 @@ import java.util.*
             unique = true
         )]*/
 )
-@Root(name = "channel", strict = false)
 data class FeedChannel(
 
     /*
@@ -45,7 +42,6 @@ data class FeedChannel(
     var pubDate: Date = Date(),
 
     @Ignore
-    @field:ElementList(name = "item", inline = true, required = false)
     var channelItems: List<FeedChannelItem>? = null
 
 ) {

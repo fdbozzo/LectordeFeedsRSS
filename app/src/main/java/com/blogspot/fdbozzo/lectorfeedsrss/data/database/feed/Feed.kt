@@ -12,16 +12,22 @@ import androidx.room.*
         parentColumns = ["id"],
         childColumns = ["group_id"],
         onDelete = ForeignKey.CASCADE
-    )]
+    )],
+    indices = [
+        Index(
+            value = ["link"],
+            unique = true
+        )]
 )
 data class Feed constructor(
 
     @ColumnInfo(name = "group_id", index = true)
-    var groupId: Long = 0L,
+    var groupId: Long = 1L,
 
-    @ColumnInfo(name = "link_name", index = true)
+    @ColumnInfo(name = "link_name", index = false)
     var linkName: String = "",
 
+    @ColumnInfo(name = "link")
     var link: String = "",
 
     var favorite: Int = 0,

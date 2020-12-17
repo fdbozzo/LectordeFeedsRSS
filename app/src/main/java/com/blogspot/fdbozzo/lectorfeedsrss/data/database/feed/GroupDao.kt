@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 interface GroupDao {
 
     @Insert
-    suspend fun insert(group: Group): Long
+    fun insert(group: Group): Long
 
     /**
      * Actualiza el group indicado
@@ -21,7 +21,7 @@ interface GroupDao {
      * @param group nuevo valor a escribir
      */
     @Update
-    suspend fun update(group: Group): Int
+    fun update(group: Group): Int
 
     /**
      * Selecciona y retorna la fila que coincide con la clave indicada
@@ -29,16 +29,24 @@ interface GroupDao {
      * @param key Group a buscar
      */
     @Query("SELECT * from group_table WHERE id = :key")
-    suspend fun get(key: Long): Group
+    fun get(key: Long): Group
+
+    /**
+     * Selecciona y retorna la fila que coincide con la clave indicada
+     *
+     * @param key Group a buscar
+     */
+    @Query("SELECT id from group_table WHERE group_name = :key")
+    fun get(key: String): Long
 
     /**
      * Borra todos los datos de la tabla
      */
     @Query("DELETE FROM group_table")
-    suspend fun clear()
+    fun clear()
 
     @Query("SELECT COUNT(id) FROM group_table")
-    suspend fun groupCount(): Int
+    fun groupCount(): Int
 
     /**
      * Selecciona y retorna todos los datos de la tabla,
@@ -51,7 +59,7 @@ interface GroupDao {
      * Selecciona y retorna el último Group.
      */
     @Query("SELECT * FROM group_table ORDER BY id DESC LIMIT 1")
-    suspend fun getLastGroup(): Group?
+    fun getLastGroup(): Group?
 
     /**
      * Selecciona y retorna el Group con el Id indicado.

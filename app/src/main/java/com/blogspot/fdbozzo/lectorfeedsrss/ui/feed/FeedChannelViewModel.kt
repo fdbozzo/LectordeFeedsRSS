@@ -74,12 +74,17 @@ class FeedChannelViewModel(private val feedRepository: FeedRepository) : ViewMod
 
                     val domainFeed = (rssApiResponse as RssResponse.Success<Feed>).data.toDomainFeed()
                     val domainFeedChannels = (rssApiResponse as RssResponse.Success<Feed>).data.channel.toDomainFeedChannel()
+
+                    // Reemplazo algunos datos
+                    domainFeed.linkName = domainFeedChannels.title
+                    domainFeed.link = domainFeedChannels.link
+
                     val domainFeedChannelItems = (rssApiResponse as RssResponse.Success<Feed>).data.channel.channelItems?.map {
                         it.toDomainFeedChannelItem()
                     }
 
                     /** Con la respuesta ahora puedo guardar en BBDD */
-                    //feedRepository.saveNetworkFeeds(domainFeed)
+                    feedRepository.saveNetworkFeeds(domainFeed)
 
                     // TODO: Falta filtrar los items leidos antes de actualizar el LiveData
                     _items.value = domainFeedChannelItems

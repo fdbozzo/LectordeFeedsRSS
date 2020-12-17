@@ -32,7 +32,7 @@ interface FeedChannelDao {
      * @param feedItem nuevo valor a reemplazar
      */
     @Update
-    suspend fun update(feedChannel: FeedChannel): Int
+    fun update(feedChannel: FeedChannel): Int
 
     /**
      *
@@ -42,13 +42,20 @@ interface FeedChannelDao {
     fun get(title: String) : Flow<FeedChannel>
 
     /**
+     *
+     * @param feedId Id del Feed del que buscar su channel
+     */
+    @Query("SELECT * FROM feed_channel_table WHERE feed_id = :feedId")
+    fun get(feedId: Int) : Flow<FeedChannel>
+
+    /**
      * Borra todos los datos de la tabla
      */
     @Query("DELETE FROM feed_channel_table")
-    suspend fun clear()
+    fun clear()
 
     @Query("SELECT COUNT(id) FROM feed_channel_table")
-    suspend fun groupCount(): Int
+    fun groupCount(): Int
 
     /**
      * Selecciona y retorna todos los datos de la tabla,

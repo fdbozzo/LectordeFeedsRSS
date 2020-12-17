@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 interface FeedDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(feed: Feed): Long
+    fun insert(feed: Feed): Long
 
     /**
      * Cuando se actualiza una fila con un valor existente en la columna,
@@ -20,7 +20,7 @@ interface FeedDao {
      * @param feed nuevo valor a escribir
      */
     @Update
-    suspend fun update(feed: Feed): Int
+    fun update(feed: Feed): Int
 
     /**
      * Selecciona y retorna la fila que coincide con la clave indicada
@@ -28,16 +28,16 @@ interface FeedDao {
      * @param key feed a buscar
      */
     @Query("SELECT * from feed_table WHERE id = :key")
-    suspend fun get(key: Long): Feed
+    fun get(key: Long): Feed
 
     /**
      * Borra todos los datos de la tabla
      */
     @Query("DELETE FROM feed_table")
-    suspend fun clear()
+    fun clear()
 
     @Query("SELECT COUNT(id) FROM feed_table")
-    suspend fun feedCount(): Int
+    fun feedCount(): Int
 
     /**
      * Selecciona y retorna todos los datos de la tabla,
@@ -50,7 +50,7 @@ interface FeedDao {
      * Selecciona y retorna el último feed.
      */
     @Query("SELECT * FROM feed_table ORDER BY id DESC LIMIT 1")
-    suspend fun getLastFeed(): Feed?
+    fun getLastFeed(): Feed?
 
     /**
      * Selecciona y retorna el feed con el Id indicado.

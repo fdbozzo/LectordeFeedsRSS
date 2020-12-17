@@ -16,7 +16,7 @@ interface FeedChannelItemDao {
      * @param feedChannelItem nuevo valor a insertar
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(feedChannelItem: FeedChannelItem): Long
+    fun insert(feedChannelItem: FeedChannelItem): Long
 
     /*
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -28,23 +28,23 @@ interface FeedChannelItemDao {
      * @param feedChannelItem nuevo valor a reemplazar
      */
     @Update
-    suspend fun update(feedChannelItem: FeedChannelItem): Int
+    fun update(feedChannelItem: FeedChannelItem): Int
 
     /**
      *
      * @param key Id del FeedChannelItem a buscar
      */
     @Query("SELECT * from feed_channel_item_table WHERE id = :key")
-    suspend fun get(key: Long): FeedChannelItem
+    fun get(key: Long): FeedChannelItem
 
     /**
      * Borra todos los datos de la tabla
      */
     @Query("DELETE FROM feed_channel_item_table")
-    suspend fun clear()
+    fun clear()
 
     @Query("SELECT COUNT(id) FROM feed_channel_item_table")
-    suspend fun feedChannelItemCount(): Int
+    fun feedChannelItemCount(): Int
 
     /**
      * Selecciona y retorna todos los datos de la tabla no leídos,
@@ -57,7 +57,7 @@ interface FeedChannelItemDao {
      * Selecciona y retorna el último item.
      */
     @Query("SELECT * FROM feed_channel_item_table ORDER BY id DESC LIMIT 1")
-    suspend fun getLastFeedItem(): FeedChannelItem?
+    fun getLastFeedItem(): FeedChannelItem?
 
     /**
      * Selecciona y retorna el content con el Id indicado.

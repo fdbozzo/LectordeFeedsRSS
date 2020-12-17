@@ -45,11 +45,24 @@ fun ServerFeed.toDomainFeed(): DomainFeed =
     DomainFeed(id, groupId, linkName, link, favorite, channel.toDomainFeedChannel(), version)
 
 fun ServerFeedChannel.toDomainFeedChannel(): DomainFeedChannel =
-    DomainFeedChannel(id, feedId, title, description, copyright, link, pubDate, (channelItems as List<ServerFeedChannelItem>).map {
-        it.toDomainFeedChannelItem() })
+    DomainFeedChannel(id, feedId, title, description, copyright,
+        link = if (this.links.isNotEmpty()) (this.links[this.links.size - 1].text) else "",
+        pubDate, (channelItems as List<ServerFeedChannelItem>).map {
+            it.toDomainFeedChannelItem()
+        })
 
 fun ServerFeedChannelItem.toDomainFeedChannelItem(): DomainFeedChannelItem =
-    DomainFeedChannelItem(id, feedId, title, link, DateParser.stringToDate(pubDate, "EEE, d MMM yyyy HH:mm:ss Z"), description, read, readLater, imageLink)
+    DomainFeedChannelItem(
+        id,
+        feedId,
+        title,
+        link,
+        DateParser.stringToDate(pubDate, "EEE, d MMM yyyy HH:mm:ss Z"),
+        description,
+        read,
+        readLater,
+        imageLink
+    )
 
 /**
  * Mapea los Feed de la base de datos a entidades del dominio
@@ -124,9 +137,11 @@ fun List<RoomFeedChannelItem>.asDomainModelFeedChannelItem(): List<DomainFeedCha
             link = it.link,
             imageLink = it.imageLink,
             read = it.read,
-            readLater = it.readLater)
+            readLater = it.readLater
+        )
     }
 }
+
 /**
  * Mapea los FeedChannelItem del dominio a entidades de la base de datos
  */
@@ -140,7 +155,8 @@ fun List<DomainFeedChannelItem>.asDatabaseModelFeedChannelItem(): List<RoomFeedC
             link = it.link,
             imageLink = it.imageLink,
             read = it.read,
-            readLater = it.readLater)
+            readLater = it.readLater
+        )
     }
 }
 

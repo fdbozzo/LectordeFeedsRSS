@@ -9,7 +9,7 @@ data class Feed constructor(
 
     var id: Long = 0L,
 
-    var groupId: Long = 0L,
+    var groupId: Long = 1L,
 
     var linkName: String = "",
 
