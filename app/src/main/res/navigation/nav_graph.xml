@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_feed_contents">
+    <fragment
+        android:id="@+id/nav_login"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.login.LoginFragment"
+        android:label="@string/title_login"
+        tools:layout="@layout/login_fragment" />
+    <fragment
+        android:id="@+id/nav_feed_contents"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.FeedChannelFragment"
+        android:label="@string/title_feed_contents"
+        tools:layout="@layout/feed_channel_fragment">
+        <action
+            android:id="@+id/action_feedContentsFragment_to_contentsFragment"
+            app:destination="@id/nav_contents" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_contents"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.contents.ContentsFragment"
+        android:label="@string/title_contents">
+        <argument
+            android:name="itemUrl"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_add_group_fragment"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.group.AddGroupFragment"
+        android:label="@string/title_add_group"
+        tools:layout="@layout/add_group_fragment" />
+    <fragment
+        android:id="@+id/nav_add_feed"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.AddFeedFragment"
+        android:label="@string/title_add_feed"
+        tools:layout="@layout/add_feed_fragment" />
+</navigation>

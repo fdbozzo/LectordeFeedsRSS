@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.FeedChannelViewModel"/>
+        <variable
+            name="channelItem"
+            type="com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem"/>
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> viewModel.navigateToContentsWithUrl(channelItem.link)}"
+        tools:context="com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.channel.channelItem.FeedChannelItemFragment">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- ESTRUCTURA DEL ITEM:
+            <Título-Noticia>      | <ima-
+            <Nombre-Feed y Fecha> |  gen>
+            -->
+
+            <!-- Título de la noticia o artículo  @{channelItem.title} -->
+            <TextView
+                android:id="@+id/text_height_max"
+                android:layout_width="1dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:lines="4"
+                android:text="TextView"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textContentsTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:maxLines="3"
+                android:outlineProvider="none"
+                android:text="@{channelItem.title}"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/imageView"
+                app:layout_constraintStart_toStartOf="@id/text_height_max"
+                app:layout_constraintTop_toTopOf="@id/imageView"
+                tools:text="Título noticia" />
+
+            <!-- Nombre del Feed @{channelItem.description} -->
+            <TextView
+                android:id="@+id/nombreFeed"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:maxLines="1"
+                android:text=""
+                android:textColor="@android:color/darker_gray"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@id/imageView"
+                app:layout_constraintEnd_toStartOf="@+id/fechaFeed"
+                app:layout_constraintStart_toStartOf="@id/text_height_max"
+                app:layout_constraintTop_toBottomOf="@id/textContentsTitle"
+                tools:text="Nombre Feed" />
+
+            <!-- Fecha del Feed  @{channelItem.pubDate} -->
+            <TextView
+                android:id="@+id/fechaFeed"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:maxLines="1"
+                android:text="@{@string/pubdate_format(channelItem.pubDate)}"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/imageView"
+                app:layout_constraintEnd_toStartOf="@+id/imageView"
+                app:layout_constraintTop_toBottomOf="@+id/textContentsTitle"
+                tools:text="Fecha Feed" />
+
+            <!-- Primera imagen de la noticia  app:imageUrl="@{channelItem.imageLink}" -->
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="@dimen/photo_width"
+                android:layout_height="0dp"
+                android:layout_marginEnd="@dimen/default_margin"
+                android:adjustViewBounds="false"
+                android:contentDescription="@string/content_picture"
+                android:cropToPadding="false"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_dashboard_black_24dp"
+                app:imageUrl="@{channelItem.description}"
+                app:layout_constraintBottom_toBottomOf="@id/text_height_max"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/text_height_max" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+</layout>
