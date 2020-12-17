@@ -98,7 +98,6 @@ class FeedChannelFragment : Fragment() {
         /** Observer para el navigateToFeedContentsItem **/
         viewModel.contentsUrl.observe(viewLifecycleOwner, Observer { url ->
             url?.let {
-                //val action = SleepTrackerFragmentDirections.actionSleepTrackerFragmentToSleepQualityFragment(night.nightId)
                 val action =
                     FeedChannelFragmentDirections.actionFeedContentsFragmentToContentsFragment(
                         url
