@@ -73,11 +73,11 @@ class FeedChannelViewModel(private val feedRepository: FeedRepository) : ViewMod
                 is RssResponse.Success -> {
 
                     val domainFeed = (rssApiResponse as RssResponse.Success<Feed>).data.toDomainFeed()
-                    val domainFeedChannels = (rssApiResponse as RssResponse.Success<Feed>).data.channel.toDomainFeedChannel()
+                    //val domainFeedChannels = (rssApiResponse as RssResponse.Success<Feed>).data.channel.toDomainFeedChannel()
 
                     // Reemplazo algunos datos
-                    domainFeed.linkName = domainFeedChannels.title
-                    domainFeed.link = domainFeedChannels.link
+                    //domainFeed.linkName = domainFeedChannels.title
+                    //domainFeed.link = domainFeedChannels.link
 
                     val domainFeedChannelItems = (rssApiResponse as RssResponse.Success<Feed>).data.channel.channelItems?.map {
                         it.toDomainFeedChannelItem()

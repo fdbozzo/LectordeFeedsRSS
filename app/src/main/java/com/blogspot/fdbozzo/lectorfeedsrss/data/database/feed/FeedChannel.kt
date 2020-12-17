@@ -8,17 +8,24 @@ import java.util.*
  */
 @Entity(
     tableName = "feed_channel_table",
-    foreignKeys = [ForeignKey(
-        entity = Feed::class,
-        parentColumns = ["id"],
-        childColumns = ["feed_id"],
-        onDelete = ForeignKey.CASCADE
-    )] /*,
+    foreignKeys = [
+        ForeignKey(
+            entity = Feed::class,
+            parentColumns = ["id"],
+            childColumns = ["feed_id"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
     indices = [
         Index(
-            value = ["title", "link"],
+            value = ["link"],
             unique = true
-        )]*/
+        ),
+        Index(
+            value = ["title"],
+            unique = true
+        )
+    ]
 )
 data class FeedChannel(
 

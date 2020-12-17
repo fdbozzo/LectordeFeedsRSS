@@ -64,6 +64,7 @@ fun ServerFeedChannelItem.toDomainFeedChannelItem(): DomainFeedChannelItem =
         imageLink
     )
 
+/*
 /**
  * Mapea los Feed de la base de datos a entidades del dominio
  */
@@ -182,3 +183,4 @@ fun List<RoomGroup>.asDatabaseModel(): List<DomainGroup> {
         )
     }
 }
+*/

@@ -90,13 +90,13 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
     }
      */
 
-    /*
-    override suspend fun saveFeedChannels(feedChannels: List<DomainFeedChannel>) {
-        feedChannelDao.insert(feedChannels.map {
-            domainFeedChannel -> domainFeedChannel.toRoomFeedChannel()
-        })
+    override suspend fun saveFeedChannel(feedChannel: DomainFeedChannel): Long {
+        var feedChannelId = 0L
+        withContext(Dispatchers.IO) {
+            feedChannelId = feedChannelDao.insert(feedChannel.toRoomFeedChannel())
+        }
+        return feedChannelId
     }
-     */
 
     override suspend fun getFeedChannel(feedId: Int): Flow<DomainFeedChannel> =
         withContext(Dispatchers.IO) {
@@ -105,6 +105,22 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
             }
         }
 
+    override suspend fun getFeedIdByLink(link: String): Long {
+        var feedId = 0L
+        withContext(Dispatchers.IO) {
+            feedId = feedDao.get(link)
+        }
+        return feedId
+    }
+
+    override suspend fun getFeedChannelIdByFeedId(feedId: Long): Long {
+        var feedChannelId = 0L
+        withContext(Dispatchers.IO) {
+            feedChannelId = feedChannelDao.getFeedChannelIdByFeedId(feedId)
+        }
+        return feedChannelId
+    }
+
     /** FEED-CHANNEL-ITEM **/
     override suspend fun feedChannelItemsIsEmpty(): Boolean =
         withContext(Dispatchers.IO) { feedChannelItemDao.feedChannelItemCount() <= 0 }
@@ -112,13 +128,13 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
     override suspend fun feedChannelItemsSize(): Int =
         withContext(Dispatchers.IO) { feedChannelItemDao.feedChannelItemCount() }
 
-    /*
     override suspend fun saveFeedChannelItems(feedChannelItems: List<DomainFeedChannelItem>) {
-        feedChannelItemDao.insert(feedChannelItems.map {
-            domainFeedChannelItem -> domainFeedChannelItem.toRoomFeedChannelItem()
-        })
+        withContext(Dispatchers.IO) {
+            feedChannelItemDao.insert(feedChannelItems.map { domainFeedChannelItem ->
+                domainFeedChannelItem.toRoomFeedChannelItem()
+            })
+        }
     }
-     */
 
     override suspend fun getFeedChannelItems(): Flow<List<DomainFeedChannelItem>> =
         withContext(Dispatchers.IO) {
@@ -129,16 +145,4 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
             }
         }
 
-    /*
-    override suspend fun saveMovies(movies: List<Movie>) {
-        movieDao.insertMovies(movies.map { it.toRoomMovie() })
-    }
-    */
-
-    /*
-    override fun getMovies(): Flow<List<Movie>> =
-        movieDao
-            .getAll()
-            .map { movies -> movies.map { it.toDomainMovie() } }
-     */
 }

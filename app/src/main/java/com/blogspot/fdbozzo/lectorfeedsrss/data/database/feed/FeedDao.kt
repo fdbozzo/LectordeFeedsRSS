@@ -1,6 +1,5 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
@@ -29,6 +28,14 @@ interface FeedDao {
      */
     @Query("SELECT * from feed_table WHERE id = :key")
     fun get(key: Long): Feed
+
+    /**
+     * Selecciona y retorna la fila que coincide con la clave indicada
+     *
+     * @param link feed a buscar
+     */
+    @Query("SELECT id from feed_table WHERE link = :link")
+    fun get(link: String): Long
 
     /**
      * Borra todos los datos de la tabla

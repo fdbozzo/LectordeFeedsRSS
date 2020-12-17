@@ -1,8 +1,6 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannel
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -17,15 +15,6 @@ interface FeedChannelDao {
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(feedChannel: FeedChannel) : Long
-
-    /**
-     *
-     * @param feedItem nuevo valor a insertar
-     */
-    /*
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(feeds: List<FeedChannel>)
-     */
 
     /**
      *
@@ -47,6 +36,13 @@ interface FeedChannelDao {
      */
     @Query("SELECT * FROM feed_channel_table WHERE feed_id = :feedId")
     fun get(feedId: Int) : Flow<FeedChannel>
+
+    /**
+     *
+     * @param feedId Id del Feed del que buscar su channelId
+     */
+    @Query("SELECT id FROM feed_channel_table WHERE feed_id = :feedId")
+    fun getFeedChannelIdByFeedId(feedId: Long) : Long
 
     /**
      * Borra todos los datos de la tabla

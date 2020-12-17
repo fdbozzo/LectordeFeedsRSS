@@ -1,9 +1,6 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
 import java.util.*
 
@@ -12,12 +9,20 @@ import java.util.*
  */
 @Entity(
     tableName = "feed_channel_item_table",
-    foreignKeys = [ForeignKey(
-        entity = Feed::class,
-        parentColumns = ["id"],
-        childColumns = ["feed_id"],
-        onDelete = ForeignKey.CASCADE
-    )]
+    foreignKeys = [
+        ForeignKey(
+            entity = Feed::class,
+            parentColumns = ["id"],
+            childColumns = ["feed_id"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [
+        Index(
+            value = ["link"],
+            unique = true
+        )
+    ]
 )
 data class FeedChannelItem(
 
@@ -26,7 +31,7 @@ data class FeedChannelItem(
 
     var title: String = "",
 
-    @ColumnInfo(index = true)
+    //@ColumnInfo(index = true)
     var link: String = "",
 
     @ColumnInfo(name = "pub_date", index = true)

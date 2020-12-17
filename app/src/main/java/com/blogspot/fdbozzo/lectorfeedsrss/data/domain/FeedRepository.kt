@@ -49,7 +49,39 @@ class FeedRepository(
         if (localDataSource.groupIsEmpty()) {
             localDataSource.saveGroup(DomainGroup())
         }
-        localDataSource.saveFeed(domainFeed)
+
+        /**
+         * Se intenta insertar el Feed, pero si ya existe devolverá -1 y se recuperará su id actual
+         */
+        var feedId = localDataSource.saveFeed(domainFeed)
+
+        if (feedId == -1L)
+            feedId = localDataSource.getFeedIdByLink(domainFeed.link)
+
+
+        // Completar algunos datos del Feed con los del channel
+        domainFeed.linkName = domainFeed.channel.title
+        domainFeed.link = domainFeed.channel.link
+
+        // Reemplazar el feedId del channel por el id del Feed
+        domainFeed.channel.feedId = feedId
+
+        /**
+         * Se intenta insertar el FeedChannel, pero si ya existe devolverá -1 y se recuperará su id actual
+         */
+        var feedChannelId = localDataSource.saveFeedChannel(domainFeed.channel)
+
+        if (feedChannelId == -1L)
+            feedChannelId = localDataSource.getFeedChannelIdByFeedId(feedId)
+
+        for (domainFeedChannelItem in domainFeed.channel.channelItems!!) {
+            domainFeedChannelItem.feedId = feedChannelId
+        }
+
+        val listFeedChannelItem = domainFeed.channel.channelItems
+
+        if (listFeedChannelItem != null)
+            localDataSource.saveFeedChannelItems(listFeedChannelItem)
     }
 
 }
@@ -73,21 +105,23 @@ interface LocalDataSource {
     suspend fun feedSize(): Int
     suspend fun saveFeed(feed: DomainFeed): Long
     suspend fun getFeeds(): Flow<List<DomainFeed>>
+    suspend fun getFeedIdByLink(link: String): Long
 
     /**
      * FeedChannel
      */
     //suspend fun feedChannelIsEmpty(): Boolean
     //suspend fun feedChannelSize(): Int
-    //suspend fun saveFeedChannels(feedChannels: List<DomainFeedChannel>)
+    suspend fun saveFeedChannel(feedChannel: DomainFeedChannel): Long
     suspend fun getFeedChannel(feedId: Int): Flow<DomainFeedChannel>
+    suspend fun getFeedChannelIdByFeedId(feedId: Long): Long
 
     /**
      * FeedChannelItem
      */
     suspend fun feedChannelItemsIsEmpty(): Boolean
     suspend fun feedChannelItemsSize(): Int
-    //suspend fun saveFeedChannelItems(feedChannelItems: List<DomainFeedChannelItem>)
+    suspend fun saveFeedChannelItems(feedChannelItems: List<DomainFeedChannelItem>)
     suspend fun getFeedChannelItems(): Flow<List<DomainFeedChannelItem>>
 
 }

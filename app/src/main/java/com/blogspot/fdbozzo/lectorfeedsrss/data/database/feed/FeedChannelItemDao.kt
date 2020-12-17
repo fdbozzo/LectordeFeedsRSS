@@ -1,8 +1,6 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItem
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -18,10 +16,8 @@ interface FeedChannelItemDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(feedChannelItem: FeedChannelItem): Long
 
-    /*
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(feedChannelItems: List<FeedChannelItem>): Long
-     */
+    suspend fun insert(feedChannelItems: List<FeedChannelItem>)
 
     /**
      *
