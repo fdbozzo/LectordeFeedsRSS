@@ -1,6 +1,6 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data
 
-import com.blogspot.fdbozzo.lectorfeedsrss.util.DateParser
+import com.blogspot.fdbozzo.lectorfeedsrss.util.DateParser.Companion.stringToDate as dpStringToDate
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Feed as RoomFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannel as RoomFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItem as RoomFeedChannelItem
@@ -41,6 +41,23 @@ fun DomainFeedChannelItem.toRoomFeedChannelItem(): RoomFeedChannelItem =
     RoomFeedChannelItem(feedId, title, link, pubDate, description, read, readLater, imageLink)
 
 /** SERVER **/
+fun ServerFeed.toRoomFeed(): RoomFeed =
+    RoomFeed(groupId, linkName, link, favorite)
+
+fun ServerFeedChannel.toRoomFeedChannel(): RoomFeedChannel =
+    RoomFeedChannel(feedId, title, description, copyright, link, pubDate)
+
+fun ServerFeedChannelItem.toRoomFeedChannelItem(): RoomFeedChannelItem =
+    RoomFeedChannelItem(
+        feedId,
+        title,
+        link,
+        dpStringToDate(pubDate, "EEE, d MMM yyyy HH:mm:ss Z"),
+        description,
+        read,
+        readLater,
+        imageLink)
+
 fun ServerFeed.toDomainFeed(): DomainFeed =
     DomainFeed(id, groupId, linkName, link, favorite, channel.toDomainFeedChannel(), version)
 
@@ -57,7 +74,7 @@ fun ServerFeedChannelItem.toDomainFeedChannelItem(): DomainFeedChannelItem =
         feedId,
         title,
         link,
-        DateParser.stringToDate(pubDate, "EEE, d MMM yyyy HH:mm:ss Z"),
+        dpStringToDate(pubDate, "EEE, d MMM yyyy HH:mm:ss Z"),
         description,
         read,
         readLater,

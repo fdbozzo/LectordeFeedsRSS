@@ -6,6 +6,9 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as Domai
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Group as DomainGroup
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.LocalDataSource
+import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannelItem as ServerFeedChannelItem
+import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannel as ServerFeedChannel
+import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -68,6 +71,14 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         return feedId
     }
 
+    override suspend fun saveFeedFromServer(feed: ServerFeed): Long {
+        var feedId = 0L
+        withContext(Dispatchers.IO) {
+            feedId = feedDao.insert(feed.toRoomFeed())
+        }
+        return feedId
+    }
+
     override suspend fun getFeeds(): Flow<List<DomainFeed>> =
         withContext(Dispatchers.IO) {
             feedDao.getAllFeeds().map { roomFeed ->
@@ -91,6 +102,14 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
      */
 
     override suspend fun saveFeedChannel(feedChannel: DomainFeedChannel): Long {
+        var feedChannelId = 0L
+        withContext(Dispatchers.IO) {
+            feedChannelId = feedChannelDao.insert(feedChannel.toRoomFeedChannel())
+        }
+        return feedChannelId
+    }
+
+    override suspend fun saveFeedChannelFromServer(feedChannel: ServerFeedChannel): Long {
         var feedChannelId = 0L
         withContext(Dispatchers.IO) {
             feedChannelId = feedChannelDao.insert(feedChannel.toRoomFeedChannel())
@@ -136,12 +155,27 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         }
     }
 
+    override suspend fun saveFeedChannelItemsFromServer(feedChannelItems: List<ServerFeedChannelItem>) {
+        withContext(Dispatchers.IO) {
+            feedChannelItemDao.insert(feedChannelItems.map { serverFeedChannelItem ->
+                serverFeedChannelItem.toRoomFeedChannelItem()
+            })
+        }
+    }
+
     override suspend fun getFeedChannelItems(): Flow<List<DomainFeedChannelItem>> =
         withContext(Dispatchers.IO) {
             feedChannelItemDao.getAllFeedChannelItems().map { roomFeedChannelItem ->
                 roomFeedChannelItem.map {
                     it.toDomainFeedChannelItem()
                 }
+            }
+        }
+
+    override fun getFeedChannelItems2(): Flow<List<DomainFeedChannelItem>> =
+        feedChannelItemDao.getAllFeedChannelItems().map { roomFeedChannelItem ->
+            roomFeedChannelItem.map {
+                it.toDomainFeedChannelItem()
             }
         }
 

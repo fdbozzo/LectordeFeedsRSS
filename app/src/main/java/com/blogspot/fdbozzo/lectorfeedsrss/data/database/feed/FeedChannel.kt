@@ -29,11 +29,6 @@ import java.util.*
 )
 data class FeedChannel(
 
-    /*
-    @PrimaryKey(autoGenerate = true)
-    var id: Long = 0L,
-     */
-
     @ColumnInfo(name = "feed_id", index = true)
     var feedId: Long = 0L,
 

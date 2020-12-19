@@ -31,11 +31,9 @@ data class FeedChannelItem(
 
     var title: String = "",
 
-    //@ColumnInfo(index = true)
     var link: String = "",
 
     @ColumnInfo(name = "pub_date", index = true)
-    //@field:Element(name = "pubDate")
     var pubDate: Date? = null,
 
     var description: String = "",
