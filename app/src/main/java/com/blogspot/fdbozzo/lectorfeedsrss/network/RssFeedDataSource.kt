@@ -5,6 +5,8 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as D
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.RemoteDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.RssApiStatus
+import com.blogspot.fdbozzo.lectorfeedsrss.util.getSrcImage
+import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -24,19 +26,22 @@ class RssFeedDataSource(): RemoteDataSource {
                 if (response.isSuccessful) {
                     response.body()?.let {
 
-                        // Actualizar la BBDD
-                        /*
-                        _items = Transformations.map(database.videoDao.getVideos()) {
-                            it.asDomainModel()
-                        }
-
-                         */
-
                         val feed = it
                         val feedChannel = feed.channel
                         val feedChannelItem = feedChannel.channelItems
-                        //val articles = it.channel!!.channelItems
-                        //Timber.d("feed = $feed")
+
+                        // Completo algunos datos faltantes del Feed con info del FeedChannel
+                        feed.linkName = feedChannel.title
+
+                        if (feedChannel.links.isNotEmpty()) {
+                            if (feedChannel.links.size > 1 && feedChannel.links[1].text.isNotEmpty()) {
+                                feedChannel.link = feedChannel.links[1].text
+                            } else {
+                                feedChannel.link = feedChannel.links[0].text
+                            }
+                            feed.link = feedChannel.link
+                        }
+
 
                         if (feedChannelItem != null) {
                             Timber.d(feedChannelItem.size.toString())
@@ -46,6 +51,16 @@ class RssFeedDataSource(): RemoteDataSource {
                                 Timber.d("index %d %s", i, feedChannelItem[i].pubDate)
                                 //Timber.d("index %d %s", i, articles[i].description)
                                 //Timber.d("index %d %s", i, articles[i].guid)
+
+                                // Obtener un link de imagen para mostrar en el item
+                                if (!feedChannelItem[i].description.isNullOrEmpty()) {
+                                    // Obtengo la URL de la imagen de la descripción (si hay una)
+                                    val imagen = getSrcImage(feedChannelItem[i].description)
+                                    if (imagen.isNotEmpty()) {
+                                        feedChannelItem[i].imageLink = imagen
+                                    }
+                                }
+
                             }
                             /** ACTUALIZAR EL ORIGEN DE DATOS (ITEMS) */
                             /** ACTUALIZAR EL ORIGEN DE DATOS (ITEMS) */

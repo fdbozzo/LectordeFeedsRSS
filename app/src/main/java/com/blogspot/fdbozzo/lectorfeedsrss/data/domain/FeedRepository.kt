@@ -32,7 +32,7 @@ class FeedRepository(
         when (rssApiResponse) {
             is RssResponse.Success -> {
 
-                val serverFeed = (rssApiResponse as RssResponse.Success<ServerFeed>).data
+                val serverFeed = rssApiResponse.data
 
                 /**
                  * Guardar feeds en Room
@@ -63,17 +63,14 @@ class FeedRepository(
         /**
          * Se intenta insertar el Feed, pero si ya existe devolverá -1 y se recuperará su id actual
          */
+
         var feedId = localDataSource.saveFeedFromServer(serverFeed)
 
         if (feedId == -1L)
             feedId = localDataSource.getFeedIdByLink(serverFeed.link)
 
 
-        // Completar algunos datos del Feed con los del channel
-        serverFeed.linkName = serverFeed.channel.title
-        serverFeed.link = serverFeed.channel.link
-
-        // Reemplazar el feedId del channel por el id del Feed
+        // Reemplazar el feedId del channel por el id del Feed, antes de guardarlo
         serverFeed.channel.feedId = feedId
 
         /**
@@ -84,14 +81,19 @@ class FeedRepository(
         if (feedChannelId == -1L)
             feedChannelId = localDataSource.getFeedChannelIdByFeedId(feedId)
 
-        for (domainFeedChannelItem in serverFeed.channel.channelItems!!) {
-            domainFeedChannelItem.feedId = feedChannelId
-        }
-
+        /**
+         * Se intenta insertar el FeedChannelItem, pero si ya existe se ignorará
+         */
         val listFeedChannelItem = serverFeed.channel.channelItems
 
-        if (listFeedChannelItem != null)
+        if (listFeedChannelItem != null && listFeedChannelItem.isNotEmpty()) {
+            // Reemplazar el feedChannelId del item por el id del Channel, antes de guardarlo
+            for (domainFeedChannelItem in listFeedChannelItem) {
+                domainFeedChannelItem.feedId = feedChannelId
+            }
+
             localDataSource.saveFeedChannelItemsFromServer(listFeedChannelItem)
+        }
     }
 
     /*
