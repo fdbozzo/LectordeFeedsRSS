@@ -37,7 +37,7 @@ class FeedRepository(
                 /**
                  * Guardar feeds en Room
                  */
-                saveNetworkFeedsToBBDD(serverFeed)
+                saveNetworkFeeds(serverFeed)
 
                 /**
                  * Filtrar feeds leidos
@@ -52,7 +52,7 @@ class FeedRepository(
         return rssApiResponse
     }
 
-    suspend fun saveNetworkFeedsToBBDD(serverFeed: ServerFeed): Unit {
+    private suspend fun saveNetworkFeeds(serverFeed: ServerFeed): Unit {
         /**
          * Guardar los feeds en BBDD
          */
@@ -95,50 +95,6 @@ class FeedRepository(
             localDataSource.saveFeedChannelItemsFromServer(listFeedChannelItem)
         }
     }
-
-    /*
-    suspend fun saveNetworkFeeds(domainFeed: DomainFeed): Unit {
-        /**
-         * Guardar los feeds en BBDD
-         */
-        if (localDataSource.groupIsEmpty()) {
-            localDataSource.saveGroup(DomainGroup())
-        }
-
-        /**
-         * Se intenta insertar el Feed, pero si ya existe devolverá -1 y se recuperará su id actual
-         */
-        var feedId = localDataSource.saveFeed(domainFeed)
-
-        if (feedId == -1L)
-            feedId = localDataSource.getFeedIdByLink(domainFeed.link)
-
-
-        // Completar algunos datos del Feed con los del channel
-        domainFeed.linkName = domainFeed.channel.title
-        domainFeed.link = domainFeed.channel.link
-
-        // Reemplazar el feedId del channel por el id del Feed
-        domainFeed.channel.feedId = feedId
-
-        /**
-         * Se intenta insertar el FeedChannel, pero si ya existe devolverá -1 y se recuperará su id actual
-         */
-        var feedChannelId = localDataSource.saveFeedChannel(domainFeed.channel)
-
-        if (feedChannelId == -1L)
-            feedChannelId = localDataSource.getFeedChannelIdByFeedId(feedId)
-
-        for (domainFeedChannelItem in domainFeed.channel.channelItems!!) {
-            domainFeedChannelItem.feedId = feedChannelId
-        }
-
-        val listFeedChannelItem = domainFeed.channel.channelItems
-
-        if (listFeedChannelItem != null)
-            localDataSource.saveFeedChannelItems(listFeedChannelItem)
-    }
-     */
 
 }
 
