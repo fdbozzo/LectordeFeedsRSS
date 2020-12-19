@@ -16,7 +16,7 @@ class RssFeedDataSource(): RemoteDataSource {
     lateinit var listDomainFeedChannelItem: List<DomainFeedChannelItem>
 
     //override suspend fun getFeedChannelItems(): List<DomainFeedChannelItem> {
-    override suspend fun getFeedInfo(): RssResponse<ServerFeed> {
+    override suspend fun getFeeds(): RssResponse<ServerFeed> {
         val response = RssApi.retrofitService.getRss()
 
         try {

@@ -1,14 +1,11 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.domain
 
 import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
-import com.blogspot.fdbozzo.lectorfeedsrss.data.toDomainFeed
-import com.blogspot.fdbozzo.lectorfeedsrss.data.toDomainFeedChannelItem
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannel as ServerFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannelItem as ServerFeedChannelItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withTimeout
-import timber.log.Timber
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as DomainFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
@@ -29,7 +26,7 @@ class FeedRepository(
      */
     suspend fun checkNetworkFeeds(): RssResponse<ServerFeed> {
         val rssApiResponse = withTimeout(15_000) {
-            remoteDataSource.getFeedInfo()
+            remoteDataSource.getFeeds()
         }
 
         when (rssApiResponse) {
@@ -190,6 +187,6 @@ interface LocalDataSource {
 interface RemoteDataSource {
 
     //suspend fun getFeedInfo(): List<DomainFeedChannelItem>
-    suspend fun getFeedInfo(): RssResponse<ServerFeed>
+    suspend fun getFeeds(): RssResponse<ServerFeed>
 
 }
