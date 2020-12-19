@@ -45,6 +45,7 @@ class RssFeedDataSource(): RemoteDataSource {
 
                         if (feedChannelItem != null) {
                             Timber.d(feedChannelItem.size.toString())
+
                             for (i in feedChannelItem.indices) {
                                 Timber.d("index %d %s", i, feedChannelItem[i].title)
                                 Timber.d("index %d %s", i, feedChannelItem[i].link)
@@ -62,14 +63,6 @@ class RssFeedDataSource(): RemoteDataSource {
                                 }
 
                             }
-                            /** ACTUALIZAR EL ORIGEN DE DATOS (ITEMS) */
-                            /** ACTUALIZAR EL ORIGEN DE DATOS (ITEMS) */
-                            //initRecyclerView(articles)
-                            //items_normales = articles
-                            Timber.d("actualizando LiveData...")
-                            //_items.value = articles     // Dispara evento de cambio!
-                            Timber.d("LiveData actualizado!")
-                            //_status.value = RssApiStatus.DONE
 
                         }
 

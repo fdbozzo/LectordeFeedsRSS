@@ -43,18 +43,6 @@ class FeedChannelFragment : Fragment() {
     private lateinit var mainViewModel: MainViewModel
     private lateinit var localDatabase: FeedDatabase
 
-    // Valores de ejemplo para RecyclerView
-    private val items = listOf(
-        "Mon 6/23 - Sunny - 31/17",
-        "Tue 6/24 - Foggy - 21/8",
-        "Wed 6/25 - Cloudy - 22/17",
-        "Thurs 6/26 - Rainy - 18/11",
-        "Fri 6/27 - Foggy - 21/10",
-        "Sat 6/28 - TRAPPED IN WEATHERSTATION - 23/18",
-        "Sun 6/29 - Sunny - 20/7"
-    )
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -126,7 +114,6 @@ class FeedChannelFragment : Fragment() {
 
 
         return binding.root
-        //return inflater.inflate(R.layout.feed_channel_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -142,12 +129,6 @@ class FeedChannelFragment : Fragment() {
             navController.navigate(R.id.nav_login)
         }
 
-        /*
-        val feedContents: RecyclerView = binding.feedContents
-        feedContents.layoutManager = LinearLayoutManager(requireContext())
-        feedContents.adapter = FeedContentsAdapter(channelItems)
-         */
-
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -156,14 +137,13 @@ class FeedChannelFragment : Fragment() {
         // TODO: Use the ViewModel
     }
 
-    //*
+    /*
     private fun initRecyclerView(list: List<DomainFeedChannelItem>) {
         //val recyclerview: RecyclerView = findViewById(R.id.recycler_view)
         val recyclerview2 = binding.recyclerView
         recyclerview2.adapter = FeedChannelAdapter(list, viewModel, requireContext())
     }
-
-     //*/
+     */
 
 
 }
