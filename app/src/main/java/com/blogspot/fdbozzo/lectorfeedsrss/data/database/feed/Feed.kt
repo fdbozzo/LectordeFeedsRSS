@@ -17,7 +17,12 @@ import androidx.room.*
         Index(
             value = ["link"],
             unique = true
-        )]
+        ),
+        Index(
+            value = ["link_name"],
+            unique = true
+        )
+    ]
 )
 data class Feed constructor(
 
