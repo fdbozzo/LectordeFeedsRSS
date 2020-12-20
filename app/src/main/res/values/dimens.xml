@@ -41,5 +41,6 @@
     <dimen name="photo_size">64dp</dimen>
     <dimen name="default_margin">8dp</dimen>
     <dimen name="photo_width">120dp</dimen>
+    <dimen name="menu_icon_width">48dp</dimen>
 
 </resources>

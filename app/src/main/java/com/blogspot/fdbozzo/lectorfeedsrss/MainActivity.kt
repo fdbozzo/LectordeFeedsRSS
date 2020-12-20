@@ -1,6 +1,11 @@
 package com.blogspot.fdbozzo.lectorfeedsrss
 
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ExpandableListAdapter
+import android.widget.ExpandableListView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -10,7 +15,10 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.ActivityMainBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RetrofitFactory
+import com.blogspot.fdbozzo.lectorfeedsrss.ui.drawer.CustomExpandableListAdapter
 import timber.log.Timber
+import java.util.ArrayList
+import java.util.HashMap
 
 
 class MainActivity : AppCompatActivity() {
@@ -19,6 +27,54 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     //private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var mainViewModel: MainViewModel
+
+    private var expandableListView: ExpandableListView? = null
+    private var adapter: ExpandableListAdapter? = null
+    internal var titleList: List<String> ? = null
+
+    val data: HashMap<String, List<String>>
+        get() {
+            val listData = HashMap<String, List<String>>()
+
+            val redmiMobiles = ArrayList<String>()
+            redmiMobiles.add("Redmi Y2")
+            redmiMobiles.add("Redmi S2")
+            redmiMobiles.add("Redmi Note 5 Pro")
+            redmiMobiles.add("Redmi Note 5")
+            redmiMobiles.add("Redmi 5 Plus")
+            redmiMobiles.add("Redmi Y1")
+            redmiMobiles.add("Redmi 3S Plus")
+
+            val micromaxMobiles = ArrayList<String>()
+            micromaxMobiles.add("Micromax Bharat Go")
+            micromaxMobiles.add("Micromax Bharat 5 Pro")
+            micromaxMobiles.add("Micromax Bharat 5")
+            micromaxMobiles.add("Micromax Canvas 1")
+            micromaxMobiles.add("Micromax Dual 5")
+
+            val appleMobiles = ArrayList<String>()
+            appleMobiles.add("iPhone 8")
+            appleMobiles.add("iPhone 8 Plus")
+            appleMobiles.add("iPhone X")
+            appleMobiles.add("iPhone 7 Plus")
+            appleMobiles.add("iPhone 7")
+            appleMobiles.add("iPhone 6 Plus")
+
+            val samsungMobiles = ArrayList<String>()
+            samsungMobiles.add("Samsung Galaxy S9+")
+            samsungMobiles.add("Samsung Galaxy Note 7")
+            samsungMobiles.add("Samsung Galaxy Note 5 Dual")
+            samsungMobiles.add("Samsung Galaxy S8")
+            samsungMobiles.add("Samsung Galaxy A8")
+            samsungMobiles.add("Samsung Galaxy Note 4")
+
+            listData["Redmi"] = redmiMobiles
+            listData["Micromax"] = micromaxMobiles
+            listData["Apple"] = appleMobiles
+            listData["Samsung"] = samsungMobiles
+
+            return listData
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +90,8 @@ class MainActivity : AppCompatActivity() {
 
         navController = navHostFragment.navController
         drawerLayout = binding.drawerLayout
+
+        setupDrawerExpandableListView(data)
 
         /**
          * Ocultar el hamburger del NavDrawer dependiendo de si es login o no.
@@ -58,8 +116,45 @@ class MainActivity : AppCompatActivity() {
 
         //setupActionBarWithNavController(navController, appBarConfiguration)
         NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)  // Para navegación y drawer
-        NavigationUI.setupWithNavController(binding.navView, navController)
+        //NavigationUI.setupWithNavController(binding.navView, navController)
 
+    }
+
+    private fun setupDrawerExpandableListView(listData: HashMap<String, List<String>>) {
+        expandableListView = findViewById(R.id.expandableListView)
+
+        if (expandableListView != null) {
+            //val listData = data
+            titleList = ArrayList(listData.keys)
+            adapter = CustomExpandableListAdapter(this, titleList as ArrayList<String>, listData)
+            expandableListView!!.setAdapter(adapter)
+
+            expandableListView!!.setOnGroupExpandListener {
+                    groupPosition -> Toast.makeText(applicationContext,
+                (titleList as ArrayList<String>)[groupPosition] + " List Expanded.",
+                Toast.LENGTH_SHORT).show()
+            }
+
+            expandableListView!!.setOnGroupCollapseListener { groupPosition ->
+                Toast.makeText(applicationContext,
+                    (titleList as ArrayList<String>)[groupPosition] + " List Collapsed.",
+                    Toast.LENGTH_SHORT).show()
+            }
+
+            expandableListView!!.setOnChildClickListener { parent, v, groupPosition, childPosition, id ->
+                Toast.makeText(applicationContext,
+                    "Clicked: " +
+                            (titleList as ArrayList<String>)[groupPosition] + " -> " +
+                            listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition],
+                    Toast.LENGTH_SHORT).show()
+                false
+            }
+
+            expandableListView!!.setOnGroupClickListener { parent, v, groupPosition, id ->
+                setListViewHeight(parent, groupPosition)
+                false
+            }
+        }
     }
 
     override fun onStart() {
@@ -90,5 +185,45 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
+    /**
+     * Este método resuelve el problema de que el ExpandableListView no respete los controles
+     * que hay arriba o abajo del mismo, dejándolos fuera de vista.
+     *
+     * Fuente: https://www.developerlibs.com/2020/10/android-expandable-listview-inside-scrollview.html
+     */
+    private fun setListViewHeight(
+        listView: ExpandableListView,
+        group: Int
+    ) {
+        val listAdapter = listView.expandableListAdapter as ExpandableListAdapter
+        var totalHeight = 0
+        val desiredWidth: Int = View.MeasureSpec.makeMeasureSpec(
+            listView.width,
+            View.MeasureSpec.EXACTLY
+        )
+        for (i in 0 until listAdapter.groupCount) {
+            val groupItem: View = listAdapter.getGroupView(i, false, null, listView)
+            groupItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED)
+            totalHeight += groupItem.measuredHeight
+            if (listView.isGroupExpanded(i) && group != i
+                || !listView.isGroupExpanded(i) && group == i
+            ) {
+                for (j in 0 until listAdapter.getChildrenCount(i)) {
+                    val listItem: View = listAdapter.getChildView(
+                        i, j, false, null,
+                        listView
+                    )
+                    listItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED)
+                    totalHeight += listItem.measuredHeight
+                }
+            }
+        }
+        val params = listView.layoutParams
+        var height = (totalHeight
+                + listView.dividerHeight * (listAdapter.groupCount - 1))
+        if (height < 10) height = 200
+        params.height = height
+        listView.layoutParams = params
+        listView.requestLayout()
+    }
 }
