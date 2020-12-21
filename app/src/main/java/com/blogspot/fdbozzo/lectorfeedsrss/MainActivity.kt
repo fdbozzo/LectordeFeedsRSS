@@ -16,6 +16,9 @@ import androidx.navigation.ui.NavigationUI
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.ActivityMainBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RetrofitFactory
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.drawer.CustomExpandableListAdapter
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import timber.log.Timber
 import java.util.ArrayList
 import java.util.HashMap
@@ -27,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     //private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var mainViewModel: MainViewModel
-
+    private lateinit var mAuth: FirebaseAuth
     private var expandableListView: ExpandableListView? = null
     private var adapter: ExpandableListAdapter? = null
     internal var titleList: List<String> ? = null
@@ -90,6 +93,7 @@ class MainActivity : AppCompatActivity() {
 
         navController = navHostFragment.navController
         drawerLayout = binding.drawerLayout
+        mAuth = Firebase.auth
 
         setupDrawerExpandableListView(data)
 
@@ -104,6 +108,18 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
+
+        /**
+         * Logout
+         */
+        binding.navLogout.setOnClickListener {
+            mAuth.signOut()
+            drawerLayout.close()
+            navController.popBackStack(R.id.nav_feed_contents, true)
+            navController.navigate(R.id.nav_login)
+            Toast.makeText(this, "Loging out...", Toast.LENGTH_SHORT).show()
+        }
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         /*
