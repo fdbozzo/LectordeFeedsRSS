@@ -112,7 +112,7 @@ dependencies {
     //implementation 'com.google.firebase:firebase-auth:20.0.0'
 
     // Declare the dependencies for the Crashlytics and Analytics libraries
-    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    //implementation 'com.google.firebase:firebase-crashlytics-ktx'
 
     //implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.annotation:annotation:1.1.0'
