@@ -6,14 +6,14 @@ import retrofit2.Retrofit
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 import java.util.concurrent.TimeUnit
 
-const val API_BASE_URL = "https://hardzone.es/"
+//const val API_BASE_URL = "https://hardzone.es/"
 
 object RetrofitFactory {
     //const val BASE_URL = "https://jsonplaceholder.typicode.com"
 
-    fun makeRetrofitService(): RssApiService {
+    fun makeRetrofitService(apiBaseUrl: String): RssApiService {
         return Retrofit.Builder()
-            .baseUrl(API_BASE_URL)
+            .baseUrl(apiBaseUrl)
             .client(makeOkHttpClient())
             .addConverterFactory(SimpleXmlConverterFactory.create())
             .build().create(RssApiService::class.java)

@@ -15,6 +15,8 @@ class FeedChannelViewModel(private val feedRepository: FeedRepository) : ViewMod
 
     private lateinit var rssApiResponse: RssResponse<Feed>
 
+    private var apiBaseUrl = "http://blog.mozilla.com/" // "https://hardzone.es/"
+
     /*
     private var _channels = MutableLiveData<List<DomainFeedChannel>>()
     val channels: LiveData<List<DomainFeedChannel>>
@@ -51,11 +53,12 @@ class FeedChannelViewModel(private val feedRepository: FeedRepository) : ViewMod
     init {
         viewModelScope.launch {
 
-            rssApiResponse = feedRepository.checkNetworkFeeds()
+            rssApiResponse = feedRepository.checkNetworkFeeds(apiBaseUrl)
 
             when (rssApiResponse) {
                 is RssResponse.Success -> {
                     // TODO: Falta filtrar los items leidos antes de actualizar el LiveData
+                    Timber.d("RssResponse.Success!}")
                 }
                 is RssResponse.Error -> {
                     // TODO: Falta controlar errores

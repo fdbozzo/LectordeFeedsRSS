@@ -15,5 +15,6 @@ interface RssApiService {
  * A public Api object that exposes the lazy-initialized Retrofit service
  */
 object RssApi {
-    val retrofitService : RssApiService by lazy { RetrofitFactory.makeRetrofitService() }
+    var apiBaseUrl = ""
+    val retrofitService : RssApiService by lazy { RetrofitFactory.makeRetrofitService(apiBaseUrl) }
 }
