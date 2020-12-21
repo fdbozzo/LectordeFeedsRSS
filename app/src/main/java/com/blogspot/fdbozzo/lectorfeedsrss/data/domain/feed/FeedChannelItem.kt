@@ -9,6 +9,7 @@ data class FeedChannelItem(
     var link: String = "",
     var pubDate: Date? = null,
     var description: String = "",
+    var content: String = "",
     var read: Int = 0,
     var readLater: Int = 0,
     var imageLink: String = ""
