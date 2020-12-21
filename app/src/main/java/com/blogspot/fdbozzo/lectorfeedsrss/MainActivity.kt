@@ -2,7 +2,6 @@ package com.blogspot.fdbozzo.lectorfeedsrss
 
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ExpandableListAdapter
 import android.widget.ExpandableListView
 import android.widget.Toast
@@ -14,11 +13,9 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.ActivityMainBinding
-import com.blogspot.fdbozzo.lectorfeedsrss.network.RetrofitFactory
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.drawer.CustomExpandableListAdapter
 import timber.log.Timber
-import java.util.ArrayList
-import java.util.HashMap
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {

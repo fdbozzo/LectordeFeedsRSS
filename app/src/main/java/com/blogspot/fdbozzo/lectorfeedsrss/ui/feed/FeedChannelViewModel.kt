@@ -1,25 +1,12 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.ui.feed
 
-import android.content.Context
 import androidx.lifecycle.*
 import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as DomainFeedChannel
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItemDao
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
-import com.blogspot.fdbozzo.lectorfeedsrss.data.toDomainFeed
-import com.blogspot.fdbozzo.lectorfeedsrss.data.toDomainFeedChannel
-import com.blogspot.fdbozzo.lectorfeedsrss.data.toDomainFeedChannelItem
-import com.blogspot.fdbozzo.lectorfeedsrss.network.RssApi
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.HttpException
-import retrofit2.Response
 import timber.log.Timber
-import kotlin.coroutines.coroutineContext
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
 
 enum class RssApiStatus { LOADING, ERROR, DONE }
 
