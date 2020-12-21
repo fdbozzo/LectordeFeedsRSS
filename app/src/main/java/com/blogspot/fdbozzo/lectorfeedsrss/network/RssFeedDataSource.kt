@@ -6,12 +6,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.RemoteDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.RssApiStatus
 import com.blogspot.fdbozzo.lectorfeedsrss.util.getSrcImage
-import com.squareup.picasso.Picasso
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
 import retrofit2.HttpException
-import retrofit2.Response
 import timber.log.Timber
 
 class RssFeedDataSource(): RemoteDataSource {
@@ -53,15 +48,25 @@ class RssFeedDataSource(): RemoteDataSource {
                                 //Timber.d("index %d %s", i, articles[i].description)
                                 //Timber.d("index %d %s", i, articles[i].guid)
 
-                                // Obtener un link de imagen para mostrar en el item
-                                if (!feedChannelItem[i].description.isNullOrEmpty()) {
+                                /**
+                                 * Obtener un link de imagen para mostrar en el item.
+                                 * Puede haber una en "description", en "content" o ninguna.
+                                 */
+
+                                var imagen = ""
+
+                                if (imagen.isEmpty() && feedChannelItem[i].description.isNotEmpty()) {
                                     // Obtengo la URL de la imagen de la descripción (si hay una)
-                                    val imagen = getSrcImage(feedChannelItem[i].description)
-                                    if (imagen.isNotEmpty()) {
-                                        feedChannelItem[i].imageLink = imagen
-                                    }
+                                    imagen = getSrcImage(feedChannelItem[i].description)
                                 }
 
+                                if (imagen.isEmpty() && feedChannelItem[i].content.isNotEmpty()) {
+                                    val imagen = getSrcImage(feedChannelItem[i].content)
+                                }
+
+                                if (imagen.isNotEmpty()) {
+                                    feedChannelItem[i].imageLink = imagen
+                                }
                             }
 
                         }

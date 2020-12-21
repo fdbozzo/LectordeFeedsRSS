@@ -25,6 +25,9 @@ data class FeedChannelItem(
     @field:Element(name = "description")
     var description: String = "",
 
+    @field:Element(name = "content", required = false)
+    var content: String = "",
+
     var read: Int = 0,
 
     var readLater: Int = 0,

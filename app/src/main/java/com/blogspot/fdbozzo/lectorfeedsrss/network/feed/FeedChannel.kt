@@ -30,5 +30,10 @@ data class FeedChannel(
     var channelItems: List<FeedChannelItem>? = null
 
 ) {
+    /**
+     * "link" no se puede leer directamente, ya que cualquier link dentro de channel
+     * es incluido en una lista de links, de la que luego hay que separar el que interesa,
+     * que es el que tiene el link en el campo "text"
+     */
     var link = ""
 }
