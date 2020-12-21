@@ -145,15 +145,15 @@
 
                         <TextView
                             android:id="@+id/nav_logout"
-                            app:layout_constraintStart_toEndOf="@id/img_logout"
-                            app:layout_constraintTop_toTopOf="@id/img_logout"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="16dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="16dp"
+                            android:text="@string/title_logout"
                             android:textSize="12sp"
                             android:textStyle="bold"
-                            android:text="Logout"/>
+                            app:layout_constraintStart_toEndOf="@id/img_logout"
+                            app:layout_constraintTop_toTopOf="@id/img_logout" />
 
                         <com.blogspot.fdbozzo.lectorfeedsrss.ui.drawer.NonScrollingExpandableListView
                             android:id="@+id/expandableListView"
@@ -175,7 +175,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="12sp"
                             android:textStyle="bold"
-                            android:text="Logout"/>
+                            android:text="otra opción"/>
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
