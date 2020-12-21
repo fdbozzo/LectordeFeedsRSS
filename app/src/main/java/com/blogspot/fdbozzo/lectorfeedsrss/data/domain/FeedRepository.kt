@@ -24,9 +24,9 @@ class FeedRepository(
     /**
      * Buscar los feeds en la red
      */
-    suspend fun checkNetworkFeeds(): RssResponse<ServerFeed> {
+    suspend fun checkNetworkFeeds(apiBaseUrl: String): RssResponse<ServerFeed> {
         val rssApiResponse = withTimeout(15_000) {
-            remoteDataSource.getFeeds()
+            remoteDataSource.getFeeds(apiBaseUrl)
         }
 
         when (rssApiResponse) {
@@ -145,6 +145,6 @@ interface LocalDataSource {
 interface RemoteDataSource {
 
     //suspend fun getFeedInfo(): List<DomainFeedChannelItem>
-    suspend fun getFeeds(): RssResponse<ServerFeed>
+    suspend fun getFeeds(apiBaseUrl: String): RssResponse<ServerFeed>
 
 }
