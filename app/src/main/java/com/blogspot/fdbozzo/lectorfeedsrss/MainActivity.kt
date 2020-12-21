@@ -215,7 +215,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /* ----- FUNCIONA, PERO NO LE VEO SENTIDO TENIENDO EL MENU DEL DRAWER -----
+    //----- ESTE MENU FUNCIONA, PERO NO LE VEO SENTIDO TENIENDO EL MENU DEL DRAWER -----
+    /*
     // MENU PRINCIPAL
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.navdrawer_menu, menu)
