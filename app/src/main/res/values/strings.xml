@@ -25,4 +25,6 @@
     <string name="title_add_group">Add Group</string>
     <string name="title_add_feed">Add Feed</string>
     <string name="title_feed_list_select">Select Feed</string>
+    <string name="title_today">Today</string>
+    <string name="title_all">All</string>
 </resources>

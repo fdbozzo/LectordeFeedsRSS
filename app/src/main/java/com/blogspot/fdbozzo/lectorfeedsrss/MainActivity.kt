@@ -112,7 +112,7 @@ class MainActivity : AppCompatActivity() {
         /**
          * Logout
          */
-        binding.navLogout.setOnClickListener {
+        binding.drawerMenu.navLogout.setOnClickListener {
             mAuth.signOut()
             drawerLayout.close()
             navController.popBackStack(R.id.nav_feed_contents, true)
