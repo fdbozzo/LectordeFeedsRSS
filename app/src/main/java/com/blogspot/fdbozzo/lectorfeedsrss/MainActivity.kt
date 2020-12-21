@@ -201,6 +201,23 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // MENU PRINCIPAL
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.navdrawer_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    // Opción de menu
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.nav_logout -> {
+                // TODO
+                Toast.makeText(this, "Loging out...", Toast.LENGTH_SHORT).show()
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     /**
      * Este método resuelve el problema de que el ExpandableListView no respete los controles
      * que hay arriba o abajo del mismo, dejándolos fuera de vista.
