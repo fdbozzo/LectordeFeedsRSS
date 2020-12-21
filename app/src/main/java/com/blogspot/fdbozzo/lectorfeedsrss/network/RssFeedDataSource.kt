@@ -50,7 +50,7 @@ class RssFeedDataSource(): RemoteDataSource {
 
                                 /**
                                  * Obtener un link de imagen para mostrar en el item.
-                                 * Puede haber una en "description", en "content" o ninguna.
+                                 * Puede haber una en "description", en "contentEncoded" o ninguna.
                                  */
 
                                 var imagen = ""
@@ -60,8 +60,8 @@ class RssFeedDataSource(): RemoteDataSource {
                                     imagen = getSrcImage(feedChannelItem[i].description)
                                 }
 
-                                if (imagen.isEmpty() && feedChannelItem[i].content.isNotEmpty()) {
-                                    val imagen = getSrcImage(feedChannelItem[i].content)
+                                if (imagen.isEmpty() && feedChannelItem[i].contentEncoded.isNotEmpty()) {
+                                    val imagen = getSrcImage(feedChannelItem[i].contentEncoded)
                                 }
 
                                 if (imagen.isNotEmpty()) {

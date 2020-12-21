@@ -101,7 +101,7 @@ class FeedChannelFragment : Fragment() {
         viewModel.showSnackBarEvent.observe(viewLifecycleOwner, Observer {
             if (it == true) { // Observed state is true.
                 Snackbar.make(
-                    requireActivity().findViewById(android.R.id.content),
+                    requireActivity().findViewById(android.R.id.contentEncoded),
                     getString(R.string.cleared_message),
                     Snackbar.LENGTH_LONG // How long to display the message.
                 ).show()

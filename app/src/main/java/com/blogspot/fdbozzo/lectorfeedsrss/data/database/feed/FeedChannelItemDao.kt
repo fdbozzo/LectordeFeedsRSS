@@ -56,13 +56,13 @@ interface FeedChannelItemDao {
     fun getLastFeedItem(): FeedChannelItem?
 
     /**
-     * Selecciona y retorna el content con el Id indicado.
+     * Selecciona y retorna el contentEncoded con el Id indicado.
      */
     @Query("SELECT * from feed_channel_item_table WHERE id = :key")
     fun getFeedItemWithId(key: Long): Flow<FeedChannelItem>
 
     /**
-     * Selecciona y retorna el content con el link indicado.
+     * Selecciona y retorna el contentEncoded con el link indicado.
      */
     @Query("SELECT * from feed_channel_item_table WHERE link = :link")
     fun getFeedItemWithLink(link: String): Flow<FeedChannelItem>

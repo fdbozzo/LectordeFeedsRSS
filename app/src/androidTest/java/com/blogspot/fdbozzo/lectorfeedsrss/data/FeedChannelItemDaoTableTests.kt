@@ -83,7 +83,7 @@ class FeedChannelItemDaoTableTests {
         feedDao.insert(feed)
         val lastFeed = feedDao.getLastFeed() ?: throw Exception("lastFeed es null")
 
-        // Ahora inserto un content
+        // Ahora inserto un contentEncoded
         val content = FeedChannelItem()
         content.title = "title"
         content.feedId = lastFeed.id
@@ -119,7 +119,7 @@ class FeedChannelItemDaoTableTests {
         val insId2 = feedDao.insert(feed)
         val lastFeed = feedDao.getLastFeed() ?: throw Exception("lastFeed es null")
 
-        // Ahora inserto un content
+        // Ahora inserto un contentEncoded
 
         // contenido 1
         var content = FeedChannelItem()
