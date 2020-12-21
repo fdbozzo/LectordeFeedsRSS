@@ -10,7 +10,7 @@ import retrofit2.HttpException
 import timber.log.Timber
 
 class RssFeedDataSource(): RemoteDataSource {
-    lateinit var listDomainFeedChannelItem: List<DomainFeedChannelItem>
+    //lateinit var listDomainFeedChannelItem: List<DomainFeedChannelItem>
 
     //override suspend fun getFeedChannelItems(): List<DomainFeedChannelItem> {
     override suspend fun getFeeds(apiBaseUrl: String): RssResponse<ServerFeed> {
@@ -62,7 +62,7 @@ class RssFeedDataSource(): RemoteDataSource {
                                 }
 
                                 if (imagen.isEmpty() && feedChannelItem[i].contentEncoded.isNotEmpty()) {
-                                    val imagen = getSrcImage(feedChannelItem[i].contentEncoded)
+                                    imagen = getSrcImage(feedChannelItem[i].contentEncoded)
                                 }
 
                                 if (imagen.isNotEmpty()) {
