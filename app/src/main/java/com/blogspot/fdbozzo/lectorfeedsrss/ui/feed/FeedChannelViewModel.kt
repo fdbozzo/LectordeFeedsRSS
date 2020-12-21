@@ -3,10 +3,11 @@ package com.blogspot.fdbozzo.lectorfeedsrss.ui.feed
 import androidx.lifecycle.*
 import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed as DomainFeedChannelItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
 
 enum class RssApiStatus { LOADING, ERROR, DONE }
 
@@ -15,7 +16,7 @@ class FeedChannelViewModel(private val feedRepository: FeedRepository) : ViewMod
 
     private lateinit var rssApiResponse: RssResponse<Feed>
 
-    private var apiBaseUrl = "http://blog.mozilla.com/" // "https://hardzone.es/"
+    private var apiBaseUrl = "https://hardzone.es/" // "http://blog.mozilla.com/" // "https://hardzone.es/"
 
     /*
     private var _channels = MutableLiveData<List<DomainFeedChannel>>()
@@ -45,7 +46,7 @@ class FeedChannelViewModel(private val feedRepository: FeedRepository) : ViewMod
         _contentsUrl.value = null
     }
 
-    val items: LiveData<List<DomainFeedChannelItem>> = feedRepository.getFeeds().asLiveData()
+    val items: LiveData<List<DomainFeedChannelItemWithFeed>> = feedRepository.getFeeds().asLiveData()
 
     /**
      * Llamar a getRssFeedData() en el init para obtener los datos inmediatamente.

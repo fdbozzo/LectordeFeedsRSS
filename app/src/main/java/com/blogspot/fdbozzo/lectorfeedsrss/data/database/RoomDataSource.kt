@@ -4,6 +4,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.*
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as DomainFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed as DomainFeedChannelItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Group as DomainGroup
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.LocalDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannelItem as ServerFeedChannelItem
@@ -176,6 +177,13 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         feedChannelItemDao.getAllFeedChannelItems().map { roomFeedChannelItem ->
             roomFeedChannelItem.map {
                 it.toDomainFeedChannelItem()
+            }
+        }
+
+    override fun getFeedChannelItemsWithFeed(): Flow<List<DomainFeedChannelItemWithFeed>> =
+        feedChannelItemDao.getAllFeedChannelItemsWithFeed().map { roomFeedChannelItemWithFeed ->
+            roomFeedChannelItemWithFeed.map {
+                it.toDomainFeedChannelItemWithFeed()
             }
         }
 

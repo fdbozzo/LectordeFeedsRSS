@@ -9,6 +9,7 @@ import kotlinx.coroutines.withTimeout
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as DomainFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed as DomainFeedChannelItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Group as DomainGroup
 
 class FeedRepository(
@@ -19,7 +20,7 @@ class FeedRepository(
     /**
      * Devolver los feeds guardados en BBDD
      */
-    fun getFeeds(): Flow<List<DomainFeedChannelItem>> = localDataSource.getFeedChannelItems2()
+    fun getFeeds(): Flow<List<DomainFeedChannelItemWithFeed>> = localDataSource.getFeedChannelItemsWithFeed()
 
     /**
      * Buscar los feeds en la red
@@ -139,6 +140,7 @@ interface LocalDataSource {
     suspend fun saveFeedChannelItemsFromServer(feedChannelItems: List<ServerFeedChannelItem>)
     suspend fun getFeedChannelItems(): Flow<List<DomainFeedChannelItem>>
     fun getFeedChannelItems2(): Flow<List<DomainFeedChannelItem>>
+    fun getFeedChannelItemsWithFeed(): Flow<List<DomainFeedChannelItemWithFeed>>
 
 }
 

@@ -4,10 +4,12 @@ import com.blogspot.fdbozzo.lectorfeedsrss.util.DateParser.Companion.stringToDat
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Feed as RoomFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannel as RoomFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItem as RoomFeedChannelItem
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItemWithFeed as RoomFeedChannelItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group as RoomGroup
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as DomainFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed as DomainFeedChannelItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Group as DomainGroup
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannel as ServerFeedChannel
@@ -26,6 +28,9 @@ fun RoomFeedChannel.toDomainFeedChannel(): DomainFeedChannel =
 
 fun RoomFeedChannelItem.toDomainFeedChannelItem(): DomainFeedChannelItem =
     DomainFeedChannelItem(id, feedId, title, link, pubDate, description, read, readLater, imageLink)
+
+fun RoomFeedChannelItemWithFeed.toDomainFeedChannelItemWithFeed(): DomainFeedChannelItemWithFeed =
+    DomainFeedChannelItemWithFeed(linkName, id, feedId, title, link, pubDate, description, read, readLater, imageLink)
 
 /** DOMAIN **/
 fun DomainGroup.toRoomGroup(): RoomGroup =

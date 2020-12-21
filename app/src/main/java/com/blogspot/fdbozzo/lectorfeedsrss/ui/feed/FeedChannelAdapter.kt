@@ -6,11 +6,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed as DomainFeedChannelItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.FeedChannelItemFragmentBinding
 import timber.log.Timber
 
 class FeedChannelAdapter(
-    private val list: List<DomainFeedChannelItem>,
+    private val list: List<DomainFeedChannelItemWithFeed>,
     private val viewModel: FeedChannelViewModel,
     val context: Context) : RecyclerView.Adapter<FeedChannelAdapter.ViewHolder>() {
 //class FeedChannelAdapter: ListAdapter<FeedChannelItem, FeedChannelAdapter.ViewHolder>(FeedContentsDiff()) {
@@ -41,7 +42,7 @@ class FeedChannelAdapter(
     class ViewHolder private constructor(
         val binding: FeedChannelItemFragmentBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(channelItem: DomainFeedChannelItem, viewModel: FeedChannelViewModel) {
+        fun bind(channelItem: DomainFeedChannelItemWithFeed, viewModel: FeedChannelViewModel) {
             binding.channelItem = channelItem
             binding.viewModel = viewModel
             //binding.clickListener = clickListener
