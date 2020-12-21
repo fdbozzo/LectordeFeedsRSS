@@ -12,8 +12,11 @@ object RetrofitFactory {
     //const val BASE_URL = "https://jsonplaceholder.typicode.com"
 
     fun makeRetrofitService(apiBaseUrl: String): RssApiService {
+        if (apiBaseUrl.isEmpty())
+            throw Exception("apiBaseUrl está vacía!")
+
         return Retrofit.Builder()
-            .baseUrl(API_BASE_URL)
+            .baseUrl(apiBaseUrl)
             .client(makeOkHttpClient())
             .addConverterFactory(SimpleXmlConverterFactory.create())
             .build().create(RssApiService::class.java)
