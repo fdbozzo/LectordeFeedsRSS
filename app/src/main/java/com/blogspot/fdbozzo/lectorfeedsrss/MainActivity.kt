@@ -1,39 +1,38 @@
 package com.blogspot.fdbozzo.lectorfeedsrss
 
 import android.os.Bundle
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ExpandableListAdapter
-import android.widget.ExpandableListView
-import android.widget.Toast
+import android.util.TypedValue
+import android.view.*
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.setupActionBarWithNavController
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.ActivityMainBinding
-import com.blogspot.fdbozzo.lectorfeedsrss.network.RetrofitFactory
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.drawer.CustomExpandableListAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import timber.log.Timber
-import java.util.ArrayList
-import java.util.HashMap
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var binding: ActivityMainBinding
-    //private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var mainViewModel: MainViewModel
     private lateinit var mAuth: FirebaseAuth
     private var expandableListView: ExpandableListView? = null
     private var adapter: ExpandableListAdapter? = null
-    internal var titleList: List<String> ? = null
+    internal var titleList: List<String>? = null
 
     val data: HashMap<String, List<String>>
         get() {
@@ -86,7 +85,8 @@ class MainActivity : AppCompatActivity() {
         //setContentView(R.layout.activity_main)
 
         mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        binding.lifecycleOwner = this // Para que LiveData sea consciente del LifeCycle y se actualice la uI
+        binding.lifecycleOwner =
+            this // Para que LiveData sea consciente del LifeCycle y se actualice la uI
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
@@ -131,7 +131,11 @@ class MainActivity : AppCompatActivity() {
          */
 
         //setupActionBarWithNavController(navController, appBarConfiguration)
-        NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)  // Para navegación y drawer
+        NavigationUI.setupActionBarWithNavController(
+            this,
+            navController,
+            drawerLayout
+        )  // Para navegación y drawer
         //NavigationUI.setupWithNavController(binding.navView, navController)
 
     }
@@ -145,24 +149,30 @@ class MainActivity : AppCompatActivity() {
             adapter = CustomExpandableListAdapter(this, titleList as ArrayList<String>, listData)
             expandableListView!!.setAdapter(adapter)
 
-            expandableListView!!.setOnGroupExpandListener {
-                    groupPosition -> Toast.makeText(applicationContext,
-                (titleList as ArrayList<String>)[groupPosition] + " List Expanded.",
-                Toast.LENGTH_SHORT).show()
+            expandableListView!!.setOnGroupExpandListener { groupPosition ->
+                Toast.makeText(
+                    applicationContext,
+                    (titleList as ArrayList<String>)[groupPosition] + " List Expanded.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             expandableListView!!.setOnGroupCollapseListener { groupPosition ->
-                Toast.makeText(applicationContext,
+                Toast.makeText(
+                    applicationContext,
                     (titleList as ArrayList<String>)[groupPosition] + " List Collapsed.",
-                    Toast.LENGTH_SHORT).show()
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             expandableListView!!.setOnChildClickListener { parent, v, groupPosition, childPosition, id ->
-                Toast.makeText(applicationContext,
+                Toast.makeText(
+                    applicationContext,
                     "Clicked: " +
                             (titleList as ArrayList<String>)[groupPosition] + " -> " +
                             listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition],
-                    Toast.LENGTH_SHORT).show()
+                    Toast.LENGTH_SHORT
+                ).show()
                 false
             }
 
@@ -179,14 +189,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     *
+     * Soporte para la opción de navegación "atrás"
      */
     override fun onSupportNavigateUp(): Boolean {
         //val navController = findNavController(R.id.myNavHostFragment)
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         val navController = navHostFragment.navController
         Timber.i("onSupportNavigateUp()")
-        return NavigationUI.navigateUp(navController, drawerLayout)    // Activa el menu navigation del drawer
+        return NavigationUI.navigateUp(
+            navController,
+            drawerLayout
+        )    // Activa el menu navigation del drawer
     }
 
     /**
@@ -201,6 +215,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /* ----- FUNCIONA, PERO NO LE VEO SENTIDO TENIENDO EL MENU DEL DRAWER -----
     // MENU PRINCIPAL
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.navdrawer_menu, menu)
@@ -217,6 +232,7 @@ class MainActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+     */
 
     /**
      * Este método resuelve el problema de que el ExpandableListView no respete los controles
