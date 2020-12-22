@@ -7,7 +7,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
@@ -17,7 +16,6 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.ActivityMainBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.drawer.CustomExpandableListAdapter
-import com.blogspot.fdbozzo.lectorfeedsrss.ui.login.LoginFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -31,7 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     //private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var mainSharedViewModel: MainSharedViewModel
-    private lateinit var sharedViewModel: MainSharedViewModel
+    //private lateinit var sharedViewModel: MainSharedViewModel
     private lateinit var mAuth: FirebaseAuth
     private var expandableListView: ExpandableListView? = null
     private var adapter: ExpandableListAdapter? = null
@@ -93,7 +91,7 @@ class MainActivity : AppCompatActivity() {
         val sharedViewModel: MainSharedViewModel by viewModels { MainSharedViewModel.Factory(applicationContext, feedRepository) }
         //sharedViewModel = ViewModelProvider(this, MainSharedViewModel.Factory(applicationContext, feedRepository)).get(MainSharedViewModel::class.java)
         mainSharedViewModel = sharedViewModel
-        sharedViewModel.fragmento = "MainActivity"
+        sharedViewModel.testigo = "MainActivity"
 
         binding.lifecycleOwner =
             this // Para que LiveData sea consciente del LifeCycle y se actualice la uI
@@ -195,8 +193,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        Timber.i("onStart() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.fragmento)
-        mainSharedViewModel.fragmento = MainActivity::class.java.canonicalName
+        Timber.i("onStart() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.testigo)
+        mainSharedViewModel.testigo = MainActivity::class.java.canonicalName
     }
 
     /**

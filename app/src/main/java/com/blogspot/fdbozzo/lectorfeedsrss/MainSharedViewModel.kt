@@ -10,11 +10,9 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed as DomainFeedChannelItemWithFeed
 
-enum class RssApiStatus { LOADING, ERROR, DONE }
-
 class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewModel() {
 
-    var fragmento: String? = ""
+    var testigo: String? = ""
 
     private lateinit var rssApiResponse: RssResponse<Feed>
 
@@ -72,7 +70,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     }
 
     override fun onCleared() {
-        Timber.i("onCleared() - mainSharedViewModel.fragmento: %s", fragmento)
+        Timber.i("onCleared() - mainSharedViewModel.fragmento: %s", testigo)
         super.onCleared()
     }
 
@@ -80,12 +78,13 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            Timber.i("Factory() - mainSharedViewModel.fragmento: %s", MainSharedViewModel::fragmento)
+            Timber.i("Factory() - mainSharedViewModel.fragmento: %s", MainSharedViewModel::testigo)
             return MainSharedViewModel(feedRepository) as T
             //return MainSharedViewModel.getInstance(context, feedRepository) as T
         }
     }
 
+    /*
     companion object {
 
         @Volatile
@@ -108,4 +107,5 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
             }
         }
     }
+     */
 }

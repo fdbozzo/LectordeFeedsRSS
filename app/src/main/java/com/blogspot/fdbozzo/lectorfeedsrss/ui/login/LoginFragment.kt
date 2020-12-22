@@ -11,7 +11,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
@@ -47,7 +46,7 @@ class LoginFragment : Fragment(), View.OnClickListener {
     private lateinit var navController: NavController
     //private lateinit var navGraph: NavGraph
     private lateinit var mainSharedViewModel: MainSharedViewModel
-    private lateinit var sharedViewModel: MainSharedViewModel
+    //private lateinit var sharedViewModel: MainSharedViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,8 +63,8 @@ class LoginFragment : Fragment(), View.OnClickListener {
         //sharedViewModel = ViewModelProvider(this, MainSharedViewModel.Factory(requireContext(), feedRepository)).get(MainSharedViewModel::class.java)
         mainSharedViewModel = sharedViewModel
 
-        Timber.i("onCreateView() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.fragmento)
-        mainSharedViewModel.fragmento = LoginFragment::class.java.canonicalName
+        Timber.i("onCreateView() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.testigo)
+        mainSharedViewModel.testigo = LoginFragment::class.java.canonicalName
 
         binding.lifecycleOwner = this // Para que LiveData sea consciente del LifeCycle y se actualice la uI
         mAuth = Firebase.auth
@@ -101,8 +100,8 @@ class LoginFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Timber.i("onViewCreated() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.fragmento)
-        mainSharedViewModel.fragmento = LoginFragment::class.java.canonicalName
+        Timber.i("onViewCreated() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.testigo)
+        mainSharedViewModel.testigo = LoginFragment::class.java.canonicalName
 
         /**
          * Como al login se llega desde el destino principal (recycler_view),

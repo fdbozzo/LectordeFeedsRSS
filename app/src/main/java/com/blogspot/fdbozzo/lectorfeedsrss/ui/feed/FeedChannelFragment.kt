@@ -7,9 +7,7 @@ import android.view.ViewGroup
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.fragment.findNavController
@@ -21,7 +19,6 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.FeedChannelFragmentBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
-import com.blogspot.fdbozzo.lectorfeedsrss.ui.login.LoginFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -43,7 +40,7 @@ class FeedChannelFragment : Fragment() {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var mAuth: FirebaseAuth
     private lateinit var mainSharedViewModel: MainSharedViewModel
-    private lateinit var sharedViewModel: MainSharedViewModel
+    //private lateinit var sharedViewModel: MainSharedViewModel
     //private lateinit var localDatabase: FeedDatabase
 
     override fun onCreateView(
@@ -59,8 +56,8 @@ class FeedChannelFragment : Fragment() {
         //sharedViewModel = ViewModelProvider(this, MainSharedViewModel.Factory(requireContext(), feedRepository)).get(MainSharedViewModel::class.java)
         mainSharedViewModel = sharedViewModel
 
-        Timber.i("onCreateView() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.fragmento)
-        mainSharedViewModel.fragmento = FeedChannelFragment::class.java.canonicalName
+        Timber.i("onCreateView() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.testigo)
+        mainSharedViewModel.testigo = FeedChannelFragment::class.java.canonicalName
 
         //localDatabase = FeedDatabase.getInstance(requireContext())
         ///val contentDS = localDatabase.getFeedChannelItemDao()
@@ -130,8 +127,8 @@ class FeedChannelFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Timber.i("onViewCreated() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.fragmento)
-        mainSharedViewModel.fragmento = FeedChannelFragment::class.java.canonicalName
+        Timber.i("onViewCreated() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.testigo)
+        mainSharedViewModel.testigo = FeedChannelFragment::class.java.canonicalName
 
         /**
          * Si el usuario no está validado, enviarlo al login
