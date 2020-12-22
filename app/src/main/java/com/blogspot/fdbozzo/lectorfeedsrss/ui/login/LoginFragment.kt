@@ -10,12 +10,18 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
-import com.blogspot.fdbozzo.lectorfeedsrss.MainViewModel
+import com.blogspot.fdbozzo.lectorfeedsrss.MainSharedViewModel
 import com.blogspot.fdbozzo.lectorfeedsrss.R
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.LoginFragmentBinding
+import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.util.hideKeyboard
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -40,7 +46,8 @@ class LoginFragment : Fragment(), View.OnClickListener {
     private lateinit var lnkSignup: TextView
     private lateinit var navController: NavController
     //private lateinit var navGraph: NavGraph
-    private lateinit var mainViewModel: MainViewModel
+    private lateinit var mainSharedViewModel: MainSharedViewModel
+    private lateinit var sharedViewModel: MainSharedViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,7 +57,15 @@ class LoginFragment : Fragment(), View.OnClickListener {
         // Inflate the layout for this fragment
         _binding = LoginFragmentBinding.inflate(inflater, container, false)
 
-        mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+        //mainSharedViewModel = ViewModelProvider(requireActivity()).get(MainSharedViewModel::class.java)
+        val localDatabase = FeedDatabase.getInstance(requireContext())
+        val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
+        val sharedViewModel: MainSharedViewModel by activityViewModels { MainSharedViewModel.Factory(requireContext(), feedRepository) }
+        //sharedViewModel = ViewModelProvider(this, MainSharedViewModel.Factory(requireContext(), feedRepository)).get(MainSharedViewModel::class.java)
+        mainSharedViewModel = sharedViewModel
+
+        Timber.i("onCreateView() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.fragmento)
+        mainSharedViewModel.fragmento = LoginFragment::class.java.canonicalName
 
         binding.lifecycleOwner = this // Para que LiveData sea consciente del LifeCycle y se actualice la uI
         mAuth = Firebase.auth
@@ -86,8 +101,8 @@ class LoginFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Timber.i("mainViewModel.fragmento: %s", mainViewModel.fragmento)
-        mainViewModel.fragmento = LoginFragment::class.java.canonicalName
+        Timber.i("onViewCreated() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.fragmento)
+        mainSharedViewModel.fragmento = LoginFragment::class.java.canonicalName
 
         /**
          * Como al login se llega desde el destino principal (recycler_view),

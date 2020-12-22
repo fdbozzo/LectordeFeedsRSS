@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.blogspot.fdbozzo.lectorfeedsrss.MainSharedViewModel
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed as DomainFeedChannelItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.FeedChannelItemFragmentBinding
@@ -12,7 +13,7 @@ import timber.log.Timber
 
 class FeedChannelAdapter(
     private val list: List<DomainFeedChannelItemWithFeed>,
-    private val viewModel: FeedChannelViewModel,
+    private val sharedViewViewModel: MainSharedViewModel,
     val context: Context) : RecyclerView.Adapter<FeedChannelAdapter.ViewHolder>() {
 //class FeedChannelAdapter: ListAdapter<FeedChannelItem, FeedChannelAdapter.ViewHolder>(FeedContentsDiff()) {
 
@@ -29,7 +30,7 @@ class FeedChannelAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         //val item = getItem(position)
         val item = list[position]
-        holder.bind(item, viewModel)
+        holder.bind(item, sharedViewViewModel)
     }
 
     override fun getItemCount(): Int = list.size
@@ -42,7 +43,7 @@ class FeedChannelAdapter(
     class ViewHolder private constructor(
         val binding: FeedChannelItemFragmentBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(channelItem: DomainFeedChannelItemWithFeed, viewModel: FeedChannelViewModel) {
+        fun bind(channelItem: DomainFeedChannelItemWithFeed, viewModel: MainSharedViewModel) {
             binding.channelItem = channelItem
             binding.viewModel = viewModel
             //binding.clickListener = clickListener

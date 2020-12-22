@@ -1,21 +1,23 @@
 package com.blogspot.fdbozzo.lectorfeedsrss
 
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.*
 import android.widget.*
-import androidx.appcompat.app.AlertDialog
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
-import androidx.navigation.ui.setupActionBarWithNavController
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.ActivityMainBinding
+import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.drawer.CustomExpandableListAdapter
+import com.blogspot.fdbozzo.lectorfeedsrss.ui.login.LoginFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -27,8 +29,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var binding: ActivityMainBinding
-    private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var mainViewModel: MainViewModel
+    //private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var mainSharedViewModel: MainSharedViewModel
+    private lateinit var sharedViewModel: MainSharedViewModel
     private lateinit var mAuth: FirebaseAuth
     private var expandableListView: ExpandableListView? = null
     private var adapter: ExpandableListAdapter? = null
@@ -82,9 +85,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        //setContentView(R.layout.activity_main)
 
-        mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        Timber.i("onCreate() - mainSharedViewModel")
+        //mainViewModel = ViewModelProvider(this).get(MainSharedViewModel::class.java)
+        val localDatabase = FeedDatabase.getInstance(applicationContext)
+        val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
+        val sharedViewModel: MainSharedViewModel by viewModels { MainSharedViewModel.Factory(applicationContext, feedRepository) }
+        //sharedViewModel = ViewModelProvider(this, MainSharedViewModel.Factory(applicationContext, feedRepository)).get(MainSharedViewModel::class.java)
+        mainSharedViewModel = sharedViewModel
+        sharedViewModel.fragmento = "MainActivity"
+
         binding.lifecycleOwner =
             this // Para que LiveData sea consciente del LifeCycle y se actualice la uI
 
@@ -185,7 +195,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        Timber.i("onStart() - fragment: %s", mainViewModel.fragmento)
+        Timber.i("onStart() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.fragmento)
+        mainSharedViewModel.fragmento = MainActivity::class.java.canonicalName
     }
 
     /**

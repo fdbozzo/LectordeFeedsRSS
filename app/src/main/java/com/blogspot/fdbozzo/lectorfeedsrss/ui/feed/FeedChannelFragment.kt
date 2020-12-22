@@ -6,20 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blogspot.fdbozzo.lectorfeedsrss.MainViewModel
+import com.blogspot.fdbozzo.lectorfeedsrss.MainSharedViewModel
 import com.blogspot.fdbozzo.lectorfeedsrss.R
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.FeedChannelFragmentBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
+import com.blogspot.fdbozzo.lectorfeedsrss.ui.login.LoginFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -35,13 +37,14 @@ class FeedChannelFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    private lateinit var viewModel: FeedChannelViewModel
+    //private lateinit var sharedModel: FeedChannelViewModel
     private lateinit var navController: NavController
     private lateinit var navGraph: NavGraph
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var mAuth: FirebaseAuth
-    private lateinit var mainViewModel: MainViewModel
-    private lateinit var localDatabase: FeedDatabase
+    private lateinit var mainSharedViewModel: MainSharedViewModel
+    private lateinit var sharedViewModel: MainSharedViewModel
+    //private lateinit var localDatabase: FeedDatabase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,13 +53,22 @@ class FeedChannelFragment : Fragment() {
         Timber.d("onCreateView")
         _binding = FeedChannelFragmentBinding.inflate(inflater, container, false)
 
-        localDatabase = FeedDatabase.getInstance(requireContext())
-        val contentDS = localDatabase.getFeedChannelItemDao()
+        val localDatabase = FeedDatabase.getInstance(requireContext())
         val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
-        //val viewModelFactory = FeedChannelViewModelFactory(contentDS)
-        val viewModelFactory = FeedChannelViewModelFactory(feedRepository)
-        mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
-        viewModel = ViewModelProvider(this, viewModelFactory).get(FeedChannelViewModel::class.java)
+        val sharedViewModel: MainSharedViewModel by activityViewModels { MainSharedViewModel.Factory(requireContext(), feedRepository) }
+        //sharedViewModel = ViewModelProvider(this, MainSharedViewModel.Factory(requireContext(), feedRepository)).get(MainSharedViewModel::class.java)
+        mainSharedViewModel = sharedViewModel
+
+        Timber.i("onCreateView() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.fragmento)
+        mainSharedViewModel.fragmento = FeedChannelFragment::class.java.canonicalName
+
+        //localDatabase = FeedDatabase.getInstance(requireContext())
+        ///val contentDS = localDatabase.getFeedChannelItemDao()
+        //val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
+        ///val viewModelFactory = FeedChannelViewModelFactory(contentDS)
+        //val viewModelFactory = FeedChannelViewModelFactory(feedRepository)
+        //mainViewModel = ViewModelProvider(requireActivity()).get(MainSharedViewModel::class.java)
+        //sharedModel = ViewModelProvider(this, viewModelFactory).get(FeedChannelViewModel::class.java)
 
         binding.lifecycleOwner = this // Para que LiveData sea consciente del LifeCycle y se actualice la uI
         mAuth = Firebase.auth
@@ -73,18 +85,18 @@ class FeedChannelFragment : Fragment() {
 
 
         //*
-        viewModel.items.observe(viewLifecycleOwner, Observer {
+        sharedViewModel.items.observe(viewLifecycleOwner, Observer {
             it?.let {
                 //adapter.data = it   // Esto solo lo usa el RecyclerView.Adapter
                 //adapter.submitList(it)
                 //initRecyclerView(it)
-                binding.recyclerView.adapter = FeedChannelAdapter(it, viewModel, requireContext())
+                binding.recyclerView.adapter = FeedChannelAdapter(it, sharedViewModel, requireContext())
             }
         })
          //*/
 
         /** Observer para el navigateToFeedContentsItem **/
-        viewModel.contentsUrl.observe(viewLifecycleOwner, Observer { url ->
+        sharedViewModel.contentsUrl.observe(viewLifecycleOwner, Observer { url ->
             url?.let {
                 val action =
                     FeedChannelFragmentDirections.actionFeedContentsFragmentToContentsFragment(
@@ -92,13 +104,13 @@ class FeedChannelFragment : Fragment() {
                     )
                 //NavHostFragment.findNavController(this).navigate(action)
                 findNavController().navigate(action)
-                viewModel.navigateToContentsWithUrl_Done()
+                sharedViewModel.navigateToContentsWithUrl_Done()
             }
         })
 
         /** Observer para el Snackbar **/
         /*
-        viewModel.showSnackBarEvent.observe(viewLifecycleOwner, Observer {
+        sharedModel.showSnackBarEvent.observe(viewLifecycleOwner, Observer {
             if (it == true) { // Observed state is true.
                 Snackbar.make(
                     requireActivity().findViewById(android.R.id.contentEncoded),
@@ -118,7 +130,8 @@ class FeedChannelFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mainViewModel.fragmento = FeedChannelFragment::class.java.canonicalName
+        Timber.i("onViewCreated() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.fragmento)
+        mainSharedViewModel.fragmento = FeedChannelFragment::class.java.canonicalName
 
         /**
          * Si el usuario no está validado, enviarlo al login
@@ -141,7 +154,7 @@ class FeedChannelFragment : Fragment() {
     private fun initRecyclerView(list: List<DomainFeedChannelItem>) {
         //val recyclerview: RecyclerView = findViewById(R.id.recycler_view)
         val recyclerview2 = binding.recyclerView
-        recyclerview2.adapter = FeedChannelAdapter(list, viewModel, requireContext())
+        recyclerview2.adapter = FeedChannelAdapter(list, sharedModel, requireContext())
     }
      */
 

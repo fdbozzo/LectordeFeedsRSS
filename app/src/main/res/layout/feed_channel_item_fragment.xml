@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.FeedChannelViewModel"/>
+            type="com.blogspot.fdbozzo.lectorfeedsrss.MainSharedViewModel"/>
         <variable
             name="channelItem"
             type="com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed"/>
