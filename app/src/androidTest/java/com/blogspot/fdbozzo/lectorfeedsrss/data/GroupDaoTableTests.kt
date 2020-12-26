@@ -3,6 +3,7 @@ package com.blogspot.fdbozzo.lectorfeedsrss.data
 import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.asLiveData
 //import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
@@ -70,7 +71,7 @@ class GroupDaoTableTests {
         val group = Group()
         val insId1 = groupDao.insert(group)
         val lastGroup = groupDao.getLastGroup()
-        Assert.assertEquals("other", lastGroup?.groupName)
+        Assert.assertEquals("Uncategorized", lastGroup?.groupName)
     }
 
     @Test
@@ -99,13 +100,13 @@ class GroupDaoTableTests {
         val insId2 = groupDao.insert(group)
 
         // Test
-        val allGroups = groupDao.getAllGroups()
-        //val size = getValue(allGroups).size
+        //val allGroups = groupDao.getAllGroups()
+        val valores = getValue(groupDao.getAllGroups().asLiveData())
 
         // Verify
         //Assert.assertEquals(2, getValue(allGroups).size)
-        val elements = allGroups.take(1).toList()
-        Assert.assertEquals(2, elements[0].size)
+        //val elements = allGroups.take(1).toList()
+        Assert.assertEquals(2, valores.size)
 
     }
 

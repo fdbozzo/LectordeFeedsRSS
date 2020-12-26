@@ -11,7 +11,7 @@ import androidx.room.*
 )
 data class Group(
     @ColumnInfo(name = "group_name")
-    var groupName: String = "Other"
+    var groupName: String = "Uncategorized"
 
 ) {
     @PrimaryKey(autoGenerate = true)

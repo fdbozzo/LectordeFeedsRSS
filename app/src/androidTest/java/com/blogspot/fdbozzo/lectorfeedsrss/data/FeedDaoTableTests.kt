@@ -2,6 +2,7 @@ package com.blogspot.fdbozzo.lectorfeedsrss.data
 
 import android.database.sqlite.SQLiteConstraintException
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.asLiveData
 import androidx.room.Room
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 //import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -35,6 +36,7 @@ class FeedDaoTableTests {
     private lateinit var feedDao: FeedDao
     private lateinit var feedChannelItemDao: FeedChannelItemDao
     private lateinit var db: FeedDatabase
+    val feed_0 = Feed(groupId = 0, linkName = "HardZone", link = "https://hardzone.es")
 
     @get:Rule
     val instantTaskExecutorRule: TestRule = InstantTaskExecutorRule()
@@ -102,25 +104,24 @@ class FeedDaoTableTests {
         val lastGroup = groupDao.getLastGroup() ?: throw Exception("lastGroup es null")
 
         // Inserto un Feed
-        var feed = Feed()
-        feed.groupId = lastGroup.id
-        feedDao.insert(feed)
+        var feed = feed_0.copy(groupId = lastGroup.id)
+        val idF1 = feedDao.insert(feed)
         feedDao.getLastFeed() ?: throw Exception("lastFeed(1) es null")
 
         // Inserto otro Feed
-        feed = Feed()
-        feed.groupId = lastGroup.id
-        feedDao.insert(feed)
+        feed = Feed(groupId = lastGroup.id, linkName = "Mozilla", link = "http://mozilla.org")
+        val idF2 = feedDao.insert(feed)
         feedDao.getLastFeed() ?: throw Exception("lastFeed(2) es null")
 
         // Test
         //val allFeeds = feedDao.getAllFeeds() // LiveData<List<Feed>>
-        val allFeeds = feedDao.getAllFeeds() // Flow<List<Feed>>
+        //val allFeeds = feedDao.getAllFeeds().asLiveData() // Flow<List<Feed>>
 
         // Verify
-        val valores = allFeeds.take(1).toList()
+        val valores = getValue(feedDao.getAllFeeds().asLiveData()).toList()
 
-        Assert.assertEquals(2, valores[0].size)
+        Assert.assertNotEquals(idF1, idF2)
+        Assert.assertEquals(2, valores.size)
     }
 
 
