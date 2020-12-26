@@ -5,14 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItem
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Feed
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItemDao
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedDao
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannel
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelDao
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.GroupDao
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.*
 import com.blogspot.fdbozzo.lectorfeedsrss.util.DateConverter
 import com.blogspot.fdbozzo.lectorfeedsrss.util.DateParser
 
@@ -20,7 +13,15 @@ import com.blogspot.fdbozzo.lectorfeedsrss.util.DateParser
  * Base de datos que guarda información de feeds
  * y un método global para acceder a los datos de la misma.
  */
-@Database(entities = [Group::class, Feed::class, FeedChannel::class, FeedChannelItem::class], version = 1, exportSchema = false)
+@Database(
+    entities = [
+        Group::class,
+        Feed::class,
+        FeedChannel::class,
+        FeedChannelItem::class],
+    version = 1,
+    exportSchema = false
+)
 @TypeConverters(DateConverter::class)
 //@TypeConverters(DateParser::class)
 abstract class FeedDatabase : RoomDatabase() {
@@ -32,6 +33,7 @@ abstract class FeedDatabase : RoomDatabase() {
     abstract fun getFeedDao(): FeedDao
     abstract fun getFeedChannelDao(): FeedChannelDao
     abstract fun getFeedChannelItemDao(): FeedChannelItemDao
+    //abstract fun getGroupWithFeedsDao(): GroupWithFeedsDao
 
     /**
      * Define el objeto companion, esto nos permite agregar funciones  en la clase FeedDatabase.
