@@ -7,7 +7,7 @@ plugins {
     //id 'de.mannodermaus.android-junit5'
     //id 'com.google.firebase.crashlytics'
     id 'com.google.gms.google-services'
-    id 'androidx.navigation.safeargs.kotlin'
+    id 'androidx.navigation.safeargs'  // 'androidx.navigation.safeargs.kotlin' ¿qué diferencia hay?
 }
 
 android {
