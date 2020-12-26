@@ -1,12 +1,12 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data
 
+import android.content.Context
 import android.database.sqlite.SQLiteConstraintException
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.asLiveData
 import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
-//import androidx.test.ext.junit.runners.AndroidJUnit4
-//import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.platform.app.InstrumentationRegistry
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItemDao
@@ -15,7 +15,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedDao
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.GroupDao
 import com.blogspot.fdbozzo.lectorfeedsrss.utilities.CoroutinesTestRule
-import com.blogspot.fdbozzo.lectorfeedsrss.utilities.getValue
+import com.blogspot.fdbozzo.lectorfeedsrss.util.getValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
@@ -25,9 +25,11 @@ import org.junit.*
 import org.junit.Test
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
+//import org.robolectric.RobolectricTestRunner
 import kotlin.test.*
 import java.io.IOException
 
+//@RunWith(RobolectricTestRunner::class)
 @RunWith(AndroidJUnit4ClassRunner::class)
 @ExperimentalCoroutinesApi
 class FeedDaoTableTests {
@@ -37,6 +39,7 @@ class FeedDaoTableTests {
     private lateinit var feedChannelItemDao: FeedChannelItemDao
     private lateinit var db: FeedDatabase
     val feed_0 = Feed(groupId = 0, linkName = "HardZone", link = "https://hardzone.es")
+    val context = ApplicationProvider.getApplicationContext<Context>()
 
     @get:Rule
     val instantTaskExecutorRule: TestRule = InstantTaskExecutorRule()
@@ -47,7 +50,8 @@ class FeedDaoTableTests {
 
     @Before
     fun createDb() {
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        //val context = InstrumentationRegistry.getInstrumentation().targetContext
+
         // Using an in-memory database because the information stored here disappears when the
         // process is killed.
         db = Room.inMemoryDatabaseBuilder(context, FeedDatabase::class.java)
@@ -123,6 +127,5 @@ class FeedDaoTableTests {
         Assert.assertNotEquals(idF1, idF2)
         Assert.assertEquals(2, valores.size)
     }
-
 
 }

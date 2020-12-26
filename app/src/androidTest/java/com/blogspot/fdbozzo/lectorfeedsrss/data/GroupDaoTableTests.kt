@@ -1,7 +1,6 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data
 
 import android.database.sqlite.SQLiteConstraintException
-import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.asLiveData
 //import androidx.arch.core.executor.testing.InstantTaskExecutorRule
@@ -9,19 +8,14 @@ import androidx.room.Room
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 //import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.runner.AndroidJUnit4
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItemDao
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedDao
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.GroupDao
 import com.blogspot.fdbozzo.lectorfeedsrss.utilities.CoroutinesTestRule
-import com.blogspot.fdbozzo.lectorfeedsrss.utilities.getValue
+import com.blogspot.fdbozzo.lectorfeedsrss.util.getValue
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.*
 import org.junit.Test
 import org.junit.rules.TestRule

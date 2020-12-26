@@ -26,11 +26,13 @@ class ContentsFragment : Fragment() {
     ): View? {
         _binding = ContentsFragmentBinding.inflate(inflater, container, false)
 
+        binding.lifecycleOwner = this // Para que LiveData sea consciente del LifeCycle y se actualice la uI
+
         val arguments = ContentsFragmentArgs.fromBundle(requireArguments())
         binding.webView.loadUrl(arguments.itemUrl)
 
+
         return binding.root
-        //return inflater.inflate(R.layout.contents_fragment, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
