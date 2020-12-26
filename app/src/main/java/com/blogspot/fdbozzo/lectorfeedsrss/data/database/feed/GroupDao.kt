@@ -1,9 +1,6 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -72,4 +69,9 @@ interface GroupDao {
      */
     @Query("SELECT * from group_table WHERE group_name = :groupName")
     fun getGroupWithName(groupName: String): Group
+
+    @Transaction
+    @Query("select * from group_table ORDER BY group_name")
+    fun getGroupsWithFeeds(): List<GroupWithFeeds>?
+
 }
