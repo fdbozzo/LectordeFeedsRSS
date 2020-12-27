@@ -1,7 +1,6 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data
 
 //import androidx.test.ext.junit.runners.AndroidJUnit4
-import android.database.sqlite.SQLiteConstraintException
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
@@ -15,7 +14,6 @@ import org.junit.*
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
 import java.io.IOException
-import kotlin.test.assertFailsWith
 
 @RunWith(AndroidJUnit4ClassRunner::class)
 @ExperimentalCoroutinesApi
