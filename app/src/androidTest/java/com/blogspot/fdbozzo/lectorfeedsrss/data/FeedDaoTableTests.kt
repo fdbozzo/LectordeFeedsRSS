@@ -25,6 +25,7 @@ import org.junit.*
 import org.junit.Test
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
+import timber.log.Timber
 //import org.robolectric.RobolectricTestRunner
 import kotlin.test.*
 import java.io.IOException
@@ -118,14 +119,41 @@ class FeedDaoTableTests {
         feedDao.getLastFeed() ?: throw Exception("lastFeed(2) es null")
 
         // Test
-        //val allFeeds = feedDao.getAllFeeds() // LiveData<List<Feed>>
-        //val allFeeds = feedDao.getAllFeeds().asLiveData() // Flow<List<Feed>>
-
-        // Verify
         val valores = getValue(feedDao.getAllFeeds().asLiveData()).toList()
 
+        // Verify
         Assert.assertNotEquals(idF1, idF2)
         Assert.assertEquals(2, valores.size)
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun deberiaInsertarUnGrupoYDosFeed_BorrarElGrupoYObtenerUnRecuentoDe_0_Feeds(): Unit = runBlocking {
+        /** Inserta 1 grupo y 2 feed **/
+        // Inserto primero un grupo
+        val group = Group()
+        groupDao.insert(group)
+        val lastGroup = groupDao.getLastGroup() ?: throw Exception("lastGroup es null")
+
+        // Inserto un Feed
+        var feed = feed_0.copy(groupId = lastGroup.id)
+        val idF1 = feedDao.insert(feed)
+        feedDao.getLastFeed() ?: throw Exception("lastFeed(1) es null")
+
+        // Inserto otro Feed
+        feed = Feed(groupId = lastGroup.id, linkName = "Mozilla", link = "http://mozilla.org")
+        val idF2 = feedDao.insert(feed)
+        feedDao.getLastFeed() ?: throw Exception("lastFeed(2) es null")
+
+        // Borro los grupos
+        val ret = groupDao.deleteAll()
+        Timber.d("groupDao.delete(group) = $ret", ret)
+
+        // Test
+        val valores = getValue(feedDao.getAllFeeds().asLiveData()).toList()
+
+        // Verify
+        Assert.assertEquals(0, valores.size)
     }
 
 }

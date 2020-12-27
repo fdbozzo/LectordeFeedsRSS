@@ -23,6 +23,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
+import timber.log.Timber
 import kotlin.test.*
 import java.io.IOException
 import java.util.*
@@ -143,6 +144,42 @@ class FeedChannelItemDaoTableTests {
         val valores = getValue(feedChannelItemDao.getAllFeedChannelItems().asLiveData())
 
         Assert.assertEquals(2, valores.size)
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun deberiaInsertarUnGrupoYUnFeedYUnContenido_BorrarElGrupoYObtenerUnRecuentoDe_0_Contenidos(): Unit = runBlocking {
+        /** Inserta 2 contenidos **/
+
+        // Inserto un grupo
+        val group = Group()
+        val gId1 = groupDao.insert(group)
+        val lastGroup = groupDao.getLastGroup() ?: throw Exception("lastGroup es null")
+
+        // Inserto un Feed
+        val feed = feed_0.copy(groupId = gId1)
+        val fId1 = feedDao.insert(feed)
+        val lastFeed = feedDao.getLastFeed() ?: throw Exception("lastFeed es null")
+
+        // Ahora inserto un contentEncoded
+
+        // contenido 1
+        var content = content_0.copy(feedId = fId1)
+        val fcId1 = feedChannelItemDao.insert(content)
+
+        // contenido 2
+        content = content_0.copy(feedId = fId1, link = "https://mozilla.org")
+        val fcId2 = feedChannelItemDao.insert(content)
+
+        // Borro los grupos
+        val ret = groupDao.deleteAll()
+        Timber.d("groupDao.delete(group) = $ret", ret)
+
+        // Test
+        val valores = getValue(feedChannelItemDao.getAllFeedChannelItems().asLiveData())
+
+        // Verify
+        Assert.assertEquals(0, valores.size)
     }
 
 }

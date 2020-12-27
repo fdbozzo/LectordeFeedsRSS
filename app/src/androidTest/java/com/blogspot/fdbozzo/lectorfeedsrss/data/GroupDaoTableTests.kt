@@ -94,14 +94,25 @@ class GroupDaoTableTests {
         val insId2 = groupDao.insert(group)
 
         // Test
-        //val allGroups = groupDao.getAllGroups()
         val valores = getValue(groupDao.getAllGroups().asLiveData())
 
         // Verify
-        //Assert.assertEquals(2, getValue(allGroups).size)
-        //val elements = allGroups.take(1).toList()
         Assert.assertEquals(2, valores.size)
+    }
 
+    @Test
+    @Throws(Exception::class)
+    fun deberiaInsertarUnGrupoYBorrarloYObtenerUnRecuentoDe_0(): Unit = runBlocking {
+        // grupo 1
+        val group = Group()
+        val insId1 = groupDao.insert(group)
+        groupDao.deleteAll()
+
+        // Test
+        val valores = getValue(groupDao.getAllGroups().asLiveData())
+
+        // Verify
+        Assert.assertEquals(0, valores.size)
     }
 
 
