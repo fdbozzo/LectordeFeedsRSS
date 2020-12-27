@@ -14,7 +14,15 @@ class RssFeedDataSource(): RemoteDataSource {
 
     //override suspend fun getFeedChannelItems(): List<DomainFeedChannelItem> {
     override suspend fun getFeeds(apiBaseUrl: String): RssResponse<ServerFeed> {
-        RssApi.apiBaseUrl = apiBaseUrl
+
+        // Comprobar si la URL tiene la barra final
+        if (apiBaseUrl.endsWith("/")) {
+            RssApi.apiBaseUrl = apiBaseUrl
+        } else {
+            RssApi.apiBaseUrl = "$apiBaseUrl/"
+        }
+
+        Timber.d("RssApi.apiBaseUrl = ${RssApi.apiBaseUrl}")
         val response = RssApi.retrofitService.getRss()
 
         try {
