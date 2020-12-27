@@ -81,13 +81,20 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     }
 
     override fun onCleared() {
-        Timber.i("onCleared() - mainSharedViewModel.fragmento: %s", testigo)
+        Timber.d("onCleared() - mainSharedViewModel.fragmento: %s", testigo)
         super.onCleared()
     }
 
     private suspend fun setupInitialDrawerMenuData() {
-        // TODO: implementar carga inicial de datos del menú Drawer.
-        //val localDatabase = FeedDatabase.getInstance(context)
+
+        // Compruebo si existe el último grupo, y si no existe borro toto y relleno
+        val groupId = feedRepository.getGroupIdByName("Hardware")
+        Timber.d("setupInitialDrawerMenuData() - group.id = %d", groupId)
+
+        if (groupId != 0L) {
+            return
+        }
+
         // Borro la bbdd
         feedRepository.deleteAllLocalGroups()
 

@@ -61,7 +61,7 @@ class GroupDaoTableTests {
 
     @Test
     @Throws(Exception::class)
-    fun deberiaInsertarUnGrupoVacioYObtenerElNombrePorDefecto_other() = runBlocking {
+    fun deberiaInsertarUnGrupoVacioYObtenerElNombrePorDefecto_Uncategorized() = runBlocking {
         val group = Group()
         val insId1 = groupDao.insert(group)
         val lastGroup = groupDao.getLastGroup()
@@ -70,8 +70,9 @@ class GroupDaoTableTests {
 
     @Test
     @Throws(Exception::class)
-    fun deberiaInsertarUnGrupoVacioPorDuplicadoYObtenerUnError_SQLiteConstraintException(): Unit = runBlocking {
-        /** El error es porque hay un índice que impide nombres duplicados **/
+    fun deberiaInsertarUnGrupoVacioPorDuplicadoYObtenerUnRetorno_menosUno(): Unit = runBlocking {
+        /** En vez de error se devuelve -1 porque hay un índice que impide nombres duplicados **/
+        /*
         assertFailsWith<SQLiteConstraintException> {
             // grupo 1
             var group = Group()
@@ -80,6 +81,15 @@ class GroupDaoTableTests {
             group = Group()
             val insId2 = groupDao.insert(group)
         }
+         */
+        // grupo 1
+        var group = Group()
+        val insId1 = groupDao.insert(group)
+        // grupo 2
+        group = Group()
+        val insId2 = groupDao.insert(group)
+
+        Assert.assertEquals(-1, insId2)
     }
 
     @Test
@@ -105,14 +115,33 @@ class GroupDaoTableTests {
     fun deberiaInsertarUnGrupoYBorrarloYObtenerUnRecuentoDe_0(): Unit = runBlocking {
         // grupo 1
         val group = Group()
-        val insId1 = groupDao.insert(group)
-        groupDao.deleteAll()
+        val insVals = groupDao.insert(group)
+        val lastGroup = groupDao.getLastGroup() ?: throw Exception("lastGroup es null")
+        groupDao.delete(lastGroup)
 
         // Test
         val valores = getValue(groupDao.getAllGroups().asLiveData())
 
         // Verify
         Assert.assertEquals(0, valores.size)
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun deberiaInsertarDosGruposConDistintoNombreYObtenerElIdDelSegundoGrupo(): Unit = runBlocking {
+        // grupo 1
+        var group = Group()
+        val insId1 = groupDao.insert(group)
+        // grupo 2
+        group = Group()
+        group.groupName = "otro más"
+        val insId2 = groupDao.insert(group)
+
+        // Test
+        group = groupDao.get(2)?: Group()
+
+        // Verify
+        Assert.assertEquals(2, group.id)
     }
 
 

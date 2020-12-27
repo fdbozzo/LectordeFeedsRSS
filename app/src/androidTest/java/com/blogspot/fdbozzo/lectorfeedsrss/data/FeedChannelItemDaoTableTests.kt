@@ -7,6 +7,7 @@ import androidx.lifecycle.asLiveData
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
+import androidx.test.platform.app.InstrumentationRegistry
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.*
@@ -28,8 +29,8 @@ import kotlin.test.*
 import java.io.IOException
 import java.util.*
 
-@RunWith(AndroidJUnit4ClassRunner::class)
 //@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@RunWith(AndroidJUnit4ClassRunner::class)
 @ExperimentalCoroutinesApi
 class FeedChannelItemDaoTableTests {
 
@@ -49,11 +50,11 @@ class FeedChannelItemDaoTableTests {
     val feed_0 = Feed(groupId = 0, linkName = "HardZone", link = "https://hardzone.es")
     val channel_0 = FeedChannel(feedId = 0, title = "titulo", description = "description", link = "https://hardzone.es")
     val content_0 = FeedChannelItem(feedId = 0, title = "title", link = "https://hardzone.es", description = "description", pubDate = Date())
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    //val context = ApplicationProvider.getApplicationContext<Context>()
 
     @Before
     fun createDb() {
-        //val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val context = ApplicationProvider.getApplicationContext<Context>()
 
         // Using an in-memory database because the information stored here disappears when the
         // process is killed.
@@ -102,6 +103,9 @@ class FeedChannelItemDaoTableTests {
     @Test
     @Throws(Exception::class)
     fun deberiaInsertarUnContentYObtenerUnError_SQLiteConstraintException(): Unit = runBlocking {
+        /**
+         * El error de constraint es porque no se indica el feedId
+         */
         assertFailsWith<SQLiteConstraintException> {
             // Inserto un Item sin feedId
             val content = content_0.copy(pubDate = Date())
@@ -134,15 +138,10 @@ class FeedChannelItemDaoTableTests {
         content = content_0.copy(feedId = fId1, link = "https://mozilla.org")
         val fcId2 = feedChannelItemDao.insert(content)
 
-        // Obtener toods
-        //val allContent = feedChannelItemDao.getAllFeedChannelItems() // LiveData<List<FeedChannelItem>>
-        //val size = getValue(allContent).size
-
-        //Assert.assertEquals(2, getValue(allContent).size)
-
-        //val valores = allContent.take(2).toList()
+        // Test
         val valores = getValue(feedChannelItemDao.getAllFeedChannelItems().asLiveData())
 
+        // Verify
         Assert.assertEquals(2, valores.size)
     }
 
@@ -171,8 +170,8 @@ class FeedChannelItemDaoTableTests {
         content = content_0.copy(feedId = fId1, link = "https://mozilla.org")
         val fcId2 = feedChannelItemDao.insert(content)
 
-        // Borro los grupos
-        val ret = groupDao.deleteAll()
+        // Borro el grupo
+        val ret = groupDao.delete(lastGroup)
         Timber.d("groupDao.delete(group) = $ret", ret)
 
         // Test

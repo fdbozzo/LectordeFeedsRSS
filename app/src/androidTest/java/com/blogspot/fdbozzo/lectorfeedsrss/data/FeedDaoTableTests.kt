@@ -79,12 +79,11 @@ class FeedDaoTableTests {
         val lastGroup = groupDao.getLastGroup() ?: throw Exception("lastGroup es null")
 
         // Ahora inserto un Feed
-        val feed = Feed()
-        feed.groupId = lastGroup.id
+        val feed = Feed(groupId = lastGroup.id)
         val insFeed = feedDao.insert(feed)
-        val lastFeed = feedDao.getLastFeed()
+        val lastFeed = feedDao.getLastFeed() ?: throw Exception("lastFeed es null")
 
-        Assert.assertEquals(lastGroup.id, lastFeed?.groupId)
+        Assert.assertEquals(lastGroup.id, lastFeed.groupId)
         Assert.assertEquals(1, insFeed)
         Assert.assertEquals(1, insGroup)
     }
@@ -92,8 +91,11 @@ class FeedDaoTableTests {
     @Test
     @Throws(Exception::class)
     fun deberiaInsertarUnFeedYObtenerUnError_SQLiteConstraintException(): Unit = runBlocking {
+        /**
+         * El error de constraint en este caso es porque no se asignó el id del grupo al que pertenece el feed
+         */
         assertFailsWith<SQLiteConstraintException> {
-            // Inserto un Feed
+            // Inserto un Feed sin groupId
             val feed = Feed()
             feedDao.insert(feed)
         }
@@ -122,7 +124,7 @@ class FeedDaoTableTests {
         val valores = getValue(feedDao.getAllFeeds().asLiveData()).toList()
 
         // Verify
-        Assert.assertNotEquals(idF1, idF2)
+        Assert.assertNotEquals(idF1, idF2) // Los valroes comparados son cantidad de registros A y B
         Assert.assertEquals(2, valores.size)
     }
 
@@ -145,8 +147,8 @@ class FeedDaoTableTests {
         val idF2 = feedDao.insert(feed)
         feedDao.getLastFeed() ?: throw Exception("lastFeed(2) es null")
 
-        // Borro los grupos
-        val ret = groupDao.deleteAll()
+        // Borro el grupo
+        val ret = groupDao.delete(lastGroup)
         Timber.d("groupDao.delete(group) = $ret", ret)
 
         // Test

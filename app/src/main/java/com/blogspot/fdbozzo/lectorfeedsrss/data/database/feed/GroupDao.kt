@@ -32,15 +32,15 @@ interface GroupDao {
      * @param key Group a buscar
      */
     @Query("SELECT * from group_table WHERE id = :key")
-    fun get(key: Long): Group
+    fun get(key: Long): Group?
 
     /**
      * Selecciona y retorna la fila que coincide con la clave indicada
      *
-     * @param key Group a buscar
+     * @param name Group a buscar
      */
-    @Query("SELECT id from group_table WHERE group_name = :key")
-    fun get(key: String): Long
+    @Query("SELECT id from group_table WHERE group_name = :name")
+    fun get(name: String): Long
 
     /**
      * Borra todos los datos de la tabla

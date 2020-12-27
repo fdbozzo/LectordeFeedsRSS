@@ -115,6 +115,14 @@ class FeedRepository(
         return localDataSource.saveFeedChannel(feedChannel)
     }
 
+    suspend fun getGroupById(key: Long): DomainGroup {
+        return localDataSource.getGroupById(key)
+    }
+
+    suspend fun getGroupIdByName(name: String): Long {
+        return localDataSource.getGroupIdByName(name)
+    }
+
 }
 
 interface LocalDataSource {
@@ -126,7 +134,8 @@ interface LocalDataSource {
     suspend fun groupSize(): Int
     suspend fun saveGroup(group: DomainGroup): Long
     suspend fun getGroupWithName(name: String): DomainGroup
-    suspend fun getGroupId(name: String): Long
+    suspend fun getGroupIdByName(name: String): Long
+    suspend fun getGroupById(key: Long): DomainGroup
     suspend fun getGroups(): Flow<List<DomainGroup>>
     fun delete(group: Group): Int
     suspend fun deleteAll(): Int

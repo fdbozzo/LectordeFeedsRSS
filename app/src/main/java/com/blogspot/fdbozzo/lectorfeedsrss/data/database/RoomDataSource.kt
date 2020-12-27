@@ -39,10 +39,22 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         return groupId
     }
 
-    override suspend fun getGroupId(name: String): Long =
+    override suspend fun getGroupIdByName(name: String): Long {
+        var id = 0L
         withContext(Dispatchers.IO) {
-            groupDao.get(name)
+            id = groupDao.get(name)
         }
+        return id
+    }
+
+    override suspend fun getGroupById(key: Long): DomainGroup {
+        var group: DomainGroup
+        withContext(Dispatchers.IO) {
+            val rGroup = groupDao.get(key)
+            group = rGroup?.toDomainGroup() ?: DomainGroup()
+        }
+        return group
+    }
 
     override suspend fun getGroupWithName(name: String): DomainGroup =
         withContext(Dispatchers.IO) {
