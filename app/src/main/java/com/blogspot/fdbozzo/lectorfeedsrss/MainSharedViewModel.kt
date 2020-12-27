@@ -13,6 +13,8 @@ import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.RssApiStatus
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.ArrayList
+import java.util.HashMap
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed as DomainFeedChannelItemWithFeed
 
 class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewModel() {
@@ -21,7 +23,8 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
 
     private lateinit var rssApiResponse: RssResponse<Feed>
 
-    private var apiBaseUrl = "https://hardzone.es" // "http://blog.mozilla.com/" // "https://hardzone.es/"
+    private var apiBaseUrl =
+        "https://hardzone.es" // "http://blog.mozilla.com/" // "https://hardzone.es/"
 
     /*
     private var _channels = MutableLiveData<List<DomainFeedChannel>>()
@@ -47,11 +50,13 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     fun navigateToContentsWithUrl(url: String) {
         _contentsUrl.value = url
     }
+
     fun navigateToContentsWithUrlIsDone() {
         _contentsUrl.value = null
     }
 
-    val items: LiveData<List<DomainFeedChannelItemWithFeed>> = feedRepository.getFeeds().asLiveData()
+    val items: LiveData<List<DomainFeedChannelItemWithFeed>> =
+        feedRepository.getFeeds().asLiveData()
 
     /**
      * Llamar a getRssFeedData() en el init para obtener los datos inmediatamente.
@@ -61,7 +66,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
         // Cargamos datos iniciales en el drawer
         viewModelScope.launch { setupInitialDrawerMenuData() }
 
-
+        // Chequeamos los feeds y sus actualizaciones
         viewModelScope.launch {
             //setupInitialDrawerMenuData()
 
@@ -117,12 +122,12 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
 
         val gId2 = feedRepository.saveLocalGroup(DomainGroup(groupName = "Tecnología y Ciencia"))
         val fId2 = feedRepository.saveLocalFeed(
-                DomainFeed(
-                    groupId = gId2,
-                    linkName = "HardZone",
-                    link = "https://hardzone.es"
-                )
+            DomainFeed(
+                groupId = gId2,
+                linkName = "HardZone",
+                link = "https://hardzone.es"
             )
+        )
         val cId2 = feedRepository.saveLocalFeedChannel(
             DomainFeedChannel(
                 feedId = fId2,
@@ -184,7 +189,51 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
         )
     }
 
-    class Factory(private val context: Context, private val feedRepository: FeedRepository) : ViewModelProvider.Factory {
+    fun getMenuData(): HashMap<String, List<String>> {
+        val listData = HashMap<String, List<String>>()
+
+        val redmiMobiles = ArrayList<String>()
+        redmiMobiles.add("Redmi Y2")
+        redmiMobiles.add("Redmi S2")
+        redmiMobiles.add("Redmi Note 5 Pro")
+        redmiMobiles.add("Redmi Note 5")
+        redmiMobiles.add("Redmi 5 Plus")
+        redmiMobiles.add("Redmi Y1")
+        redmiMobiles.add("Redmi 3S Plus")
+
+        val micromaxMobiles = ArrayList<String>()
+        micromaxMobiles.add("Micromax Bharat Go")
+        micromaxMobiles.add("Micromax Bharat 5 Pro")
+        micromaxMobiles.add("Micromax Bharat 5")
+        micromaxMobiles.add("Micromax Canvas 1")
+        micromaxMobiles.add("Micromax Dual 5")
+
+        val appleMobiles = ArrayList<String>()
+        appleMobiles.add("iPhone 8")
+        appleMobiles.add("iPhone 8 Plus")
+        appleMobiles.add("iPhone X")
+        appleMobiles.add("iPhone 7 Plus")
+        appleMobiles.add("iPhone 7")
+        appleMobiles.add("iPhone 6 Plus")
+
+        val samsungMobiles = ArrayList<String>()
+        samsungMobiles.add("Samsung Galaxy S9+")
+        samsungMobiles.add("Samsung Galaxy Note 7")
+        samsungMobiles.add("Samsung Galaxy Note 5 Dual")
+        samsungMobiles.add("Samsung Galaxy S8")
+        samsungMobiles.add("Samsung Galaxy A8")
+        samsungMobiles.add("Samsung Galaxy Note 4")
+
+        listData["Redmi"] = redmiMobiles
+        listData["Micromax"] = micromaxMobiles
+        listData["Apple"] = appleMobiles
+        listData["Samsung"] = samsungMobiles
+
+        return listData
+    }
+
+    class Factory(private val context: Context, private val feedRepository: FeedRepository) :
+        ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
