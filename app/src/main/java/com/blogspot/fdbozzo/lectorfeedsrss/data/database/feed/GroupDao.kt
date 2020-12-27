@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface GroupDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(group: Group): Long
 
     /**
@@ -19,6 +19,12 @@ interface GroupDao {
      */
     @Update
     fun update(group: Group): Int
+
+    @Delete
+    fun delete(group: Group): Int
+
+    @Query("DELETE FROM group_table")
+    fun deleteAll(): Int
 
     /**
      * Selecciona y retorna la fila que coincide con la clave indicada

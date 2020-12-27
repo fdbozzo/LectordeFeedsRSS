@@ -1,6 +1,7 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.domain
 
 import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannel as ServerFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannelItem as ServerFeedChannelItem
@@ -26,6 +27,7 @@ class FeedRepository(
      * Buscar los feeds en la red
      */
     suspend fun checkNetworkFeeds(apiBaseUrl: String): RssResponse<ServerFeed> {
+
         val rssApiResponse = withTimeout(15_000) {
             remoteDataSource.getFeeds(apiBaseUrl)
         }
@@ -97,6 +99,22 @@ class FeedRepository(
         }
     }
 
+    suspend fun deleteAllLocalGroups(): Int {
+        return localDataSource.deleteAll()
+    }
+
+    suspend fun saveLocalGroup(group: DomainGroup): Long {
+        return localDataSource.saveGroup(group)
+    }
+
+    suspend fun saveLocalFeed(feed: DomainFeed): Long {
+        return localDataSource.saveFeed(feed)
+    }
+
+    suspend fun saveLocalFeedChannel(feedChannel: DomainFeedChannel): Long {
+        return localDataSource.saveFeedChannel(feedChannel)
+    }
+
 }
 
 interface LocalDataSource {
@@ -110,6 +128,8 @@ interface LocalDataSource {
     suspend fun getGroupWithName(name: String): DomainGroup
     suspend fun getGroupId(name: String): Long
     suspend fun getGroups(): Flow<List<DomainGroup>>
+    fun delete(group: Group): Int
+    suspend fun deleteAll(): Int
 
     /**
      * Feed

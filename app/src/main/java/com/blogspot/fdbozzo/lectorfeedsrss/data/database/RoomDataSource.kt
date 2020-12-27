@@ -1,6 +1,7 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.database
 
 import com.blogspot.fdbozzo.lectorfeedsrss.data.*
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as DomainFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
@@ -56,6 +57,18 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
                 }
             }
         }
+
+    override fun delete(group: Group): Int {
+        return groupDao.delete(group)
+    }
+
+    override suspend fun deleteAll(): Int {
+        var cant = 0
+        withContext(Dispatchers.IO) {
+            cant = groupDao.deleteAll()
+        }
+        return cant
+    }
 
     /** FEED **/
     override suspend fun feedIsEmpty(): Boolean {
