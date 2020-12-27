@@ -7,11 +7,15 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Feed
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannel
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.ActivityMainBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
@@ -84,7 +88,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        Timber.i("onCreate() - mainSharedViewModel")
+        Timber.d("onCreate() - mainSharedViewModel")
         //mainViewModel = ViewModelProvider(this).get(MainSharedViewModel::class.java)
         val localDatabase = FeedDatabase.getInstance(applicationContext)
         val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
@@ -94,7 +98,7 @@ class MainActivity : AppCompatActivity() {
         sharedViewModel.testigo = "MainActivity"
 
         binding.lifecycleOwner =
-            this // Para que LiveData sea consciente del LifeCycle y se actualice la uI
+            this // Para que LiveData sea consciente del LifeCycle y se actualice la UI
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
