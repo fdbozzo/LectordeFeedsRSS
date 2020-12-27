@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -24,7 +25,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import timber.log.Timber
-import java.util.*
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -64,7 +65,10 @@ class MainActivity : AppCompatActivity() {
         drawerLayout = binding.drawerLayout
         mAuth = Firebase.auth
 
-        setupDrawerExpandableListView(mainSharedViewModel.getMenuData())
+        //setupDrawerExpandableListView(mainSharedViewModel.getMenuData())
+        mainSharedViewModel.menuData.observe(this, Observer {
+            setupDrawerExpandableListView(it)
+        })
 
         /**
          * Ocultar el hamburger del NavDrawer dependiendo de si es login o no.

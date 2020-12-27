@@ -189,7 +189,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
         )
     }
 
-    fun getMenuData(): HashMap<String, List<String>> {
+    val menuData: LiveData<HashMap<String, List<String>>> = liveData {
         val listData = HashMap<String, List<String>>()
 
         val redmiMobiles = ArrayList<String>()
@@ -229,7 +229,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
         listData["Apple"] = appleMobiles
         listData["Samsung"] = samsungMobiles
 
-        return listData
+        emit(listData)
     }
 
     class Factory(private val context: Context, private val feedRepository: FeedRepository) :
