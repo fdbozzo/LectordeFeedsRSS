@@ -14,6 +14,7 @@ enum class RssApiStatus { LOADING, ERROR, DONE }
 class FeedChannelViewModel(private val feedRepository: FeedRepository) : ViewModel() {
 //class FeedChannelViewModel(private val daoChannel: FeedChannelItemDao) : ViewModel() {
 
+    /*
     private lateinit var rssApiResponse: RssResponse<Feed>
 
     private var apiBaseUrl = "https://hardzone.es/" // "http://blog.mozilla.com/" // "https://hardzone.es/"
@@ -68,5 +69,7 @@ class FeedChannelViewModel(private val feedRepository: FeedRepository) : ViewMod
             }
         }
     }
+
+     */
 
 }
