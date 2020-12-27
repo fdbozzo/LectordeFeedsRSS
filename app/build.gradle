@@ -181,16 +181,19 @@ android {
         // Coroutines Testing
         androidTestImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.1'
 
-        // Mokito Testing
-        testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
-
         // Room Testing
         androidTestImplementation "androidx.room:room-testing:$room_version"
 
-        // Tests unitarios (sin instrumentación)
+        /** Tests unitarios (sin instrumentación) **/
+        // Mokito Testing
+        testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+        // AndroidX
         testImplementation 'androidx.test:core:1.3.0'
         testImplementation 'androidx.test.ext:truth:1.3.0'
+        // Truth
         testImplementation 'com.google.truth:truth:1.0'
+        // Turbine
+        testImplementation 'app.cash.turbine:turbine:0.3.0'
 
         // Logging
         implementation 'com.jakewharton.timber:timber:4.7.1'
