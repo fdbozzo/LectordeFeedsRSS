@@ -101,7 +101,7 @@ class FeedChannelFragment : Fragment() {
                     )
                 //NavHostFragment.findNavController(this).navigate(action)
                 findNavController().navigate(action)
-                sharedViewModel.navigateToContentsWithUrl_Done()
+                sharedViewModel.navigateToContentsWithUrlIsDone()
             }
         })
 

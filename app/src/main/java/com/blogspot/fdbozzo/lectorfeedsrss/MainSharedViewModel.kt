@@ -47,7 +47,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     fun navigateToContentsWithUrl(url: String) {
         _contentsUrl.value = url
     }
-    fun navigateToContentsWithUrl_Done() {
+    fun navigateToContentsWithUrlIsDone() {
         _contentsUrl.value = null
     }
 
