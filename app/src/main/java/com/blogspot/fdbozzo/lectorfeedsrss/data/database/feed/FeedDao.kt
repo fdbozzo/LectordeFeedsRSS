@@ -76,4 +76,16 @@ interface FeedDao {
      */
     @Query("SELECT * from feed_table WHERE link_name = :linkName")
     fun getFeedWithLinkName(linkName: String): Feed
+
+    //@SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @Transaction
+    @Query(
+        """SELECT group_table.id as grp_id, 
+        group_table.group_name as grp_group_name, 
+        feed_table.* 
+        FROM group_table 
+        LEFT JOIN feed_table ON feed_table.group_id = group_table.id"""
+    )
+    fun getGroupsWithFeedPairs(): List<Feed.GroupWithFeedPair>?
+
 }

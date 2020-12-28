@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlin.collections.HashMap
 
 class RoomDataSource(db: FeedDatabase) : LocalDataSource {
 
@@ -113,6 +114,21 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
                 }
             }
         }
+
+    override suspend fun getGroupsWithFeeds(): HashMap<String, List<String>> {
+        var lista: HashMap<String, List<String>> = HashMap()
+
+        withContext(Dispatchers.IO) {
+            lista = (feedDao.getGroupsWithFeedPairs()?.groupByTo(
+                HashMap(),
+                {it.group.groupName},
+                {it.feed.linkName}
+            ) as HashMap<String, List<String>>?)!!
+
+        }
+
+        return lista
+    }
 
     /** FEED-CHANNEL **/
     /*

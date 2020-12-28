@@ -46,4 +46,16 @@ data class Feed constructor(
 
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L
+
+    /**
+     *
+     */
+    class GroupWithFeedPair {
+        @Embedded(prefix = "grp_")
+        var group: Group = Group()
+
+        @Embedded
+        var feed: Feed = Feed()
+    }
+
 }

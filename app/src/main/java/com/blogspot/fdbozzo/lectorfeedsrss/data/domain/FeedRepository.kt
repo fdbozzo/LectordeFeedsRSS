@@ -2,11 +2,13 @@ package com.blogspot.fdbozzo.lectorfeedsrss.data.domain
 
 import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.GroupWithFeeds
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannel as ServerFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannelItem as ServerFeedChannelItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withTimeout
+import java.util.HashMap
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as DomainFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
@@ -123,6 +125,10 @@ class FeedRepository(
         return localDataSource.getGroupIdByName(name)
     }
 
+    suspend fun getGroupsWithFeeds(): HashMap<String, List<String>> {
+        return localDataSource.getGroupsWithFeeds()
+    }
+
 }
 
 interface LocalDataSource {
@@ -139,6 +145,7 @@ interface LocalDataSource {
     suspend fun getGroups(): Flow<List<DomainGroup>>
     fun delete(group: Group): Int
     suspend fun deleteAll(): Int
+    suspend fun getGroupsWithFeeds(): HashMap<String, List<String>>
 
     /**
      * Feed

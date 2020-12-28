@@ -158,4 +158,31 @@ class FeedDaoTableTests {
         Assert.assertEquals(0, valores.size)
     }
 
+    @Test
+    fun getGroupsWithFeedPairsTest(): Unit = runBlocking {
+        // Inserto primero un grupo
+        val group = Group()
+        val insGroup = groupDao.insert(group)
+        val lastGroup = groupDao.getLastGroup() ?: throw Exception("lastGroup es null")
+
+        // Ahora inserto un Feed
+        var feed = Feed(groupId = lastGroup.id)
+        val insFeed = feedDao.insert(feed)
+        val lastFeed = feedDao.getLastFeed() ?: throw Exception("lastFeed es null")
+
+        // Inserto otro Feed
+        feed = Feed(groupId = lastGroup.id, linkName = "Mozilla", link = "http://mozilla.org")
+        val idF2 = feedDao.insert(feed)
+        feedDao.getLastFeed() ?: throw Exception("lastFeed(2) es null")
+
+        val gp = feedDao.getGroupsWithFeedPairs()
+        //val gp = groupDao.getGroupsWithFeeds()
+
+        Assert.assertNotEquals(null, gp)
+
+        if (gp != null) {
+            Assert.assertEquals(2, gp.size)
+        }
+    }
+
 }

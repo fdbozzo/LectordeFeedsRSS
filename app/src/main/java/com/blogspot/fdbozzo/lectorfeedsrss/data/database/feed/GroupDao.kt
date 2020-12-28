@@ -76,6 +76,9 @@ interface GroupDao {
     @Query("SELECT * from group_table WHERE group_name = :groupName")
     fun getGroupWithName(groupName: String): Group
 
+    /**
+     * Esta función se usa para los items (grupo / feed) del menú del Drawer
+     */
     @Transaction
     @Query("select * from group_table ORDER BY group_name")
     fun getGroupsWithFeeds(): List<GroupWithFeeds>?
