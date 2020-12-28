@@ -8,20 +8,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Feed
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannel
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.ActivityMainBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.drawer.CustomExpandableListAdapter
-import com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.FeedChannelAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -40,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     private var expandableListView: ExpandableListView? = null
     private var adapter: ExpandableListAdapter? = null
     internal var titleList: List<String>? = null
-
+    private var expandableItemLongClick: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +58,7 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
 
         navController = navHostFragment.navController
+        expandableListView = findViewById(R.id.expandableListView)
         drawerLayout = binding.drawerLayout
         mAuth = Firebase.auth
 
@@ -125,13 +121,39 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupDrawerExpandableListView(listData: HashMap<String, List<String>>) {
-        expandableListView = findViewById(R.id.expandableListView)
+        //expandableListView = findViewById(R.id.expandableListView)
 
         if (expandableListView != null) {
             //val listData = data
             titleList = ArrayList(listData.keys)
             adapter = CustomExpandableListAdapter(this, titleList as ArrayList<String>, listData)
             expandableListView!!.setAdapter(adapter)
+
+            // EN PRUEBA :)
+            expandableListView!!.setOnItemLongClickListener { parent, view, position, id ->
+                Timber.d("[Timber] expandableListView!!.setOnItemLongClickListener(parent:%s, view:%s, position:%d, id:%d)", parent.toString(), view.toString(), position, id)
+                expandableItemLongClick = true
+                false
+            }
+
+            /*
+            expandableListView!!.onItemLongClickListener = AdapterView.OnItemLongClickListener() { adapterView: AdapterView<*>, view1: View, i: Int, l: Long ->
+
+                @Override
+                fun onItemLongClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                    Timber.d("[Timber] expandableListView!!.onItemLongClickListener() --> onItemLongClick()")
+
+                }
+
+                @Override
+                fun onLongClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                    Timber.d("[Timber] expandableListView!!.onItemLongClickListener() --> onLongClick()")
+
+                }
+
+                false
+            }
+             */
 
             expandableListView!!.setOnGroupExpandListener { groupPosition ->
                 /*
@@ -141,6 +163,7 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
                  */
+                expandableItemLongClick = false
             }
 
             expandableListView!!.setOnGroupCollapseListener { groupPosition ->
@@ -151,9 +174,11 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
                  */
+                expandableItemLongClick = false
             }
 
             expandableListView!!.setOnChildClickListener { parent, v, groupPosition, childPosition, id ->
+                Timber.d("[Timber] expandableListView!!.setOnChildClickListener(groupPosition = %d, childPosition = %d)", groupPosition, childPosition)
                 mainSharedViewModel.getFeedWithLinkNameAndSetApiBaseUrl(listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition])
                 Toast.makeText(
                     applicationContext,
@@ -163,10 +188,12 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
                 //mainSharedViewModel.navigateToContentsWithUrl(feed.link)
+                expandableItemLongClick = false
                 false
             }
 
             expandableListView!!.setOnGroupClickListener { parent, v, groupPosition, id ->
+                Timber.d("[Timber] expandableListView!!.setOnGroupClickListener(groupPosition = %d)", groupPosition)
                 setListViewHeight(parent, groupPosition)
                 Toast.makeText(
                     applicationContext,
@@ -174,11 +201,12 @@ class MainActivity : AppCompatActivity() {
                             (titleList as ArrayList<String>)[groupPosition],
                     Toast.LENGTH_SHORT
                 ).show()
+                expandableItemLongClick = false
                 false
             }
-
         }
     }
+
 
 
     override fun onStart() {
