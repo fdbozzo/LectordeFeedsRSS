@@ -185,4 +185,26 @@ class FeedDaoTableTests {
         }
     }
 
+    @Test
+    fun getFeedWithLinkname(): Unit = runBlocking {
+        // Inserto primero un grupo
+        val group = Group()
+        val insGroup = groupDao.insert(group)
+        val lastGroup = groupDao.getLastGroup() ?: throw Exception("lastGroup es null")
+
+        // Ahora inserto un Feed
+        val feed = Feed(groupId = lastGroup.id,linkName = "HardZone",link = "https://hardzone.es")
+        val insFeed = feedDao.insert(feed)
+        val lastFeed = feedDao.getLastFeed() ?: throw Exception("lastFeed es null")
+
+        val linkName = lastFeed.linkName
+
+        Assert.assertEquals("HardZone", linkName)
+
+        val feed1 = feedDao.getFeedWithLinkName(linkName)
+
+        Assert.assertNotNull("feed1 debería retornar un objeto y no lo hace",feed1)
+
+    }
+
 }

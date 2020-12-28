@@ -1,6 +1,7 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.domain
 
 import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.GroupWithFeeds
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
@@ -8,6 +9,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannel as ServerFee
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannelItem as ServerFeedChannelItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withTimeout
+import timber.log.Timber
 import java.util.HashMap
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as DomainFeedChannel
@@ -42,6 +44,7 @@ class FeedRepository(
                 /**
                  * Guardar feeds en Room
                  */
+                Timber.d("[Timber] FeedRepository.checkNetworkFeeds() - Guardar las ${serverFeed.channel.channelItems?.size?:0} noticias de  ${apiBaseUrl}")
                 saveNetworkFeeds(serverFeed)
 
                 /**
@@ -129,6 +132,10 @@ class FeedRepository(
         return localDataSource.getGroupsWithFeeds()
     }
 
+    fun getFeedWithLinkName(linkName: String): DomainFeed {
+        return localDataSource.getFeedWithLinkName(linkName)
+    }
+
 }
 
 interface LocalDataSource {
@@ -156,6 +163,7 @@ interface LocalDataSource {
     suspend fun saveFeedFromServer(feed: ServerFeed): Long
     suspend fun getFeeds(): Flow<List<DomainFeed>>
     suspend fun getFeedIdByLink(link: String): Long
+    fun getFeedWithLinkName(linkName: String): DomainFeed
 
     /**
      * FeedChannel

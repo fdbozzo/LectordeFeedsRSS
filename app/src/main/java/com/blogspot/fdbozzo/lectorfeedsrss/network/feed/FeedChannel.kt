@@ -16,7 +16,7 @@ data class FeedChannel(
     @field:Element(name = "title")
     var title: String = "",
 
-    @field:Element(name = "description")
+    @field:Element(name = "description", required = false)
     var description: String = "",
 
     var copyright: String = "",

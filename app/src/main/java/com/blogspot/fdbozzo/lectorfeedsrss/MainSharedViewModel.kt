@@ -11,7 +11,9 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as Domai
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.RssApiStatus
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.util.ArrayList
 import java.util.HashMap
@@ -23,8 +25,12 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
 
     private lateinit var rssApiResponse: RssResponse<Feed>
 
-    private var apiBaseUrl =
-        "https://hardzone.es" // "http://blog.mozilla.com/" // "https://hardzone.es/"
+    private var _apiBaseUrl = MutableLiveData<String>()
+    val apiBaseUrl: LiveData<String>
+        get() = _apiBaseUrl
+
+
+    // "https://hardzone.es" // "http://blog.mozilla.com/" // "https://hardzone.es/"
 
     /*
     private var _channels = MutableLiveData<List<DomainFeedChannel>>()
@@ -62,41 +68,66 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
      * Llamar a getRssFeedData() en el init para obtener los datos inmediatamente.
      */
     init {
+        Timber.d("[Timber] MainSharedViewModel.init() - apiBaseUrl se cambia a 'https://hardzone.es'")
+        _apiBaseUrl.value = "https://hardzone.es"
 
         // Cargamos datos iniciales en el drawer
         viewModelScope.launch { setupInitialDrawerMenuData() }
 
         // Chequeamos los feeds y sus actualizaciones
+        //getFeeds()
+    }
+
+    fun getFeeds() {
+        Timber.d("[Timber] MainSharedViewModel.getFeeds() - Obtener noticias de  ${_apiBaseUrl.value}")
+        if (_apiBaseUrl.value.isNullOrBlank())
+            return
+
         viewModelScope.launch {
             //setupInitialDrawerMenuData()
 
-            rssApiResponse = feedRepository.checkNetworkFeeds(apiBaseUrl)
+            rssApiResponse = feedRepository.checkNetworkFeeds(_apiBaseUrl.value!!)
 
             when (rssApiResponse) {
                 is RssResponse.Success -> {
                     // TODO: Falta filtrar los items leidos antes de actualizar el LiveData
-                    Timber.d("RssResponse.Success!")
+                    Timber.d("[Timber] RssResponse.Success!")
                 }
                 is RssResponse.Error -> {
                     // TODO: Falta controlar errores
-                    Timber.d("RssResponse.Error = ${(rssApiResponse as RssResponse.Error).exception.message}")
+                    Timber.d("[Timber] RssResponse.Error = ${(rssApiResponse as RssResponse.Error).exception.message}")
                 }
             }
         }
     }
 
     override fun onCleared() {
-        Timber.d("onCleared() - mainSharedViewModel.fragmento: %s", testigo)
+        Timber.d("[Timber] onCleared() - mainSharedViewModel.fragmento: %s", testigo)
         super.onCleared()
     }
+
+    fun getFeedWithLinkNameAndSetApiBaseUrl(linkName: String) {
+        viewModelScope.launch {
+            val feed = withContext(Dispatchers.IO) {
+                feedRepository.getFeedWithLinkName(linkName)
+            }
+            Timber.d("[Timber] feedRepository.getFeedWithLinkName(%s) = %d", linkName, feed.id)
+            _apiBaseUrl.value = feed.link
+        }
+    }
+
 
     private suspend fun setupInitialDrawerMenuData() {
 
         // Compruebo si existe el último grupo, y si no existe borro toto y relleno
         val groupId = feedRepository.getGroupIdByName("Hardware")
-        Timber.d("setupInitialDrawerMenuData() - group.id = %d", groupId)
+        Timber.d("[Timber] setupInitialDrawerMenuData() - group.id = %d", groupId)
 
         if (groupId != 0L) {
+            /**
+             * Si groupId != 0 significa que se encontró el grupo buscado,
+             * y que entonces no hay que borrar los datos nuevamente.
+             */
             return
         }
 
@@ -238,17 +269,6 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
         }
     }
 
-    class Factory(private val context: Context, private val feedRepository: FeedRepository) :
-        ViewModelProvider.Factory {
-
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            Timber.i("Factory() - mainSharedViewModel.fragmento: %s", MainSharedViewModel::testigo)
-            return MainSharedViewModel(feedRepository) as T
-            //return MainSharedViewModel.getInstance(context, feedRepository) as T
-        }
-    }
-
     /*
     companion object {
 
@@ -273,4 +293,16 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
         }
     }
      */
+
+    class Factory(private val context: Context, private val feedRepository: FeedRepository) :
+        ViewModelProvider.Factory {
+
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            Timber.d("[Timber] Factory() - mainSharedViewModel.fragmento: %s", MainSharedViewModel::testigo)
+            return MainSharedViewModel(feedRepository) as T
+            //return MainSharedViewModel.getInstance(context, feedRepository) as T
+        }
+    }
+
 }

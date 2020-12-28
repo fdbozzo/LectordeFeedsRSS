@@ -21,6 +21,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.ActivityMainBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.drawer.CustomExpandableListAdapter
+import com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.FeedChannelAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -46,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        Timber.d("onCreate() - mainSharedViewModel")
+        Timber.d("[Timber] onCreate() - mainSharedViewModel")
         //mainViewModel = ViewModelProvider(this).get(MainSharedViewModel::class.java)
         val localDatabase = FeedDatabase.getInstance(applicationContext)
         val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
@@ -69,6 +70,16 @@ class MainActivity : AppCompatActivity() {
         mainSharedViewModel.menuData.observe(this, Observer {
             setupDrawerExpandableListView(it)
         })
+
+        //*
+        mainSharedViewModel.apiBaseUrl.observe(this, Observer {
+            it?.let {
+                Timber.d("[Timber] onCreate() - mainSharedViewModel.apiBaseUrl cambiado a $it")
+                drawerLayout.close()
+                mainSharedViewModel.getFeeds()
+            }
+        })
+
 
         /**
          * Ocultar el hamburger del NavDrawer dependiendo de si es login o no.
@@ -123,42 +134,56 @@ class MainActivity : AppCompatActivity() {
             expandableListView!!.setAdapter(adapter)
 
             expandableListView!!.setOnGroupExpandListener { groupPosition ->
+                /*
                 Toast.makeText(
                     applicationContext,
                     (titleList as ArrayList<String>)[groupPosition] + " List Expanded.",
                     Toast.LENGTH_SHORT
                 ).show()
+                 */
             }
 
             expandableListView!!.setOnGroupCollapseListener { groupPosition ->
+                /*
                 Toast.makeText(
                     applicationContext,
                     (titleList as ArrayList<String>)[groupPosition] + " List Collapsed.",
                     Toast.LENGTH_SHORT
                 ).show()
+                 */
             }
 
             expandableListView!!.setOnChildClickListener { parent, v, groupPosition, childPosition, id ->
+                mainSharedViewModel.getFeedWithLinkNameAndSetApiBaseUrl(listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition])
                 Toast.makeText(
                     applicationContext,
-                    "Clicked: " +
+                    "Child Clicked: " +
                             (titleList as ArrayList<String>)[groupPosition] + " -> " +
                             listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition],
                     Toast.LENGTH_SHORT
                 ).show()
+                //mainSharedViewModel.navigateToContentsWithUrl(feed.link)
                 false
             }
 
             expandableListView!!.setOnGroupClickListener { parent, v, groupPosition, id ->
                 setListViewHeight(parent, groupPosition)
+                Toast.makeText(
+                    applicationContext,
+                    "Group Clicked: " +
+                            (titleList as ArrayList<String>)[groupPosition],
+                    Toast.LENGTH_SHORT
+                ).show()
                 false
             }
+
         }
     }
 
+
     override fun onStart() {
         super.onStart()
-        Timber.i("onStart() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.testigo)
+        Timber.d("[Timber] onStart() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.testigo)
         mainSharedViewModel.testigo = MainActivity::class.java.canonicalName
     }
 
@@ -170,7 +195,7 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         val navController = navHostFragment.navController
-        Timber.i("onSupportNavigateUp()")
+        Timber.d("[Timber] onSupportNavigateUp()")
         return NavigationUI.navigateUp(
             navController,
             drawerLayout
@@ -181,7 +206,7 @@ class MainActivity : AppCompatActivity() {
      * Cerrar el drawer si se pulsa el "botón atrás" (backButton)
      */
     override fun onBackPressed() {
-        Timber.i("onSupportNavigateUp()")
+        Timber.d("[Timber] onBackPressed()")
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         } else {

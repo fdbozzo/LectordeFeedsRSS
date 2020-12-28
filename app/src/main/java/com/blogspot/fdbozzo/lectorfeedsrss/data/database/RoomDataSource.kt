@@ -121,8 +121,8 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         withContext(Dispatchers.IO) {
             lista = (feedDao.getGroupsWithFeedPairs()?.groupByTo(
                 HashMap(),
-                {it.group.groupName},
-                {it.feed.linkName}
+                { it.group.groupName },
+                { it.feed.linkName }
             ) as HashMap<String, List<String>>?)!!
 
         }
@@ -181,6 +181,9 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         }
         return feedChannelId
     }
+
+    override fun getFeedWithLinkName(linkName: String): DomainFeed =
+        feedDao.getFeedWithLinkName(linkName).toDomainFeed()
 
     /** FEED-CHANNEL-ITEM **/
     override suspend fun feedChannelItemsIsEmpty(): Boolean =

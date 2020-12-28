@@ -15,15 +15,16 @@ class RssFeedDataSource(): RemoteDataSource {
     //override suspend fun getFeedChannelItems(): List<DomainFeedChannelItem> {
     override suspend fun getFeeds(apiBaseUrl: String): RssResponse<ServerFeed> {
 
+        var valApiBaseUrl = apiBaseUrl
+
         // Comprobar si la URL tiene la barra final
-        if (apiBaseUrl.endsWith("/")) {
-            RssApi.apiBaseUrl = apiBaseUrl
-        } else {
-            RssApi.apiBaseUrl = "$apiBaseUrl/"
+        if (!apiBaseUrl.endsWith("/")) {
+            valApiBaseUrl = "$apiBaseUrl/"
         }
 
-        Timber.d("RssApi.apiBaseUrl = ${RssApi.apiBaseUrl}")
-        val response = RssApi.retrofitService.getRss()
+        Timber.d("[Timber] valApiBaseUrl = ${valApiBaseUrl}")
+        //val response = RssApi.retrofitService.getRss()
+        val response = rssApi(valApiBaseUrl).getRss()
 
         try {
             //withContext(Dispatchers.Main) {
@@ -51,11 +52,11 @@ class RssFeedDataSource(): RemoteDataSource {
                             Timber.d(feedChannelItem.size.toString())
 
                             for (i in feedChannelItem.indices) {
-                                Timber.d("index %d %s", i, feedChannelItem[i].title)
-                                Timber.d("index %d %s", i, feedChannelItem[i].link)
-                                Timber.d("index %d %s", i, feedChannelItem[i].pubDate)
-                                //Timber.d("index %d %s", i, articles[i].description)
-                                //Timber.d("index %d %s", i, articles[i].guid)
+                                Timber.d("[Timber] index %d %s", i, feedChannelItem[i].title)
+                                Timber.d("[Timber] index %d %s", i, feedChannelItem[i].link)
+                                Timber.d("[Timber] index %d %s", i, feedChannelItem[i].pubDate)
+                                //Timber.d("[Timber] index %d %s", i, articles[i].description)
+                                //Timber.d("[Timber] index %d %s", i, articles[i].guid)
 
                                 /**
                                  * Obtener un link de imagen para mostrar en el item.
@@ -83,19 +84,19 @@ class RssFeedDataSource(): RemoteDataSource {
                         return RssResponse.Success(it)
                     }
                 } else {
-                    Timber.d("Error network operation failed with ${response.code()}")
+                    Timber.d("[Timber] Error network operation failed with ${response.code()}")
                     //_status.value = RssApiStatus.ERROR
                     return RssResponse.Error(Exception(RssApiStatus.ERROR.toString()))
                 }
             //}
 
         } catch (e: HttpException) {
-            Timber.d("Exception ${e.message}")
+            Timber.d("[Timber] Exception ${e.message}")
             //_status.value = RssApiStatus.ERROR
             return RssResponse.Error(Exception(e.message()))
 
         } catch (e: Throwable) {
-            Timber.d("Ooops: Something else went wrong")
+            Timber.d("[Timber] Ooops: Something else went wrong")
             //_status.value = RssApiStatus.ERROR
             return RssResponse.Error(Exception(e.message))
         }

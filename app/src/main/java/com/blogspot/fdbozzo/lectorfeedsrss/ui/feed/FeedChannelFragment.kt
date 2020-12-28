@@ -47,7 +47,7 @@ class FeedChannelFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Timber.d("onCreateView")
+        Timber.d("[Timber] onCreateView")
         _binding = FeedChannelFragmentBinding.inflate(inflater, container, false)
 
         val localDatabase = FeedDatabase.getInstance(requireContext())
@@ -56,7 +56,7 @@ class FeedChannelFragment : Fragment() {
         //sharedViewModel = ViewModelProvider(this, MainSharedViewModel.Factory(requireContext(), feedRepository)).get(MainSharedViewModel::class.java)
         mainSharedViewModel = sharedViewModel
 
-        Timber.i("onCreateView() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.testigo)
+        Timber.i("[Timber] onCreateView() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.testigo)
         mainSharedViewModel.testigo = FeedChannelFragment::class.java.canonicalName
 
         //localDatabase = FeedDatabase.getInstance(requireContext())
@@ -127,7 +127,7 @@ class FeedChannelFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Timber.i("onViewCreated() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.testigo)
+        Timber.i("[Timber] onViewCreated() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.testigo)
         mainSharedViewModel.testigo = FeedChannelFragment::class.java.canonicalName
 
         /**
