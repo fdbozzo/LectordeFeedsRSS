@@ -131,7 +131,7 @@ class MainActivity : AppCompatActivity() {
 
             // EN PRUEBA :)
             expandableListView!!.setOnItemLongClickListener { parent, view, position, id ->
-                Timber.d("[Timber] expandableListView!!.setOnItemLongClickListener(parent:%s, view:%s, position:%d, id:%d)", parent.toString(), view.toString(), position, id)
+                //Timber.d("[Timber] expandableListView!!.setOnItemLongClickListener(parent:%s, view:%s, position:%d, id:%d)", parent.toString(), view.toString(), position, id)
                 expandableItemLongClick = true
                 false
             }
@@ -178,30 +178,49 @@ class MainActivity : AppCompatActivity() {
             }
 
             expandableListView!!.setOnChildClickListener { parent, v, groupPosition, childPosition, id ->
-                Timber.d("[Timber] expandableListView!!.setOnChildClickListener(groupPosition = %d, childPosition = %d)", groupPosition, childPosition)
-                mainSharedViewModel.getFeedWithLinkNameAndSetApiBaseUrl(listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition])
-                Toast.makeText(
-                    applicationContext,
-                    "Child Clicked: " +
-                            (titleList as ArrayList<String>)[groupPosition] + " -> " +
-                            listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition],
-                    Toast.LENGTH_SHORT
-                ).show()
-                //mainSharedViewModel.navigateToContentsWithUrl(feed.link)
-                expandableItemLongClick = false
+                if (expandableItemLongClick) {
+                    Timber.d("[Timber] expandableListView!!.setOnChildClickListener(LONG CLICK!)")
+                    expandableItemLongClick = false
+                    return@setOnChildClickListener true
+                } else {
+                    Timber.d(
+                        "[Timber] expandableListView!!.setOnChildClickListener(groupPosition = %d, childPosition = %d)",
+                        groupPosition,
+                        childPosition
+                    )
+                    mainSharedViewModel.getFeedWithLinkNameAndSetApiBaseUrl(listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition])
+                    Toast.makeText(
+                        applicationContext,
+                        "Child Clicked: " +
+                                (titleList as ArrayList<String>)[groupPosition] + " -> " +
+                                listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition],
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    //mainSharedViewModel.navigateToContentsWithUrl(feed.link)
+                    expandableItemLongClick = false
+                }
                 false
             }
 
             expandableListView!!.setOnGroupClickListener { parent, v, groupPosition, id ->
-                Timber.d("[Timber] expandableListView!!.setOnGroupClickListener(groupPosition = %d)", groupPosition)
-                setListViewHeight(parent, groupPosition)
-                Toast.makeText(
-                    applicationContext,
-                    "Group Clicked: " +
-                            (titleList as ArrayList<String>)[groupPosition],
-                    Toast.LENGTH_SHORT
-                ).show()
-                expandableItemLongClick = false
+                if (expandableItemLongClick) {
+                    Timber.d("[Timber] expandableListView!!.setOnGroupClickListener(LONG CLICK!)")
+                    expandableItemLongClick = false
+                    return@setOnGroupClickListener true
+                } else {
+                    Timber.d(
+                        "[Timber] expandableListView!!.setOnGroupClickListener(groupPosition = %d)",
+                        groupPosition
+                    )
+                    setListViewHeight(parent, groupPosition)
+                    Toast.makeText(
+                        applicationContext,
+                        "Group Clicked: " +
+                                (titleList as ArrayList<String>)[groupPosition],
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    expandableItemLongClick = false
+                }
                 false
             }
         }
