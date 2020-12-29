@@ -4,6 +4,10 @@ import androidx.room.ColumnInfo
 import androidx.room.PrimaryKey
 import java.util.*
 
+/**
+ * Esta clase es para poder mostrar algunos datos más que no está en los items,
+ * como link_name
+ */
 data class FeedChannelItemWithFeed(
 
     @ColumnInfo(name = "link_name")

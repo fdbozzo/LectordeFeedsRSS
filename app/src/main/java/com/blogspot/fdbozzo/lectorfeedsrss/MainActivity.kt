@@ -22,8 +22,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import timber.log.Timber
 
-
-
 class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var drawerLayout: DrawerLayout
@@ -188,7 +186,10 @@ class MainActivity : AppCompatActivity() {
                         groupPosition,
                         childPosition
                     )
-                    mainSharedViewModel.getFeedWithLinkNameAndSetApiBaseUrl(listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition])
+
+                    val linkName = listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition]
+                    mainSharedViewModel.getFeedWithLinkNameAndSetApiBaseUrl(linkName)
+
                     Toast.makeText(
                         applicationContext,
                         "Child Clicked: " +

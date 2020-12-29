@@ -224,8 +224,8 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
             }
         }
 
-    override fun getFeedChannelItemsWithFeed(): Flow<List<DomainFeedChannelItemWithFeed>> =
-        feedChannelItemDao.getAllFeedChannelItemsWithFeed().map { roomFeedChannelItemWithFeed ->
+    override fun getFeedChannelItemsWithFeed(linkName: String): Flow<List<DomainFeedChannelItemWithFeed>> =
+        feedChannelItemDao.getFilteredFeedChannelItemsWithFeed(linkName).map { roomFeedChannelItemWithFeed ->
             roomFeedChannelItemWithFeed.map {
                 it.toDomainFeedChannelItemWithFeed()
             }

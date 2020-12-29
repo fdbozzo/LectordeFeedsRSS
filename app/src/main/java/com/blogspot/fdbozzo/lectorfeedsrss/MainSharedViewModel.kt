@@ -12,6 +12,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.RssApiStatus
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -29,6 +30,17 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     val apiBaseUrl: LiveData<String>
         get() = _apiBaseUrl
 
+    // Indicador de si está activo el filtro para los feeds (false=all, true=seleccionado)
+    /*
+    private var _feedsFilter = MutableLiveData<Boolean>(false)
+    val feedsFilter: LiveData<Boolean>
+        get() = _feedsFilter
+     */
+
+    // Feed seleccionado
+    private var _selectedFeed = MutableLiveData(DomainFeed(linkName = "%"))
+    val selectedFeed: LiveData<DomainFeed>
+        get() = _selectedFeed
 
     // "https://hardzone.es" // "http://blog.mozilla.com/" // "https://hardzone.es/"
 
@@ -61,8 +73,36 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
         _contentsUrl.value = null
     }
 
+    /** Conecta items al origen de BBDD para actualización automática **/
+    /* FUNCIONA, PERO NO FILTRA
     val items: LiveData<List<DomainFeedChannelItemWithFeed>> =
-        feedRepository.getFeeds().asLiveData()
+        feedRepository.getFilteredFeeds("%").asLiveData()
+     */
+
+    /*  NO FUNCIONA (NO FILTRA)
+    val items: LiveData<List<DomainFeedChannelItemWithFeed>>? =
+        selectedFeed.value?.let { feedRepository.getFilteredFeeds(it.linkName).asLiveData() }
+     */
+
+    val items: LiveData<List<DomainFeedChannelItemWithFeed>> = Transformations.switchMap(selectedFeed) { selectedFeed ->
+        feedRepository.getFilteredFeeds(selectedFeed.linkName).asLiveData()
+    }
+
+
+    /*
+    val items: LiveData<List<DomainFeedChannelItemWithFeed>> =
+        feedRepository.getFeeds().asLiveData().map { listFCIWF ->
+            listFCIWF.filter {
+                Timber.d("[Timber] * it.linkName = '%s', feedsFilter.value = '%s', feedsFilter.value.linkName = '%s'",
+                    it.linkName, selectedFeed.value.toString(), selectedFeed.value?.linkName?:"null")
+                return@filter it.linkName == "EcoInventos"
+                //return@filter feedsFilter.value == true || it.linkName == selectedFeed.value?.linkName ?: "EcoInventos"
+                //return@filter selectedFeed.value == null || selectedFeed.value!!.id == 0L || it.linkName == selectedFeed.value?.linkName ?: "HardZone"
+            }
+        }
+     */
+
+
 
     /**
      * Llamar a getRssFeedData() en el init para obtener los datos inmediatamente.
@@ -70,6 +110,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     init {
         Timber.d("[Timber] MainSharedViewModel.init() - apiBaseUrl se cambia a 'https://hardzone.es'")
         _apiBaseUrl.value = "https://hardzone.es"
+        //_feedsFilter.value = false
 
         // Cargamos datos iniciales en el drawer
         viewModelScope.launch { setupInitialDrawerMenuData() }
@@ -84,7 +125,6 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
             return
 
         viewModelScope.launch {
-            //setupInitialDrawerMenuData()
 
             rssApiResponse = feedRepository.checkNetworkFeeds(_apiBaseUrl.value!!)
 
@@ -111,7 +151,10 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
             val feed = withContext(Dispatchers.IO) {
                 feedRepository.getFeedWithLinkName(linkName)
             }
-            Timber.d("[Timber] feedRepository.getFeedWithLinkName(%s) = %d", linkName, feed.id)
+            Timber.d("[Timber] feedRepository.getFeedWithLinkName(%s) = %s", linkName, feed.toString())
+            //_selectedFeed.value?.copy(id = feed.id,groupId = feed.groupId,linkName = feed.linkName,link = feed.link,favorite = feed.favorite)
+            _selectedFeed.postValue(feed)
+            //_feedsFilter.value = true
             _apiBaseUrl.value = feed.link
         }
     }
@@ -220,6 +263,9 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
         )
     }
 
+    /**
+     * Lista de valores del menú Drawer
+     */
     val menuData: LiveData<HashMap<String, List<String>>> = liveData {
         val listData = HashMap<String, List<String>>()
 

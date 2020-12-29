@@ -1,9 +1,7 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.domain
 
 import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.GroupWithFeeds
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannel as ServerFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannelItem as ServerFeedChannelItem
@@ -25,7 +23,7 @@ class FeedRepository(
     /**
      * Devolver los feeds guardados en BBDD
      */
-    fun getFeeds(): Flow<List<DomainFeedChannelItemWithFeed>> = localDataSource.getFeedChannelItemsWithFeed()
+    fun getFilteredFeeds(linkName: String): Flow<List<DomainFeedChannelItemWithFeed>> = localDataSource.getFeedChannelItemsWithFeed(linkName)
 
     /**
      * Buscar los feeds en la red
@@ -184,7 +182,7 @@ interface LocalDataSource {
     suspend fun saveFeedChannelItemsFromServer(feedChannelItems: List<ServerFeedChannelItem>)
     suspend fun getFeedChannelItems(): Flow<List<DomainFeedChannelItem>>
     fun getFeedChannelItems2(): Flow<List<DomainFeedChannelItem>>
-    fun getFeedChannelItemsWithFeed(): Flow<List<DomainFeedChannelItemWithFeed>>
+    fun getFeedChannelItemsWithFeed(linkName: String): Flow<List<DomainFeedChannelItemWithFeed>>
 
 }
 

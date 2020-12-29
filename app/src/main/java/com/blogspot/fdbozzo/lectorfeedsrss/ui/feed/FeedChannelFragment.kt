@@ -82,7 +82,7 @@ class FeedChannelFragment : Fragment() {
 
 
         //*
-        sharedViewModel.items.observe(viewLifecycleOwner, Observer {
+        sharedViewModel.items?.observe(viewLifecycleOwner, Observer {
             it?.let {
                 //adapter.data = it   // Esto solo lo usa el RecyclerView.Adapter
                 //adapter.submitList(it)
