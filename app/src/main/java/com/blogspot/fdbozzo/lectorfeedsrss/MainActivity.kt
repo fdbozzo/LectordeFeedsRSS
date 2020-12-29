@@ -14,6 +14,7 @@ import androidx.navigation.ui.NavigationUI
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.ActivityMainBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.drawer.CustomExpandableListAdapter
@@ -65,7 +66,9 @@ class MainActivity : AppCompatActivity() {
             setupDrawerExpandableListView(it)
         })
 
-        //*
+        /**
+         * Obtener feeds cuando cambia la URL seleccionada
+         */
         mainSharedViewModel.apiBaseUrl.observe(this, Observer {
             it?.let {
                 Timber.d("[Timber] onCreate() - mainSharedViewModel.apiBaseUrl cambiado a $it")
@@ -87,15 +90,26 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+
+        /**
+         * All feeds
+         */
+        binding.drawerMenu.navAll.setOnClickListener {
+            setSelectToAllFeeds()
+        }
+        binding.drawerMenu.imgAll.setOnClickListener {
+            setSelectToAllFeeds()
+        }
+
+
         /**
          * Logout
          */
         binding.drawerMenu.navLogout.setOnClickListener {
-            mAuth.signOut()
-            drawerLayout.close()
-            navController.popBackStack(R.id.nav_feed_contents, true)
-            navController.navigate(R.id.nav_login)
-            Toast.makeText(this, "Loging out...", Toast.LENGTH_SHORT).show()
+            logout()
+        }
+        binding.drawerMenu.imgLogout.setOnClickListener {
+            logout()
         }
 
         // Passing each menu ID as a set of Ids because each
@@ -116,6 +130,20 @@ class MainActivity : AppCompatActivity() {
         )  // Para navegación y drawer
         //NavigationUI.setupWithNavController(binding.navView, navController)
 
+    }
+
+    private fun logout() {
+        mAuth.signOut()
+        drawerLayout.close()
+        navController.popBackStack(R.id.nav_feed_contents, true)
+        navController.navigate(R.id.nav_login)
+        Toast.makeText(this, "Loging out...", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setSelectToAllFeeds() {
+        drawerLayout.close()
+        Toast.makeText(this, "All feeds...", Toast.LENGTH_SHORT).show()
+        mainSharedViewModel.setSelectedFeed(Feed(linkName = "%"))
     }
 
     private fun setupDrawerExpandableListView(listData: HashMap<String, List<String>>) {

@@ -153,10 +153,16 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
             }
             Timber.d("[Timber] feedRepository.getFeedWithLinkName(%s) = %s", linkName, feed.toString())
             //_selectedFeed.value?.copy(id = feed.id,groupId = feed.groupId,linkName = feed.linkName,link = feed.link,favorite = feed.favorite)
-            _selectedFeed.postValue(feed)
+            setSelectedFeed(feed)
             //_feedsFilter.value = true
             _apiBaseUrl.value = feed.link
         }
+    }
+
+
+    fun setSelectedFeed(feed: DomainFeed) {
+        Timber.d("[Timber] MainSharedViewModel.setSelectedFeed(DomainFeed.linkName = '%s')", feed.linkName)
+        _selectedFeed.postValue(feed)
     }
 
 
