@@ -3,22 +3,20 @@ package com.blogspot.fdbozzo.lectorfeedsrss
 import android.content.Context
 import androidx.lifecycle.*
 import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Group as DomainGroup
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as DomainFeedChannel
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed as DomainFeedChannelItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.SelectedFeedOptions
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.RssApiStatus
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.util.ArrayList
 import java.util.HashMap
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed as DomainFeedChannelItemWithFeed
 
 class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewModel() {
 
@@ -38,8 +36,8 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
      */
 
     // Feed seleccionado
-    private var _selectedFeed = MutableLiveData(DomainFeed(linkName = "%"))
-    val selectedFeed: LiveData<DomainFeed>
+    private var _selectedFeed = MutableLiveData(SelectedFeedOptions())
+    val selectedFeedOptions: LiveData<SelectedFeedOptions>
         get() = _selectedFeed
 
     // "https://hardzone.es" // "http://blog.mozilla.com/" // "https://hardzone.es/"
@@ -74,33 +72,11 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     }
 
     /** Conecta items al origen de BBDD para actualización automática **/
-    /* FUNCIONA, PERO NO FILTRA
     val items: LiveData<List<DomainFeedChannelItemWithFeed>> =
-        feedRepository.getFilteredFeeds("%").asLiveData()
-     */
-
-    /*  NO FUNCIONA (NO FILTRA)
-    val items: LiveData<List<DomainFeedChannelItemWithFeed>>? =
-        selectedFeed.value?.let { feedRepository.getFilteredFeeds(it.linkName).asLiveData() }
-     */
-
-    val items: LiveData<List<DomainFeedChannelItemWithFeed>> = Transformations.switchMap(selectedFeed) { selectedFeed ->
-        feedRepository.getFilteredFeeds(selectedFeed.linkName).asLiveData()
-    }
-
-
-    /*
-    val items: LiveData<List<DomainFeedChannelItemWithFeed>> =
-        feedRepository.getFeeds().asLiveData().map { listFCIWF ->
-            listFCIWF.filter {
-                Timber.d("[Timber] * it.linkName = '%s', feedsFilter.value = '%s', feedsFilter.value.linkName = '%s'",
-                    it.linkName, selectedFeed.value.toString(), selectedFeed.value?.linkName?:"null")
-                return@filter it.linkName == "EcoInventos"
-                //return@filter feedsFilter.value == true || it.linkName == selectedFeed.value?.linkName ?: "EcoInventos"
-                //return@filter selectedFeed.value == null || selectedFeed.value!!.id == 0L || it.linkName == selectedFeed.value?.linkName ?: "HardZone"
-            }
+        Transformations.switchMap(selectedFeedOptions) { selectedFeedOptions ->
+            feedRepository.getFilteredFeeds(selectedFeedOptions)
+                .asLiveData()
         }
-     */
 
 
 
@@ -110,13 +86,10 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     init {
         Timber.d("[Timber] MainSharedViewModel.init() - apiBaseUrl se cambia a 'https://hardzone.es'")
         _apiBaseUrl.value = "https://hardzone.es"
-        //_feedsFilter.value = false
 
         // Cargamos datos iniciales en el drawer
         viewModelScope.launch { setupInitialDrawerMenuData() }
 
-        // Chequeamos los feeds y sus actualizaciones
-        //getFeeds()
     }
 
     fun getFeeds() {
@@ -151,18 +124,23 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
             val feed = withContext(Dispatchers.IO) {
                 feedRepository.getFeedWithLinkName(linkName)
             }
-            Timber.d("[Timber] feedRepository.getFeedWithLinkName(%s) = %s", linkName, feed.toString())
-            //_selectedFeed.value?.copy(id = feed.id,groupId = feed.groupId,linkName = feed.linkName,link = feed.link,favorite = feed.favorite)
-            setSelectedFeed(feed)
-            //_feedsFilter.value = true
+            Timber.d(
+                "[Timber] feedRepository.getFeedWithLinkName(%s) = %s",
+                linkName,
+                feed.toString()
+            )
+            setSelectedFeed(SelectedFeedOptions().also { it.setLinkNameValue(linkName) })
             _apiBaseUrl.value = feed.link
         }
     }
 
 
-    fun setSelectedFeed(feed: DomainFeed) {
-        Timber.d("[Timber] MainSharedViewModel.setSelectedFeed(DomainFeed.linkName = '%s')", feed.linkName)
-        _selectedFeed.postValue(feed)
+    fun setSelectedFeed(selectedFeedOptions: SelectedFeedOptions) {
+        Timber.d(
+            "[Timber] MainSharedViewModel.setSelectedFeed(DomainFeed.linkName = '%s')",
+            selectedFeedOptions.linkName
+        )
+        _selectedFeed.postValue(selectedFeedOptions)
     }
 
 
@@ -321,37 +299,16 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
         }
     }
 
-    /*
-    companion object {
-
-        @Volatile
-        private var INSTANCE: MainSharedViewModel? = null
-
-        fun getInstance(context: Context, feedRepository: FeedRepository): MainSharedViewModel {
-            synchronized(this) {
-
-                var instance = INSTANCE
-
-                // If instance is `null` make a new instance.
-                if (instance == null) {
-                    Timber.i("getInstance() - mainSharedViewModel NUEVO")
-                    instance = MainSharedViewModel(feedRepository)
-                    INSTANCE = instance
-                }
-
-                // Return instance; smart cast to be non-null.
-                return instance
-            }
-        }
-    }
-     */
 
     class Factory(private val context: Context, private val feedRepository: FeedRepository) :
         ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            Timber.d("[Timber] Factory() - mainSharedViewModel.fragmento: %s", MainSharedViewModel::testigo)
+            Timber.d(
+                "[Timber] Factory() - mainSharedViewModel.fragmento: %s",
+                MainSharedViewModel::testigo
+            )
             return MainSharedViewModel(feedRepository) as T
             //return MainSharedViewModel.getInstance(context, feedRepository) as T
         }

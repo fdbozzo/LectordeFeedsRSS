@@ -53,12 +53,17 @@ interface FeedChannelItemDao {
      * Selecciona y retorna todos los datos de la tabla no leídos,
      * ordenados por fecha de publicación descendente.
      */
-    @Query("""SELECT ft.link_name,fcit.* 
+    @Query(
+        """SELECT ft.link_name,fcit.* 
         FROM feed_channel_item_table fcit 
         INNER JOIN feed_table ft ON fcit.feed_id = ft.id 
-        WHERE fcit.read = 0 AND ft.link_name LIKE :linkName
-        ORDER BY fcit.pub_date DESC""")
-    fun getFilteredFeedChannelItemsWithFeed(linkName: String): Flow<List<FeedChannelItemWithFeed>>
+        WHERE fcit.read = 0
+        AND fcit.read_later >= :readLater
+        AND ft.favorite >= :favorite
+        AND ft.link_name LIKE :linkName
+        ORDER BY fcit.pub_date DESC"""
+    )
+    fun getFilteredFeedChannelItemsWithFeed(linkName: String, favorite: Int, readLater: Int): Flow<List<FeedChannelItemWithFeed>>
 
     /**
      * Selecciona y retorna el último item.

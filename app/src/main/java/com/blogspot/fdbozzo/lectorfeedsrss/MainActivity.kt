@@ -14,6 +14,7 @@ import androidx.navigation.ui.NavigationUI
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.SelectedFeedOptions
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.ActivityMainBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
@@ -103,6 +104,28 @@ class MainActivity : AppCompatActivity() {
 
 
         /**
+         * Read Later
+         */
+        binding.drawerMenu.imgReadLater.setOnClickListener {
+            setSelectToReadLater()
+        }
+        binding.drawerMenu.navReadLater.setOnClickListener {
+            setSelectToReadLater()
+        }
+
+
+        /**
+         * Favorites
+         */
+        binding.drawerMenu.imgNavFavorites.setOnClickListener {
+            setSelectToFavorites()
+        }
+        binding.drawerMenu.navFavorites.setOnClickListener {
+            setSelectToFavorites()
+        }
+
+
+        /**
          * Logout
          */
         binding.drawerMenu.navLogout.setOnClickListener {
@@ -132,6 +155,18 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun setSelectToFavorites() {
+        drawerLayout.close()
+        Toast.makeText(this, "Favorites...", Toast.LENGTH_SHORT).show()
+        mainSharedViewModel.setSelectedFeed(SelectedFeedOptions().also { it.setFavoriteTrue() })
+    }
+
+    private fun setSelectToReadLater() {
+        drawerLayout.close()
+        Toast.makeText(this, "Read Later...", Toast.LENGTH_SHORT).show()
+        mainSharedViewModel.setSelectedFeed(SelectedFeedOptions().also { it.setReadLaterTrue() })
+    }
+
     private fun logout() {
         mAuth.signOut()
         drawerLayout.close()
@@ -143,7 +178,7 @@ class MainActivity : AppCompatActivity() {
     private fun setSelectToAllFeeds() {
         drawerLayout.close()
         Toast.makeText(this, "All feeds...", Toast.LENGTH_SHORT).show()
-        mainSharedViewModel.setSelectedFeed(Feed(linkName = "%"))
+        mainSharedViewModel.setSelectedFeed(SelectedFeedOptions())
     }
 
     private fun setupDrawerExpandableListView(listData: HashMap<String, List<String>>) {
@@ -162,24 +197,6 @@ class MainActivity : AppCompatActivity() {
                 false
             }
 
-            /*
-            expandableListView!!.onItemLongClickListener = AdapterView.OnItemLongClickListener() { adapterView: AdapterView<*>, view1: View, i: Int, l: Long ->
-
-                @Override
-                fun onItemLongClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-                    Timber.d("[Timber] expandableListView!!.onItemLongClickListener() --> onItemLongClick()")
-
-                }
-
-                @Override
-                fun onLongClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-                    Timber.d("[Timber] expandableListView!!.onItemLongClickListener() --> onLongClick()")
-
-                }
-
-                false
-            }
-             */
 
             expandableListView!!.setOnGroupExpandListener { groupPosition ->
                 /*
@@ -218,6 +235,7 @@ class MainActivity : AppCompatActivity() {
                     val linkName = listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition]
                     mainSharedViewModel.getFeedWithLinkNameAndSetApiBaseUrl(linkName)
 
+                    /*
                     Toast.makeText(
                         applicationContext,
                         "Child Clicked: " +
@@ -225,7 +243,8 @@ class MainActivity : AppCompatActivity() {
                                 listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition],
                         Toast.LENGTH_SHORT
                     ).show()
-                    //mainSharedViewModel.navigateToContentsWithUrl(feed.link)
+                     */
+
                     expandableItemLongClick = false
                 }
                 false
@@ -242,12 +261,15 @@ class MainActivity : AppCompatActivity() {
                         groupPosition
                     )
                     setListViewHeight(parent, groupPosition)
+                    /*
                     Toast.makeText(
                         applicationContext,
                         "Group Clicked: " +
                                 (titleList as ArrayList<String>)[groupPosition],
                         Toast.LENGTH_SHORT
                     ).show()
+                     */
+
                     expandableItemLongClick = false
                 }
                 false

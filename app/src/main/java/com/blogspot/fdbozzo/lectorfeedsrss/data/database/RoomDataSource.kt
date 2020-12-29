@@ -8,6 +8,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as D
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed as DomainFeedChannelItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Group as DomainGroup
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.LocalDataSource
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.SelectedFeedOptions
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannelItem as ServerFeedChannelItem
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannel as ServerFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
@@ -224,8 +225,12 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
             }
         }
 
-    override fun getFeedChannelItemsWithFeed(linkName: String): Flow<List<DomainFeedChannelItemWithFeed>> =
-        feedChannelItemDao.getFilteredFeedChannelItemsWithFeed(linkName).map { roomFeedChannelItemWithFeed ->
+    override fun getFeedChannelItemsWithFeed(selectedFeedOptions: SelectedFeedOptions): Flow<List<DomainFeedChannelItemWithFeed>> =
+        feedChannelItemDao.getFilteredFeedChannelItemsWithFeed(
+            linkName = selectedFeedOptions.linkName,
+            favorite = selectedFeedOptions.favorite,
+            readLater = selectedFeedOptions.readLater
+        ).map { roomFeedChannelItemWithFeed ->
             roomFeedChannelItemWithFeed.map {
                 it.toDomainFeedChannelItemWithFeed()
             }
