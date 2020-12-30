@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:paddingBottom="32dp">
+
+            <TextView
+                android:id="@+id/txtTituloMenu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="Nombre del grupo"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/imgMarkAsRead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txtTituloMenu"
+                app:srcCompat="@drawable/ic_mark_as_read_holo_light_24dp" />
+
+            <TextView
+                android:id="@+id/txtMarkAsRead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/menu_option_mark_as_read"
+                app:layout_constraintBottom_toBottomOf="@+id/imgMarkAsRead"
+                app:layout_constraintStart_toEndOf="@+id/imgMarkAsRead"
+                app:layout_constraintTop_toTopOf="@+id/imgMarkAsRead" />
+
+            <ImageView
+                android:id="@+id/imgRename"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imgMarkAsRead"
+                app:srcCompat="@drawable/icons8_rename_24" />
+
+            <TextView
+                android:id="@+id/txtRename"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/menu_option_rename"
+                app:layout_constraintBottom_toBottomOf="@+id/imgRename"
+                app:layout_constraintStart_toEndOf="@+id/imgRename"
+                app:layout_constraintTop_toTopOf="@+id/imgRename" />
+
+            <ImageView
+                android:id="@+id/imgDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imgRename"
+                app:srcCompat="@drawable/ic_delete_holo_light_24dp" />
+
+            <TextView
+                android:id="@+id/txtDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/menu_option_delete"
+                app:layout_constraintBottom_toBottomOf="@+id/imgDelete"
+                app:layout_constraintStart_toEndOf="@+id/imgDelete"
+                app:layout_constraintTop_toTopOf="@+id/imgDelete" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+</layout>

@@ -5,6 +5,7 @@ import android.view.*
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
@@ -19,6 +20,9 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.ActivityMainBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.drawer.CustomExpandableListAdapter
+import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetFeedOptionsMenuFragment
+import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetGroupOptionsMenuFragment
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -201,24 +205,10 @@ class MainActivity : AppCompatActivity() {
 
 
             expandableListView!!.setOnGroupExpandListener { groupPosition ->
-                /*
-                Toast.makeText(
-                    applicationContext,
-                    (titleList as ArrayList<String>)[groupPosition] + " List Expanded.",
-                    Toast.LENGTH_SHORT
-                ).show()
-                 */
                 expandableItemLongClick = false
             }
 
             expandableListView!!.setOnGroupCollapseListener { groupPosition ->
-                /*
-                Toast.makeText(
-                    applicationContext,
-                    (titleList as ArrayList<String>)[groupPosition] + " List Collapsed.",
-                    Toast.LENGTH_SHORT
-                ).show()
-                 */
                 expandableItemLongClick = false
             }
 
@@ -226,6 +216,10 @@ class MainActivity : AppCompatActivity() {
                 if (expandableItemLongClick) {
                     Timber.d("[Timber] expandableListView!!.setOnChildClickListener(LONG CLICK!)")
                     expandableItemLongClick = false
+
+                    val tituloMenu = listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition]
+                    BottomSheetFeedOptionsMenuFragment(tituloMenu).show(supportFragmentManager, "submenu")
+
                     return@setOnChildClickListener true
                 } else {
                     Timber.d(
@@ -237,16 +231,6 @@ class MainActivity : AppCompatActivity() {
                     val linkName = listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition]
                     mainSharedViewModel.getFeedWithLinkNameAndSetApiBaseUrl(linkName)
 
-                    /*
-                    Toast.makeText(
-                        applicationContext,
-                        "Child Clicked: " +
-                                (titleList as ArrayList<String>)[groupPosition] + " -> " +
-                                listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition],
-                        Toast.LENGTH_SHORT
-                    ).show()
-                     */
-
                     expandableItemLongClick = false
                 }
                 false
@@ -256,6 +240,10 @@ class MainActivity : AppCompatActivity() {
                 if (expandableItemLongClick) {
                     Timber.d("[Timber] expandableListView!!.setOnGroupClickListener(LONG CLICK!)")
                     expandableItemLongClick = false
+
+                    val tituloMenu = (titleList as ArrayList<String>)[groupPosition]
+                    BottomSheetGroupOptionsMenuFragment(tituloMenu).show(supportFragmentManager, "submenu")
+
                     return@setOnGroupClickListener true
                 } else {
                     Timber.d(
@@ -263,14 +251,6 @@ class MainActivity : AppCompatActivity() {
                         groupPosition
                     )
                     setListViewHeight(parent, groupPosition)
-                    /*
-                    Toast.makeText(
-                        applicationContext,
-                        "Group Clicked: " +
-                                (titleList as ArrayList<String>)[groupPosition],
-                        Toast.LENGTH_SHORT
-                    ).show()
-                     */
 
                     expandableItemLongClick = false
                 }

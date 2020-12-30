@@ -30,4 +30,6 @@
     <string name="menu_option_mark_as_read">Mark as read</string>
     <string name="menu_option_rename">Rename</string>
     <string name="menu_option_delete">Delete</string>
+    <string name="menu_option_remove_from_favorites">Remove from favorites</string>
+    <string name="menu_option_unfollow">Unfollow</string>
 </resources>
