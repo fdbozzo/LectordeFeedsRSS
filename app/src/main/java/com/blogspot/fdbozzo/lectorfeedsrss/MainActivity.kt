@@ -51,8 +51,8 @@ class MainActivity : AppCompatActivity() {
         mainSharedViewModel = sharedViewModel
         sharedViewModel.testigo = "MainActivity"
 
-        binding.lifecycleOwner =
-            this // Para que LiveData sea consciente del LifeCycle y se actualice la UI
+        // Para que LiveData sea consciente del LifeCycle y se actualice la UI
+        binding.lifecycleOwner = this
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
@@ -62,7 +62,9 @@ class MainActivity : AppCompatActivity() {
         drawerLayout = binding.drawerLayout
         mAuth = Firebase.auth
 
-        //setupDrawerExpandableListView(mainSharedViewModel.getMenuData())
+        /**
+         * Actualizar las opciones del menú Drawer cuando se actualiza la lista de las mismas
+         */
         mainSharedViewModel.menuData.observe(this, Observer {
             setupDrawerExpandableListView(it)
         })
@@ -93,7 +95,7 @@ class MainActivity : AppCompatActivity() {
 
 
         /**
-         * All feeds
+         * Opción All feeds
          */
         binding.drawerMenu.navAll.setOnClickListener {
             setSelectToAllFeeds()
@@ -104,7 +106,7 @@ class MainActivity : AppCompatActivity() {
 
 
         /**
-         * Read Later
+         * Opción Read Later
          */
         binding.drawerMenu.imgReadLater.setOnClickListener {
             setSelectToReadLater()
@@ -115,7 +117,7 @@ class MainActivity : AppCompatActivity() {
 
 
         /**
-         * Favorites
+         * Opción Favorites
          */
         binding.drawerMenu.imgNavFavorites.setOnClickListener {
             setSelectToFavorites()
@@ -126,7 +128,7 @@ class MainActivity : AppCompatActivity() {
 
 
         /**
-         * Logout
+         * Opción Logout
          */
         binding.drawerMenu.navLogout.setOnClickListener {
             logout()
@@ -190,7 +192,7 @@ class MainActivity : AppCompatActivity() {
             adapter = CustomExpandableListAdapter(this, titleList as ArrayList<String>, listData)
             expandableListView!!.setAdapter(adapter)
 
-            // EN PRUEBA :)
+            // Long Click Listener
             expandableListView!!.setOnItemLongClickListener { parent, view, position, id ->
                 //Timber.d("[Timber] expandableListView!!.setOnItemLongClickListener(parent:%s, view:%s, position:%d, id:%d)", parent.toString(), view.toString(), position, id)
                 expandableItemLongClick = true
@@ -312,7 +314,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //----- ESTE MENU FUNCIONA, PERO NO LE VEO SENTIDO TENIENDO EL MENU DEL DRAWER -----
+    //----- ESTE MENU SUPERIOR/DERECHO FUNCIONA, PERO NO LE VEO SENTIDO TENIENDO EL MENU DEL DRAWER -----
     /*
     // MENU PRINCIPAL
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
