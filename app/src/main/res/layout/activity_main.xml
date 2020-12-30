@@ -5,20 +5,45 @@
     tools:context=".MainActivity">
 
     <data>
-    </data>
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    </data>
 
         <androidx.drawerlayout.widget.DrawerLayout
             android:id="@+id/drawer_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!--androidx.appcompat.widget.Toolbar
+                    android:id="@+id/upper_toolbar"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content"
+                    android:minHeight="56dp"
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/-->
+                <com.google.android.material.appbar.AppBarLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.appbar.MaterialToolbar
+                        android:id="@+id/topAppBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="?attr/actionBarSize"
+                        app:title="Titulo"
+                        style="@style/Widget.MaterialComponents.Toolbar.Primary"
+                        />
+                    <!-- opciones del MaterialToolbar
+                    app:menu="@menu/top_app_bar"
+                    app:navigationIcon="@drawable/baseline_menu_white_24"
+                    -->
+
+                </com.google.android.material.appbar.AppBarLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
 
                     <androidx.fragment.app.FragmentContainerView
                         android:id="@+id/fragmentContainerView"
@@ -33,6 +58,20 @@
                         app:navGraph="@navigation/nav_graph" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <com.google.android.material.bottomappbar.BottomAppBar
+                    android:id="@+id/bottom_app_bar"
+                    style="@style/Widget.MaterialComponents.BottomAppBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    app:navigationIcon="@drawable/baseline_menu_white_24"/>
+                <!-- opciones del BottomAppBar
+                app:backgroundTint="@color/design_default_color_primary"
+                style="@style/Widget.MaterialComponents.BottomAppBar"
+                -->
+
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
             <!-- com.google.android.material.navigation.NavigationView
                 android:id="@+id/navView"
@@ -58,6 +97,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent">
 
+                    <!-- include layout="@layout/drawer_header"
+                        android:id="@+id/navigation_header_container"/ -->
+
+                    <!-- app:layout_constraintTop_toBottomOf="@id/navigation_header_container" -->
+                    <!-- app:layout_constraintTop_toTopOf="parent" -->
+
                     <ScrollView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -72,10 +117,9 @@
                     </ScrollView>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
             </com.google.android.material.navigation.NavigationView>
+
         </androidx.drawerlayout.widget.DrawerLayout>
 
-        <!--include layout="@layout/bottom_sheet_group_options_menu_fragment"
-            android:id="@+id/idFeedGroupBottomSheetOptions"/-->
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

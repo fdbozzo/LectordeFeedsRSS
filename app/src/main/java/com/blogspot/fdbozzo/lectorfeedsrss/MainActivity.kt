@@ -22,6 +22,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.drawer.CustomExpandableListAdapter
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetFeedOptionsMenuFragment
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetGroupOptionsMenuFragment
+import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetMarkAsReadOptionsMenuFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -150,6 +151,32 @@ class MainActivity : AppCompatActivity() {
             ), drawerLayout
         )
          */
+
+        //setSupportActionBar(binding.upperToolbar)
+        binding.topAppBar.inflateMenu(R.menu.navdrawer_menu)
+        setSupportActionBar(binding.bottomAppBar)
+
+        binding.topAppBar.setOnMenuItemClickListener {
+
+            when (it.itemId) {
+                R.id.nav_mark_all_as_read -> {
+                    val tituloMenu = "Mark as read"
+                    BottomSheetMarkAsReadOptionsMenuFragment(tituloMenu).show(supportFragmentManager, "submenu")
+                }
+                else -> {
+                    Timber.d("[Timber] setOnMenuItemClickListener(%s)", it.itemId.toString())
+                }
+            }
+            /*
+            if (it.itemId == R.id.nav_mark_all_as_read) {
+                val tituloMenu = "Mark as read"
+                BottomSheetMarkAsReadOptionsMenuFragment(tituloMenu).show(supportFragmentManager, "submenu")
+            } else {
+                Timber.d("[Timber] setOnMenuItemClickListener(%s)", it.itemId.toString())
+            }
+             */
+            false
+        }
 
         //setupActionBarWithNavController(navController, appBarConfiguration)
         NavigationUI.setupActionBarWithNavController(
@@ -295,15 +322,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     //----- ESTE MENU SUPERIOR/DERECHO FUNCIONA, PERO NO LE VEO SENTIDO TENIENDO EL MENU DEL DRAWER -----
-    /*
+    //*
     // MENU PRINCIPAL
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.navdrawer_menu, menu)
-        return super.onCreateOptionsMenu(menu)
+        //menuInflater.inflate(R.menu.navdrawer_menu, menu)
+        Timber.d("[Timber] onCreateOptionsMenu()")
+        menuInflater.inflate(R.menu.bottom_nav_menu, menu)
+        return true // super.onCreateOptionsMenu(menu)
     }
 
     // Opción de menu
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Timber.d("[Timber] onOptionsItemSelected()")
         when (item.itemId) {
             R.id.nav_logout -> {
                 // TODO
@@ -312,7 +342,7 @@ class MainActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
-     */
+     //*/
 
     /**
      * Este método resuelve el problema de que el ExpandableListView no respete los controles

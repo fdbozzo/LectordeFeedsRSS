@@ -72,12 +72,7 @@ class FeedChannelFragment : Fragment() {
 
         navController = findNavController()
 
-        /** Setup de retrofit para leer RSS **/
-        //val service = RetrofitFactory.makeRetrofitService()
-
         /** Adapter para el RecyclerView **/
-        //val adapter = FeedChannelAdapter()
-        //binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
 
