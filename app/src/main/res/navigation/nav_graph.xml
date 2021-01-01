@@ -23,8 +23,11 @@
         android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.contents.ContentsFragment"
         android:label="@string/title_contents">
         <argument
-            android:name="itemUrl"
+            android:name="feedChannelItemUrl"
             app:argType="string" />
+        <argument
+            android:name="feedChannelItemId"
+            app:argType="long" />
     </fragment>
     <fragment
         android:id="@+id/nav_add_group_fragment"

@@ -23,13 +23,13 @@ class ContentsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = ContentsFragmentBinding.inflate(inflater, container, false)
 
         binding.lifecycleOwner = this // Para que LiveData sea consciente del LifeCycle y se actualice la uI
 
         val arguments = ContentsFragmentArgs.fromBundle(requireArguments())
-        binding.webView.loadUrl(arguments.itemUrl)
+        binding.webView.loadUrl(arguments.feedChannelItemUrl)
 
 
         return binding.root

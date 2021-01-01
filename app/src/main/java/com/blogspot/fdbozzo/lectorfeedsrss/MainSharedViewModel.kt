@@ -59,19 +59,33 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     /**
      * FLAGS Y MÉTODOS PARA NAVEGACIÓN A CONTENTS_FRAGMENT (la noticia)
      */
-    private var _contentsUrl = MutableLiveData<String>()
-    val contentsUrl: LiveData<String>
-        get() = _contentsUrl
+    private var _selectedFeedChannelItemWithFeed = MutableLiveData<DomainFeedChannelItemWithFeed?>()
+    val selectedFeedChannelItemWithFeed: LiveData<DomainFeedChannelItemWithFeed?>
+        get() = _selectedFeedChannelItemWithFeed
 
-    fun navigateToContentsWithUrl(url: String) {
-        _contentsUrl.value = url
+    fun navigateToContentsWithUrl(feedChannelItemUrl: String, feedChannelItemId: Long) {
+        _selectedFeedChannelItemWithFeed.value = DomainFeedChannelItemWithFeed(link = feedChannelItemUrl, id = feedChannelItemId)
     }
 
     fun navigateToContentsWithUrlIsDone() {
-        _contentsUrl.value = null
+
+        /*
+        viewModelScope.launch {
+            //val url = contentsUrl.value
+            val id = 0L
+            withContext(Dispatchers.IO) {
+                feedRepository.updateReadStatus(id, true)
+            }
+            Timber.d("[Timber] navigateToContentsWithUrlIsDone() --> feedRepository.updateReadStatus(%d,%b)",id,true)
+        }
+         */
+
+        _selectedFeedChannelItemWithFeed.value = null
     }
 
-    /** Conecta items al origen de BBDD para actualización automática **/
+    /**
+     * Conecta items al origen de BBDD para actualización automática
+     */
     val items: LiveData<List<DomainFeedChannelItemWithFeed>> =
         Transformations.switchMap(selectedFeedOptions) { selectedFeedOptions ->
             feedRepository.getFilteredFeeds(selectedFeedOptions)
@@ -92,6 +106,9 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
 
     }
 
+    /**
+     * Obtiene los feeds de la red y actualiza la BBDD
+     */
     fun getFeeds() {
         Timber.d("[Timber] MainSharedViewModel.getFeeds() - Obtener noticias de  ${_apiBaseUrl.value}")
         if (_apiBaseUrl.value.isNullOrBlank())
@@ -119,6 +136,10 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
         super.onCleared()
     }
 
+    /**
+     * Actualiza los items del feed elegido y lo configura como elegido asignando su apiBaseUrl LiveData
+     * para que su observer actualice la pantalla
+     */
     fun getFeedWithLinkNameAndSetApiBaseUrl(linkName: String) {
         viewModelScope.launch {
             val feed = withContext(Dispatchers.IO) {
@@ -135,6 +156,9 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     }
 
 
+    /**
+     * Cuando se clickea un feed, configura su linkName LiveData para que notifique a su observer
+     */
     fun setSelectedFeed(selectedFeedOptions: SelectedFeedOptions) {
         Timber.d(
             "[Timber] MainSharedViewModel.setSelectedFeed(DomainFeed.linkName = '%s')",

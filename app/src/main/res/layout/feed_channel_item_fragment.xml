@@ -8,14 +8,14 @@
             name="viewModel"
             type="com.blogspot.fdbozzo.lectorfeedsrss.MainSharedViewModel"/>
         <variable
-            name="channelItem"
+            name="feedChannelItemWithFeed"
             type="com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed"/>
     </data>
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{() -> viewModel.navigateToContentsWithUrl(channelItem.link)}"
+        android:onClick="@{() -> viewModel.navigateToContentsWithUrl(feedChannelItemWithFeed.link,feedChannelItemWithFeed.id)}"
         tools:context="com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.channel.channelItem.FeedChannelItemFragment">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -49,7 +49,7 @@
                 android:layout_marginEnd="8dp"
                 android:maxLines="3"
                 android:outlineProvider="none"
-                android:text="@{channelItem.title}"
+                android:text="@{feedChannelItemWithFeed.title}"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@id/imageView"
@@ -64,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:maxLines="1"
-                android:text="@{channelItem.linkName}"
+                android:text="@{feedChannelItemWithFeed.linkName}"
                 android:textColor="@android:color/darker_gray"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@id/imageView"
@@ -80,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:maxLines="1"
-                android:text="@{@string/pubdate_format(channelItem.pubDate)}"
+                android:text="@{@string/pubdate_format(feedChannelItemWithFeed.pubDate)}"
                 android:textColor="@android:color/darker_gray"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView"
@@ -99,7 +99,7 @@
                 android:cropToPadding="false"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_dashboard_black_24dp"
-                app:imageUrl="@{channelItem.imageLink}"
+                app:imageUrl="@{feedChannelItemWithFeed.imageLink}"
                 app:layout_constraintBottom_toBottomOf="@id/text_height_max"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/text_height_max" />

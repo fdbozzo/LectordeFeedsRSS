@@ -76,8 +76,8 @@ class FeedChannelFragment : Fragment() {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
 
-        //*
-        sharedViewModel.items?.observe(viewLifecycleOwner, Observer {
+        /** Observer para los items actualizados y su reflejo en el recycler **/
+        sharedViewModel.items.observe(viewLifecycleOwner, Observer {
             it?.let {
                 //adapter.data = it   // Esto solo lo usa el RecyclerView.Adapter
                 //adapter.submitList(it)
@@ -85,14 +85,13 @@ class FeedChannelFragment : Fragment() {
                 binding.recyclerView.adapter = FeedChannelAdapter(it, sharedViewModel, requireContext())
             }
         })
-         //*/
 
         /** Observer para el navigateToFeedContentsItem **/
-        sharedViewModel.contentsUrl.observe(viewLifecycleOwner, Observer { url ->
-            url?.let {
+        sharedViewModel.selectedFeedChannelItemWithFeed.observe(viewLifecycleOwner, Observer { feedChannelItemWithFeed ->
+            feedChannelItemWithFeed?.let {
                 val action =
                     FeedChannelFragmentDirections.actionFeedContentsFragmentToContentsFragment(
-                        url
+                        feedChannelItemWithFeed.link, feedChannelItemWithFeed.id
                     )
                 //NavHostFragment.findNavController(this).navigate(action)
                 findNavController().navigate(action)

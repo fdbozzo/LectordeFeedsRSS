@@ -43,8 +43,8 @@ class FeedChannelAdapter(
     class ViewHolder private constructor(
         val binding: FeedChannelItemFragmentBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(channelItem: DomainFeedChannelItemWithFeed, viewModel: MainSharedViewModel) {
-            binding.channelItem = channelItem
+        fun bind(feedChannelItemWithFeed: DomainFeedChannelItemWithFeed, viewModel: MainSharedViewModel) {
+            binding.feedChannelItemWithFeed = feedChannelItemWithFeed
             binding.viewModel = viewModel
             //binding.clickListener = clickListener
             binding.executePendingBindings()
