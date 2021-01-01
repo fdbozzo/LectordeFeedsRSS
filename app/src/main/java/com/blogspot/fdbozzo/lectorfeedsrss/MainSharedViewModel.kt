@@ -69,16 +69,22 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
 
     fun navigateToContentsWithUrlIsDone() {
 
-        /*
-        viewModelScope.launch {
-            //val url = contentsUrl.value
-            val id = 0L
-            withContext(Dispatchers.IO) {
-                feedRepository.updateReadStatus(id, true)
+        //*
+        selectedFeedChannelItemWithFeed.value?.let {
+            viewModelScope.launch {
+                //val url = contentsUrl.value
+                val id = selectedFeedChannelItemWithFeed.value!!.id
+                withContext(Dispatchers.IO) {
+                    feedRepository.updateReadStatus(id, true)
+                }
+                Timber.d(
+                    "[Timber] navigateToContentsWithUrlIsDone() --> feedRepository.updateReadStatus(%d,%b)",
+                    id,
+                    true
+                )
             }
-            Timber.d("[Timber] navigateToContentsWithUrlIsDone() --> feedRepository.updateReadStatus(%d,%b)",id,true)
         }
-         */
+         //*/
 
         _selectedFeedChannelItemWithFeed.value = null
     }

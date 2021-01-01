@@ -236,4 +236,8 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
             }
         }
 
+    override fun updateReadStatus(id: Long, read: Boolean): Int {
+        return feedChannelItemDao.updateReadStatus(id, read)
+    }
+
 }

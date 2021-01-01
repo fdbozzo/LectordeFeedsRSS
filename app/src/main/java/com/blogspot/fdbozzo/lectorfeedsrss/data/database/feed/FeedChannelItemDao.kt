@@ -26,6 +26,9 @@ interface FeedChannelItemDao {
     @Update
     fun update(feedChannelItem: FeedChannelItem): Int
 
+    @Query("UPDATE feed_channel_item_table SET read = :read WHERE id = :id")
+    fun updateReadStatus(id: Long ,read: Boolean): Int
+
     /**
      *
      * @param key Id del FeedChannelItem a buscar
