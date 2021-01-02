@@ -4,6 +4,8 @@ import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import retrofit2.Response
 import retrofit2.http.GET
 
+enum class RssApiStatus { LOADING, ERROR, DONE }
+
 interface RssApiService {
 
     //@GET("/feed")

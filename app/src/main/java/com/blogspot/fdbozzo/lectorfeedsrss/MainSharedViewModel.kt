@@ -3,20 +3,19 @@ package com.blogspot.fdbozzo.lectorfeedsrss
 import android.content.Context
 import androidx.lifecycle.*
 import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Group as DomainGroup
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as DomainFeedChannel
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed as DomainFeedChannelItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.SelectedFeedOptions
+import com.blogspot.fdbozzo.lectorfeedsrss.network.RssApiStatus
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed
-import com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.RssApiStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.util.ArrayList
-import java.util.HashMap
+import java.util.*
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as DomainFeedChannel
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed as DomainFeedChannelItemWithFeed
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Group as DomainGroup
 
 class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewModel() {
 

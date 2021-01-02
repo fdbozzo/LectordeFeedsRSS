@@ -1,13 +1,11 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.network
 
 import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
-import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.RemoteDataSource
-import com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.RssApiStatus
 import com.blogspot.fdbozzo.lectorfeedsrss.util.getSrcImage
 import retrofit2.HttpException
 import timber.log.Timber
+import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 
 class RssFeedDataSource(): RemoteDataSource {
     //lateinit var listDomainFeedChannelItem: List<DomainFeedChannelItem>
