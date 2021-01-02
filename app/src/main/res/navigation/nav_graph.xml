@@ -17,6 +17,9 @@
         <action
             android:id="@+id/action_feedContentsFragment_to_contentsFragment"
             app:destination="@id/nav_contents" />
+        <action
+            android:id="@+id/action_nav_feed_contents_to_settingsFragment"
+            app:destination="@id/nav_settings" />
     </fragment>
     <fragment
         android:id="@+id/nav_contents"
@@ -39,4 +42,8 @@
         android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.AddFeedFragment"
         android:label="@string/title_add_feed"
         tools:layout="@layout/add_feed_fragment" />
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.settings.SettingsFragment"
+        android:label="@string/title_settings" />
 </navigation>

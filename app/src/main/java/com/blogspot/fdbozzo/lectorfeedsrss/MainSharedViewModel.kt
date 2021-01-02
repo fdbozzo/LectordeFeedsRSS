@@ -7,7 +7,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.SelectedFeedOptions
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssApiStatus
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed
-import com.blogspot.fdbozzo.lectorfeedsrss.util.SealedClassAppScreens
+import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

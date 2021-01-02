@@ -4,12 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blogspot.fdbozzo.lectorfeedsrss.MainSharedViewModel
@@ -19,7 +17,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.FeedChannelFragmentBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
-import com.blogspot.fdbozzo.lectorfeedsrss.util.SealedClassAppScreens
+import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -50,7 +48,7 @@ class FeedChannelFragment : Fragment() {
         val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
         val sharedViewModel: MainSharedViewModel by activityViewModels { MainSharedViewModel.Factory(requireContext(), feedRepository) }
         mainSharedViewModel = sharedViewModel
-        mainSharedViewModel.setActiveScreen(SealedClassAppScreens.FeedChannelFragment())
+        mainSharedViewModel.setActiveScreen(SealedClassAppScreens.FeedChannelFragment)
 
         Timber.i("[Timber] onCreateView() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.testigo)
         mainSharedViewModel.testigo = FeedChannelFragment::class.java.canonicalName

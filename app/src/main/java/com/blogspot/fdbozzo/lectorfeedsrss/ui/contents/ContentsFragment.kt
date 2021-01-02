@@ -12,8 +12,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.ContentsFragmentBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
-import com.blogspot.fdbozzo.lectorfeedsrss.util.SealedClassAppScreens
-import timber.log.Timber
+import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
 
 class ContentsFragment : Fragment() {
 
@@ -38,7 +37,7 @@ class ContentsFragment : Fragment() {
         val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
         val sharedViewModel: MainSharedViewModel by activityViewModels { MainSharedViewModel.Factory(requireContext(), feedRepository) }
         mainSharedViewModel = sharedViewModel
-        mainSharedViewModel.setActiveScreen(SealedClassAppScreens.ContentsFragment())
+        mainSharedViewModel.setActiveScreen(SealedClassAppScreens.ContentsFragment)
 
         val arguments = ContentsFragmentArgs.fromBundle(requireArguments())
         binding.webView.loadUrl(arguments.feedChannelItemUrl)

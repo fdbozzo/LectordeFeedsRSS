@@ -5,11 +5,9 @@ import android.view.*
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
-import androidx.lifecycle.whenResumed
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
@@ -17,19 +15,16 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.SelectedFeedOptions
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.ActivityMainBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.drawer.CustomExpandableListAdapter
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetFeedOptionsMenuFragment
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetGroupOptionsMenuFragment
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetMarkAsReadOptionsMenuFragment
-import com.blogspot.fdbozzo.lectorfeedsrss.util.SealedClassAppScreens
-import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
@@ -55,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         val sharedViewModel: MainSharedViewModel by viewModels { MainSharedViewModel.Factory(applicationContext, feedRepository) }
         mainSharedViewModel = sharedViewModel
         sharedViewModel.testigo = "MainActivity"
-        mainSharedViewModel.setActiveScreen(SealedClassAppScreens.MainActivity())
+        mainSharedViewModel.setActiveScreen(SealedClassAppScreens.MainActivity)
 
         // Para que LiveData sea consciente del LifeCycle y se actualice la UI
         binding.lifecycleOwner = this
@@ -143,6 +138,17 @@ class MainActivity : AppCompatActivity() {
             logout()
         }
 
+
+        /**
+         * Opción Settings
+         */
+        binding.drawerMenu.imgNavSettings.setOnClickListener {
+            navigateToSettings()
+        }
+        binding.drawerMenu.navSettings.setOnClickListener {
+            navigateToSettings()
+        }
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         /*
@@ -170,11 +176,15 @@ class MainActivity : AppCompatActivity() {
                     binding.topAppBar.inflateMenu(R.menu.upper_navdrawer_feedchannelitem_menu)
                     Timber.d("[Timber] Menu ContentsFragment")
                 }
+                is SealedClassAppScreens.SettingsFragment -> {
+                    Timber.d("[Timber] Menu SettingsFragment")
+                }
+                else -> Unit
             }
         })
 
         /**
-         * Cargar menú superior para pantalla de Feeds
+         * Controlar las opciones elegidas del menú superior
          */
         setSupportActionBar(binding.bottomAppBar)
 
@@ -357,12 +367,20 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.nav_logout -> {
                 logout()
-                Toast.makeText(this, "Loging out...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Logged out.", Toast.LENGTH_SHORT).show()
+            }
+            R.id.nav_settings -> {
+                navigateToSettings()
             }
         }
         return super.onOptionsItemSelected(item)
     }
-     //*/
+
+    private fun navigateToSettings() {
+        drawerLayout.close()
+        navController.navigate(R.id.nav_settings)
+    }
+    //*/
 
     /**
      * Este método resuelve el problema de que el ExpandableListView no respete los controles
