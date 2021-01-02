@@ -60,13 +60,13 @@ interface FeedChannelItemDao {
         """SELECT ft.link_name,fcit.* 
         FROM feed_channel_item_table fcit 
         INNER JOIN feed_table ft ON fcit.feed_id = ft.id 
-        WHERE fcit.read = 0
+        WHERE fcit.read <= :read
         AND fcit.read_later >= :readLater
         AND ft.favorite >= :favorite
         AND ft.link_name LIKE :linkName
         ORDER BY fcit.pub_date DESC"""
     )
-    fun getFilteredFeedChannelItemsWithFeed(linkName: String, favorite: Int, readLater: Int): Flow<List<FeedChannelItemWithFeed>>
+    fun getFilteredFeedChannelItemsWithFeed(linkName: String, favorite: Int, readLater: Int, read: Int): Flow<List<FeedChannelItemWithFeed>>
 
     /**
      * Selecciona y retorna el último item.

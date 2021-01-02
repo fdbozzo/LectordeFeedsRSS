@@ -3,6 +3,7 @@ package com.blogspot.fdbozzo.lectorfeedsrss.data.domain
 data class SelectedFeedOptions(
     var linkName: String = "%",
     var favorite: Int = 0,
+    var read: Int = 1,
     var readLater: Int = 0
 ) {
     fun setLinkNameValue(linkName: String) {

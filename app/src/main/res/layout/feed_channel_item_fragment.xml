@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="androidx.core.content.ContextCompat"/>
         <variable
             name="viewModel"
             type="com.blogspot.fdbozzo.lectorfeedsrss.MainSharedViewModel"/>
@@ -16,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="@{() -> viewModel.navigateToContentsWithUrl(feedChannelItemWithFeed.link,feedChannelItemWithFeed.id)}"
-        tools:context="com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.channel.channelItem.FeedChannelItemFragment">
+        tools:context=".MainActivity">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -41,6 +42,10 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+            <!--
+            android:textColor="@{true ? @android:color/black : @android:color/grey"
+            android:textColor="@{true ? @color/material_on_primary_emphasis_high_type : @color/material_on_primary_disabled"
+            -->
 
             <TextView
                 android:id="@+id/textContentsTitle"
@@ -50,6 +55,7 @@
                 android:maxLines="3"
                 android:outlineProvider="none"
                 android:text="@{feedChannelItemWithFeed.title}"
+                app:textColor="@{feedChannelItemWithFeed.read}"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@id/imageView"

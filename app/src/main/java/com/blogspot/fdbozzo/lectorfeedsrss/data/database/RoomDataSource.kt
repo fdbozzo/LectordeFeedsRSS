@@ -229,7 +229,8 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         feedChannelItemDao.getFilteredFeedChannelItemsWithFeed(
             linkName = selectedFeedOptions.linkName,
             favorite = selectedFeedOptions.favorite,
-            readLater = selectedFeedOptions.readLater
+            readLater = selectedFeedOptions.readLater,
+            read = selectedFeedOptions.read
         ).map { roomFeedChannelItemWithFeed ->
             roomFeedChannelItemWithFeed.map {
                 it.toDomainFeedChannelItemWithFeed()
