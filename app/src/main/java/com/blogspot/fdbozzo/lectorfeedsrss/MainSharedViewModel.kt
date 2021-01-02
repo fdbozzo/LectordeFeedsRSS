@@ -7,6 +7,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.SelectedFeedOptions
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssApiStatus
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed
+import com.blogspot.fdbozzo.lectorfeedsrss.util.SealedClassAppScreens
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -26,6 +27,11 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     private var _apiBaseUrl = MutableLiveData<String>()
     val apiBaseUrl: LiveData<String>
         get() = _apiBaseUrl
+
+    // Indicador de pantalla activa. Guarda la clase de la pantalla actual
+    private var _selectedScreen = MutableLiveData<SealedClassAppScreens>()
+    val selectedScreen: LiveData<SealedClassAppScreens>
+        get() = _selectedScreen
 
     // Indicador de si está activo el filtro para los feeds (false=all, true=seleccionado)
     /*
@@ -62,30 +68,37 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     val selectedFeedChannelItemWithFeed: LiveData<DomainFeedChannelItemWithFeed?>
         get() = _selectedFeedChannelItemWithFeed
 
+    private var _lastSelectedFeedChannelItemWithFeed: DomainFeedChannelItemWithFeed = DomainFeedChannelItemWithFeed()
+    val lastSelectedFeedChannelItemWithFeed: DomainFeedChannelItemWithFeed
+        get() = _lastSelectedFeedChannelItemWithFeed
+
+    fun setActiveScreen(sealedClassAppScreens: SealedClassAppScreens) {
+        _selectedScreen.value = sealedClassAppScreens
+        Timber.d("[Timber] Pantalla activa: %s", sealedClassAppScreens)
+    }
+
     fun navigateToContentsWithUrl(feedChannelItemUrl: String, feedChannelItemId: Long) {
         _selectedFeedChannelItemWithFeed.value = DomainFeedChannelItemWithFeed(link = feedChannelItemUrl, id = feedChannelItemId)
     }
 
     fun navigateToContentsWithUrlIsDone() {
+        _lastSelectedFeedChannelItemWithFeed = _selectedFeedChannelItemWithFeed.value!!
+        _selectedFeedChannelItemWithFeed.value = null
+        updateItemReadStatus(1)
+    }
 
-        //*
-        selectedFeedChannelItemWithFeed.value?.let {
-            viewModelScope.launch {
-                //val url = contentsUrl.value
-                val id = selectedFeedChannelItemWithFeed.value!!.id
-                withContext(Dispatchers.IO) {
-                    feedRepository.updateReadStatus(id, true)
-                }
-                Timber.d(
-                    "[Timber] navigateToContentsWithUrlIsDone() --> feedRepository.updateReadStatus(%d,%b)",
-                    id,
-                    true
-                )
+    fun updateItemReadStatus(read: Int) {
+        val id = lastSelectedFeedChannelItemWithFeed.id // selectedFeedChannelItemWithFeed.value!!.id
+        Timber.d(
+            "[Timber] feedRepository.updateItemReadStatus(id=%d,read=%b)",
+            id,
+            true
+        )
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                feedRepository.updateReadStatus(id, read)
             }
         }
-         //*/
-
-        _selectedFeedChannelItemWithFeed.value = null
     }
 
     /**

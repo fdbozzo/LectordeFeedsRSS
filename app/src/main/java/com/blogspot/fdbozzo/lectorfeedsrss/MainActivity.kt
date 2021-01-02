@@ -9,6 +9,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
+import androidx.lifecycle.whenResumed
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
@@ -23,10 +24,12 @@ import com.blogspot.fdbozzo.lectorfeedsrss.ui.drawer.CustomExpandableListAdapter
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetFeedOptionsMenuFragment
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetGroupOptionsMenuFragment
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetMarkAsReadOptionsMenuFragment
+import com.blogspot.fdbozzo.lectorfeedsrss.util.SealedClassAppScreens
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
@@ -35,7 +38,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     //private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var mainSharedViewModel: MainSharedViewModel
-    //private lateinit var sharedViewModel: MainSharedViewModel
     private lateinit var mAuth: FirebaseAuth
     private var expandableListView: ExpandableListView? = null
     private var adapter: ExpandableListAdapter? = null
@@ -48,13 +50,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         Timber.d("[Timber] onCreate() - mainSharedViewModel")
-        //mainViewModel = ViewModelProvider(this).get(MainSharedViewModel::class.java)
         val localDatabase = FeedDatabase.getInstance(applicationContext)
         val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
         val sharedViewModel: MainSharedViewModel by viewModels { MainSharedViewModel.Factory(applicationContext, feedRepository) }
-        //sharedViewModel = ViewModelProvider(this, MainSharedViewModel.Factory(applicationContext, feedRepository)).get(MainSharedViewModel::class.java)
         mainSharedViewModel = sharedViewModel
         sharedViewModel.testigo = "MainActivity"
+        mainSharedViewModel.setActiveScreen(SealedClassAppScreens.MainActivity())
 
         // Para que LiveData sea consciente del LifeCycle y se actualice la UI
         binding.lifecycleOwner = this
@@ -152,8 +153,29 @@ class MainActivity : AppCompatActivity() {
         )
          */
 
-        //setSupportActionBar(binding.upperToolbar)
-        binding.topAppBar.inflateMenu(R.menu.navdrawer_menu)
+        /**
+         * Cargar menú superior según el fragmento cargado
+         */
+        mainSharedViewModel.selectedScreen.observe(this, Observer {
+            binding.topAppBar.menu.clear()
+            when (it) {
+                is SealedClassAppScreens.MainActivity -> {
+                    Timber.d("[Timber] Menu MainActivity")
+                }
+                is SealedClassAppScreens.FeedChannelFragment -> {
+                    binding.topAppBar.inflateMenu(R.menu.upper_navdrawer_feedchannel_menu)
+                    Timber.d("[Timber] Menu FeedChannelFragment")
+                }
+                is SealedClassAppScreens.ContentsFragment -> {
+                    binding.topAppBar.inflateMenu(R.menu.upper_navdrawer_feedchannelitem_menu)
+                    Timber.d("[Timber] Menu ContentsFragment")
+                }
+            }
+        })
+
+        /**
+         * Cargar menú superior para pantalla de Feeds
+         */
         setSupportActionBar(binding.bottomAppBar)
 
         binding.topAppBar.setOnMenuItemClickListener {
@@ -163,18 +185,16 @@ class MainActivity : AppCompatActivity() {
                     val tituloMenu = "Mark as read"
                     BottomSheetMarkAsReadOptionsMenuFragment(tituloMenu).show(supportFragmentManager, "submenu")
                 }
+                R.id.nav_mark_as_unread -> {
+                    //val id = sharedViewModel.lastSelectedFeedChannelItemWithFeed.id
+                    Timber.d("[Timber] Mark as unread")
+                    sharedViewModel.updateItemReadStatus(0)
+                    navController.popBackStack()
+                }
                 else -> {
                     Timber.d("[Timber] setOnMenuItemClickListener(%s)", it.itemId.toString())
                 }
             }
-            /*
-            if (it.itemId == R.id.nav_mark_all_as_read) {
-                val tituloMenu = "Mark as read"
-                BottomSheetMarkAsReadOptionsMenuFragment(tituloMenu).show(supportFragmentManager, "submenu")
-            } else {
-                Timber.d("[Timber] setOnMenuItemClickListener(%s)", it.itemId.toString())
-            }
-             */
             false
         }
 
@@ -336,7 +356,7 @@ class MainActivity : AppCompatActivity() {
         Timber.d("[Timber] onOptionsItemSelected()")
         when (item.itemId) {
             R.id.nav_logout -> {
-                // TODO
+                logout()
                 Toast.makeText(this, "Loging out...", Toast.LENGTH_SHORT).show()
             }
         }

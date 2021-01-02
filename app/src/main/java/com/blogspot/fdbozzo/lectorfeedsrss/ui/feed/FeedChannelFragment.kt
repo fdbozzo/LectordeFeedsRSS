@@ -1,11 +1,9 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.ui.feed
 
-import android.content.res.Resources
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.res.ResourcesCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -19,9 +17,9 @@ import com.blogspot.fdbozzo.lectorfeedsrss.R
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed as DomainFeedChannelItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.FeedChannelFragmentBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
+import com.blogspot.fdbozzo.lectorfeedsrss.util.SealedClassAppScreens
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -37,14 +35,9 @@ class FeedChannelFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    //private lateinit var sharedModel: FeedChannelViewModel
     private lateinit var navController: NavController
-    private lateinit var navGraph: NavGraph
-    private lateinit var drawerLayout: DrawerLayout
     private lateinit var mAuth: FirebaseAuth
     private lateinit var mainSharedViewModel: MainSharedViewModel
-    //private lateinit var sharedViewModel: MainSharedViewModel
-    //private lateinit var localDatabase: FeedDatabase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,19 +49,11 @@ class FeedChannelFragment : Fragment() {
         val localDatabase = FeedDatabase.getInstance(requireContext())
         val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
         val sharedViewModel: MainSharedViewModel by activityViewModels { MainSharedViewModel.Factory(requireContext(), feedRepository) }
-        //sharedViewModel = ViewModelProvider(this, MainSharedViewModel.Factory(requireContext(), feedRepository)).get(MainSharedViewModel::class.java)
         mainSharedViewModel = sharedViewModel
+        mainSharedViewModel.setActiveScreen(SealedClassAppScreens.FeedChannelFragment())
 
         Timber.i("[Timber] onCreateView() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.testigo)
         mainSharedViewModel.testigo = FeedChannelFragment::class.java.canonicalName
-
-        //localDatabase = FeedDatabase.getInstance(requireContext())
-        ///val contentDS = localDatabase.getFeedChannelItemDao()
-        //val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
-        ///val viewModelFactory = FeedChannelViewModelFactory(contentDS)
-        //val viewModelFactory = FeedChannelViewModelFactory(feedRepository)
-        //mainViewModel = ViewModelProvider(requireActivity()).get(MainSharedViewModel::class.java)
-        //sharedModel = ViewModelProvider(this, viewModelFactory).get(FeedChannelViewModel::class.java)
 
         binding.lifecycleOwner = this // Para que LiveData sea consciente del LifeCycle y se actualice la uI
         mAuth = Firebase.auth
