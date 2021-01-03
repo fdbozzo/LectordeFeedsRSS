@@ -33,9 +33,9 @@ class FeedChannelFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    private lateinit var mainSharedViewModel: MainSharedViewModel
     private lateinit var navController: NavController
     private lateinit var mAuth: FirebaseAuth
-    private lateinit var mainSharedViewModel: MainSharedViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,7 +46,7 @@ class FeedChannelFragment : Fragment() {
 
         val localDatabase = FeedDatabase.getInstance(requireContext())
         val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
-        val sharedViewModel: MainSharedViewModel by activityViewModels { MainSharedViewModel.Factory(requireContext(), feedRepository) }
+        val sharedViewModel: MainSharedViewModel by activityViewModels { MainSharedViewModel.Factory(feedRepository) }
         mainSharedViewModel = sharedViewModel
         mainSharedViewModel.setActiveScreen(SealedClassAppScreens.FeedChannelFragment)
 

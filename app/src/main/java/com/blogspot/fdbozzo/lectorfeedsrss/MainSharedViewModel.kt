@@ -41,9 +41,9 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
      */
 
     // Feed seleccionado
-    private var _selectedFeed = MutableLiveData(SelectedFeedOptions())
+    private var _selectedFeedOptions = MutableLiveData(SelectedFeedOptions())
     val selectedFeedOptions: LiveData<SelectedFeedOptions>
-        get() = _selectedFeed
+        get() = _selectedFeedOptions
 
     // "https://hardzone.es" // "http://blog.mozilla.com/" // "https://hardzone.es/"
 
@@ -68,7 +68,8 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     val selectedFeedChannelItemWithFeed: LiveData<DomainFeedChannelItemWithFeed?>
         get() = _selectedFeedChannelItemWithFeed
 
-    private var _lastSelectedFeedChannelItemWithFeed: DomainFeedChannelItemWithFeed = DomainFeedChannelItemWithFeed()
+    private var _lastSelectedFeedChannelItemWithFeed: DomainFeedChannelItemWithFeed =
+        DomainFeedChannelItemWithFeed()
     val lastSelectedFeedChannelItemWithFeed: DomainFeedChannelItemWithFeed
         get() = _lastSelectedFeedChannelItemWithFeed
 
@@ -78,7 +79,8 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     }
 
     fun navigateToContentsWithUrl(feedChannelItemUrl: String, feedChannelItemId: Long) {
-        _selectedFeedChannelItemWithFeed.value = DomainFeedChannelItemWithFeed(link = feedChannelItemUrl, id = feedChannelItemId)
+        _selectedFeedChannelItemWithFeed.value =
+            DomainFeedChannelItemWithFeed(link = feedChannelItemUrl, id = feedChannelItemId)
     }
 
     fun navigateToContentsWithUrlIsDone() {
@@ -88,7 +90,8 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     }
 
     fun updateItemReadStatus(read: Boolean) {
-        val id = lastSelectedFeedChannelItemWithFeed.id // selectedFeedChannelItemWithFeed.value!!.id
+        val id =
+            lastSelectedFeedChannelItemWithFeed.id // selectedFeedChannelItemWithFeed.value!!.id
         Timber.d(
             "[Timber] feedRepository.updateItemReadStatus(id=%d,read=%b)",
             id,
@@ -109,7 +112,6 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
             feedRepository.getFilteredFeeds(selectedFeedOptions)
                 .asLiveData()
         }
-
 
 
     /**
@@ -168,23 +170,65 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
                 linkName,
                 feed.toString()
             )
-            setSelectedFeed(SelectedFeedOptions().also { it.setLinkNameValue(linkName) })
+
+            // Cuando se clickea un feed, configura su linkName LiveData para que notifique a su observer
+            setSelectedFeedOptions(SelectedFeedOptions().also { it.setLinkNameValue(linkName) })
+
             _apiBaseUrl.value = feed.link
         }
     }
 
 
     /**
-     * Cuando se clickea un feed, configura su linkName LiveData para que notifique a su observer
+     * Se actualiza el _selectedFeedOptions LiveData para que se notifique a su observer
+     * y filtre automáticamente la lista de feeds.
      */
-    fun setSelectedFeed(selectedFeedOptions: SelectedFeedOptions) {
+    fun setSelectedFeedOptions(selectedFeedOptions: SelectedFeedOptions) {
         Timber.d(
             "[Timber] MainSharedViewModel.setSelectedFeed(DomainFeed.linkName = '%s')",
             selectedFeedOptions.linkName
         )
-        _selectedFeed.postValue(selectedFeedOptions)
+        _selectedFeedOptions.postValue(selectedFeedOptions)
     }
 
+    /**
+     * Actualiza el flag "read" de acuerdo al valor indicado para filtrar los datos mostrados
+     */
+    fun setSelectedFeedOptionsReadFlag(read: Boolean) {
+        // Sólo se hace la actualización si el dato realmente cambió
+        if (selectedFeedOptions.value != null && selectedFeedOptions.value!!.read != read) {
+            /*
+            val selFeedOpt = SelectedFeedOptions(
+                linkName = selectedFeedOptions.value!!.linkName,
+                favorite = selectedFeedOptions.value!!.favorite,
+                read = read,
+                readLater = selectedFeedOptions.value!!.readLater
+            )
+            setSelectedFeedOptions(selFeedOpt)
+             */
+            setSelectedFeedOptions(SelectedFeedOptions().also { it.read = read })
+        }
+    }
+
+    /**
+     * Actualiza el flag "favorite" de acuerdo al valor indicado para filtrar los datos mostrados
+     */
+    fun setSelectedFeedOptionsFavoriteTrue() {
+        // Sólo se hace la actualización si el dato realmente cambió
+        if (selectedFeedOptions.value != null && !selectedFeedOptions.value!!.favorite) {
+            setSelectedFeedOptions(SelectedFeedOptions().also { it.setFavoriteTrue() })
+        }
+    }
+
+    /**
+     * Actualiza el flag "readLater" de acuerdo al valor indicado para filtrar los datos mostrados
+     */
+    fun setSelectedFeedOptionsReadLaterTrue() {
+        // Sólo se hace la actualización si el dato realmente cambió
+        if (selectedFeedOptions.value != null && !selectedFeedOptions.value!!.readLater) {
+            setSelectedFeedOptions(SelectedFeedOptions().also { it.setReadLaterTrue() })
+        }
+    }
 
     private suspend fun setupInitialDrawerMenuData() {
 
@@ -342,7 +386,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     }
 
 
-    class Factory(private val context: Context, private val feedRepository: FeedRepository) :
+    class Factory(private val feedRepository: FeedRepository) :
         ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -352,7 +396,6 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
                 MainSharedViewModel::testigo
             )
             return MainSharedViewModel(feedRepository) as T
-            //return MainSharedViewModel.getInstance(context, feedRepository) as T
         }
     }
 

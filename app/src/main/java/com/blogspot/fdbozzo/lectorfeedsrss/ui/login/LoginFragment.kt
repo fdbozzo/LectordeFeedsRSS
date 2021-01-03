@@ -59,7 +59,7 @@ class LoginFragment : Fragment(), View.OnClickListener {
         //mainSharedViewModel = ViewModelProvider(requireActivity()).get(MainSharedViewModel::class.java)
         val localDatabase = FeedDatabase.getInstance(requireContext())
         val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
-        val sharedViewModel: MainSharedViewModel by activityViewModels { MainSharedViewModel.Factory(requireContext(), feedRepository) }
+        val sharedViewModel: MainSharedViewModel by activityViewModels { MainSharedViewModel.Factory(feedRepository) }
         //sharedViewModel = ViewModelProvider(this, MainSharedViewModel.Factory(requireContext(), feedRepository)).get(MainSharedViewModel::class.java)
         mainSharedViewModel = sharedViewModel
 

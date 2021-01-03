@@ -35,7 +35,7 @@ class ContentsFragment : Fragment() {
         binding.lifecycleOwner = this // Para que LiveData sea consciente del LifeCycle y se actualice la uI
         val localDatabase = FeedDatabase.getInstance(requireContext())
         val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
-        val sharedViewModel: MainSharedViewModel by activityViewModels { MainSharedViewModel.Factory(requireContext(), feedRepository) }
+        val sharedViewModel: MainSharedViewModel by activityViewModels { MainSharedViewModel.Factory(feedRepository) }
         mainSharedViewModel = sharedViewModel
         mainSharedViewModel.setActiveScreen(SealedClassAppScreens.ContentsFragment)
 

@@ -144,6 +144,7 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.1.0'
     //implementation 'com.google.android.gms:play-services-auth:18.1.0'
     //implementation 'com.google.gms:google-services:4.3.4'
+    implementation 'androidx.preference:preference-ktx:1.1.1'
 
     /**
      * Testing libraries

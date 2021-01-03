@@ -1,5 +1,6 @@
 package com.blogspot.fdbozzo.lectorfeedsrss
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.*
 import android.widget.*
@@ -11,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
+import androidx.preference.PreferenceManager
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
@@ -38,16 +40,25 @@ class MainActivity : AppCompatActivity() {
     private var adapter: ExpandableListAdapter? = null
     internal var titleList: List<String>? = null
     private var expandableItemLongClick: Boolean = false
+    private lateinit var sharedPreferences: SharedPreferences
+    var showUnreadOnlyPref: Boolean = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Guarda las preferencias por única vez, si no estaban ya guardadas
+        PreferenceManager.setDefaultValues(applicationContext, R.xml.preferences, false)
+
+        // Lee las preferencias
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+
         Timber.d("[Timber] onCreate() - mainSharedViewModel")
         val localDatabase = FeedDatabase.getInstance(applicationContext)
         val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
-        val sharedViewModel: MainSharedViewModel by viewModels { MainSharedViewModel.Factory(applicationContext, feedRepository) }
+        val sharedViewModel: MainSharedViewModel by viewModels { MainSharedViewModel.Factory(feedRepository) }
         mainSharedViewModel = sharedViewModel
         sharedViewModel.testigo = "MainActivity"
         mainSharedViewModel.setActiveScreen(SealedClassAppScreens.MainActivity)
@@ -76,7 +87,10 @@ class MainActivity : AppCompatActivity() {
         mainSharedViewModel.apiBaseUrl.observe(this, Observer {
             it?.let {
                 Timber.d("[Timber] onCreate() - mainSharedViewModel.apiBaseUrl cambiado a $it")
-                drawerLayout.close()
+
+                if (drawerLayout.isDrawerOpen(GravityCompat.START))
+                    drawerLayout.closeDrawer(GravityCompat.START)
+
                 mainSharedViewModel.getFeeds()
             }
         })
@@ -164,17 +178,23 @@ class MainActivity : AppCompatActivity() {
          */
         mainSharedViewModel.selectedScreen.observe(this, Observer {
             binding.topAppBar.menu.clear()
+
+            // Carga preferencia para "show_unread_only"
+            showUnreadOnlyPref = sharedPreferences.getBoolean(getString(R.string.pref_show_unread_only), false)
+            Timber.d("[Timber] selectedScreen.observe: showReadonlyPref = %s", showUnreadOnlyPref)
+
             when (it) {
                 is SealedClassAppScreens.MainActivity -> {
                     Timber.d("[Timber] Menu MainActivity")
                 }
                 is SealedClassAppScreens.FeedChannelFragment -> {
-                    binding.topAppBar.inflateMenu(R.menu.upper_navdrawer_feedchannel_menu)
                     Timber.d("[Timber] Menu FeedChannelFragment")
+                    binding.topAppBar.inflateMenu(R.menu.upper_navdrawer_feedchannel_menu)
+                    mainSharedViewModel.setSelectedFeedOptionsReadFlag(!showUnreadOnlyPref)
                 }
                 is SealedClassAppScreens.ContentsFragment -> {
-                    binding.topAppBar.inflateMenu(R.menu.upper_navdrawer_feedchannelitem_menu)
                     Timber.d("[Timber] Menu ContentsFragment")
+                    binding.topAppBar.inflateMenu(R.menu.upper_navdrawer_feedchannelitem_menu)
                 }
                 is SealedClassAppScreens.SettingsFragment -> {
                     Timber.d("[Timber] Menu SettingsFragment")
@@ -226,29 +246,38 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setSelectToFavorites() {
-        drawerLayout.close()
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
+            drawerLayout.closeDrawer(GravityCompat.START)
+
         Toast.makeText(this, "Favorites...", Toast.LENGTH_SHORT).show()
-        mainSharedViewModel.setSelectedFeed(SelectedFeedOptions().also { it.setFavoriteTrue() })
+        mainSharedViewModel.setSelectedFeedOptions(SelectedFeedOptions().also { it.setFavoriteTrue() })
     }
 
     private fun setSelectToReadLater() {
-        drawerLayout.close()
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
+            drawerLayout.closeDrawer(GravityCompat.START)
+
         Toast.makeText(this, "Read Later...", Toast.LENGTH_SHORT).show()
-        mainSharedViewModel.setSelectedFeed(SelectedFeedOptions().also { it.setReadLaterTrue() })
+        mainSharedViewModel.setSelectedFeedOptions(SelectedFeedOptions().also { it.setReadLaterTrue() })
     }
 
     private fun logout() {
         mAuth.signOut()
-        drawerLayout.close()
+
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
+            drawerLayout.closeDrawer(GravityCompat.START)
+
         navController.popBackStack(R.id.nav_feed_contents, true)
         navController.navigate(R.id.nav_login)
         Toast.makeText(this, "Loging out...", Toast.LENGTH_SHORT).show()
     }
 
     private fun setSelectToAllFeeds() {
-        drawerLayout.close()
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
+            drawerLayout.closeDrawer(GravityCompat.START)
+
         Toast.makeText(this, "All feeds...", Toast.LENGTH_SHORT).show()
-        mainSharedViewModel.setSelectedFeed(SelectedFeedOptions())
+        mainSharedViewModel.setSelectedFeedOptions(SelectedFeedOptions())
     }
 
     private fun setupDrawerExpandableListView(listData: HashMap<String, List<String>>) {
@@ -384,7 +413,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun navigateToSettings() {
-        drawerLayout.close()
+        binding.topAppBar.menu.clear()
+
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
+            drawerLayout.closeDrawer(GravityCompat.START)
+
         navController.navigate(R.id.nav_settings)
     }
     //*/
