@@ -9,6 +9,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithF
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Group as DomainGroup
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.LocalDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.SelectedFeedOptions
+import com.blogspot.fdbozzo.lectorfeedsrss.util.toInt
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannelItem as ServerFeedChannelItem
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannel as ServerFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
@@ -228,17 +229,17 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
     override fun getFeedChannelItemsWithFeed(selectedFeedOptions: SelectedFeedOptions): Flow<List<DomainFeedChannelItemWithFeed>> =
         feedChannelItemDao.getFilteredFeedChannelItemsWithFeed(
             linkName = selectedFeedOptions.linkName,
-            favorite = selectedFeedOptions.favorite,
-            readLater = selectedFeedOptions.readLater,
-            read = selectedFeedOptions.read
+            favorite = selectedFeedOptions.favorite.toInt(),
+            readLater = selectedFeedOptions.readLater.toInt(),
+            read = selectedFeedOptions.read.toInt()
         ).map { roomFeedChannelItemWithFeed ->
             roomFeedChannelItemWithFeed.map {
                 it.toDomainFeedChannelItemWithFeed()
             }
         }
 
-    override fun updateReadStatus(id: Long, read: Int): Int {
-        return feedChannelItemDao.updateReadStatus(id, read)
+    override fun updateReadStatus(id: Long, read: Boolean): Int {
+        return feedChannelItemDao.updateReadStatus(id, read.toInt())
     }
 
 }

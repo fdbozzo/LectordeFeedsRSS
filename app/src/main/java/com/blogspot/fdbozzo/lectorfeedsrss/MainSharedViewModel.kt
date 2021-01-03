@@ -84,10 +84,10 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     fun navigateToContentsWithUrlIsDone() {
         _lastSelectedFeedChannelItemWithFeed = _selectedFeedChannelItemWithFeed.value!!
         _selectedFeedChannelItemWithFeed.value = null
-        updateItemReadStatus(1)
+        updateItemReadStatus(true)
     }
 
-    fun updateItemReadStatus(read: Int) {
+    fun updateItemReadStatus(read: Boolean) {
         val id = lastSelectedFeedChannelItemWithFeed.id // selectedFeedChannelItemWithFeed.value!!.id
         Timber.d(
             "[Timber] feedRepository.updateItemReadStatus(id=%d,read=%b)",

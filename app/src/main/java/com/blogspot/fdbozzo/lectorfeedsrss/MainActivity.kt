@@ -196,7 +196,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_mark_as_unread -> {
                     //val id = sharedViewModel.lastSelectedFeedChannelItemWithFeed.id
                     Timber.d("[Timber] Mark as unread")
-                    sharedViewModel.updateItemReadStatus(0)
+                    sharedViewModel.updateItemReadStatus(false)
                     navController.popBackStack()
                 }
                 R.id.nav_settings -> {

@@ -2,26 +2,26 @@ package com.blogspot.fdbozzo.lectorfeedsrss.data.domain
 
 data class SelectedFeedOptions(
     var linkName: String = "%",
-    var favorite: Int = 0,
-    var read: Int = 1,
-    var readLater: Int = 0
+    var favorite: Boolean = false,
+    var read: Boolean = true,
+    var readLater: Boolean = false
 ) {
     fun setLinkNameValue(linkName: String) {
         this.linkName = linkName
-        this.favorite = 0
-        this.readLater = 0
+        this.favorite = false
+        this.readLater = false
     }
 
     fun setFavoriteTrue() {
         this.linkName = "%"
-        this.favorite = 1
-        this.readLater = 0
+        this.favorite = true
+        this.readLater = false
     }
 
     fun setReadLaterTrue() {
         this.linkName = "%"
-        this.favorite = 0
-        this.readLater = 1
+        this.favorite = false
+        this.readLater = true
     }
 
 }

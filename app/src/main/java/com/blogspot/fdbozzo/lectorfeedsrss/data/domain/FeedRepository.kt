@@ -136,7 +136,7 @@ class FeedRepository(
         return localDataSource.getFeedWithLinkName(linkName)
     }
 
-    fun updateReadStatus(id: Long ,read: Int): Int {
+    fun updateReadStatus(id: Long ,read: Boolean): Int {
         return localDataSource.updateReadStatus(id, read)
     }
 
@@ -189,7 +189,7 @@ interface LocalDataSource {
     suspend fun getFeedChannelItems(): Flow<List<DomainFeedChannelItem>>
     fun getFeedChannelItems2(): Flow<List<DomainFeedChannelItem>>
     fun getFeedChannelItemsWithFeed(selectedFeedOptions: SelectedFeedOptions): Flow<List<DomainFeedChannelItemWithFeed>>
-    fun updateReadStatus(id: Long ,read: Int): Int
+    fun updateReadStatus(id: Long ,read: Boolean): Int
 
 }
 
