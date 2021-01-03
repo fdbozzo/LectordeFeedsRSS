@@ -33,13 +33,6 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     val selectedScreen: LiveData<SealedClassAppScreens>
         get() = _selectedScreen
 
-    // Indicador de si está activo el filtro para los feeds (false=all, true=seleccionado)
-    /*
-    private var _feedsFilter = MutableLiveData<Boolean>(false)
-    val feedsFilter: LiveData<Boolean>
-        get() = _feedsFilter
-     */
-
     // Feed seleccionado
     private var _selectedFeedOptions = MutableLiveData(SelectedFeedOptions())
     val selectedFeedOptions: LiveData<SelectedFeedOptions>
@@ -197,15 +190,6 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     fun setSelectedFeedOptionsReadFlag(read: Boolean) {
         // Sólo se hace la actualización si el dato realmente cambió
         if (selectedFeedOptions.value != null && selectedFeedOptions.value!!.read != read) {
-            /*
-            val selFeedOpt = SelectedFeedOptions(
-                linkName = selectedFeedOptions.value!!.linkName,
-                favorite = selectedFeedOptions.value!!.favorite,
-                read = read,
-                readLater = selectedFeedOptions.value!!.readLater
-            )
-            setSelectedFeedOptions(selFeedOpt)
-             */
             setSelectedFeedOptions(SelectedFeedOptions().also { it.read = read })
         }
     }
