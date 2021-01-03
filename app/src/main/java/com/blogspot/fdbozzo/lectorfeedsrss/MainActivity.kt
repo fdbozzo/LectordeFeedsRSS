@@ -186,8 +186,6 @@ class MainActivity : AppCompatActivity() {
         /**
          * Controlar las opciones elegidas del menú superior
          */
-        setSupportActionBar(binding.bottomAppBar)
-
         binding.topAppBar.setOnMenuItemClickListener {
 
             when (it.itemId) {
@@ -201,12 +199,21 @@ class MainActivity : AppCompatActivity() {
                     sharedViewModel.updateItemReadStatus(0)
                     navController.popBackStack()
                 }
+                R.id.nav_settings -> {
+                    Timber.d("[Timber] Settings")
+                    navigateToSettings()
+                }
                 else -> {
-                    Timber.d("[Timber] setOnMenuItemClickListener(%s)", it.itemId.toString())
+                    Timber.d("[Timber] topAppBar.setOnMenuItemClickListener(%s)", it.itemId.toString())
                 }
             }
             false
         }
+
+        /**
+         * Activar el menú del ActionBar (inferior)
+         */
+        setSupportActionBar(binding.bottomAppBar)
 
         //setupActionBarWithNavController(navController, appBarConfiguration)
         NavigationUI.setupActionBarWithNavController(
