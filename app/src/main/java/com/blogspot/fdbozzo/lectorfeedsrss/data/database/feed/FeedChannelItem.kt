@@ -38,9 +38,10 @@ data class FeedChannelItem(
 
     var description: String = "",
 
+    @ColumnInfo(defaultValue = "0")
     var read: Int = 0,
 
-    @ColumnInfo(name = "read_later")
+    @ColumnInfo(name = "read_later", defaultValue = "0")
     var readLater: Int = 0,
 
     @ColumnInfo(name = "image_link")

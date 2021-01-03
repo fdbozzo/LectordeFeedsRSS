@@ -10,7 +10,7 @@ import androidx.room.*
     indices = [Index(name = "group_name__group_table", value = ["group_name"], unique = true)]
 )
 data class Group(
-    @ColumnInfo(name = "group_name")
+    @ColumnInfo(name = "group_name", defaultValue = "Uncategorized")
     var groupName: String = "Uncategorized"
 
 ) {

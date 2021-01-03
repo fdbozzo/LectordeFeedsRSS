@@ -35,6 +35,7 @@ data class Feed constructor(
     @ColumnInfo(name = "link")
     var link: String = "",
 
+    @ColumnInfo(defaultValue = "0")
     var favorite: Int = 0,
 
     @Ignore
@@ -55,7 +56,7 @@ data class Feed constructor(
         var group: Group = Group()
 
         @Embedded
-        var feed: Feed = Feed()
+        var feed: Feed? = null //Feed()
     }
 
 }

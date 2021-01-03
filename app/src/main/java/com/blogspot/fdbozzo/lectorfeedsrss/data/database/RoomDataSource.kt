@@ -123,7 +123,7 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
             lista = (feedDao.getGroupsWithFeedPairs()?.groupByTo(
                 HashMap(),
                 { it.group.groupName },
-                { it.feed.linkName }
+                { it.feed?.linkName }
             ) as HashMap<String, List<String>>?)!!
 
         }
