@@ -24,6 +24,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetFeedOptionsMenuFra
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetGroupOptionsMenuFragment
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetMarkAsReadOptionsMenuFragment
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -181,7 +182,7 @@ class MainActivity : AppCompatActivity() {
 
             // Carga preferencia para "show_unread_only"
             showUnreadOnlyPref = sharedPreferences.getBoolean(getString(R.string.pref_show_unread_only), false)
-            Timber.d("[Timber] selectedScreen.observe: showReadonlyPref = %s", showUnreadOnlyPref)
+            Timber.d("[Timber] selectedScreen.observe: showUnreadOnlyPref = %s", showUnreadOnlyPref)
 
             when (it) {
                 is SealedClassAppScreens.MainActivity -> {
@@ -190,6 +191,8 @@ class MainActivity : AppCompatActivity() {
                 is SealedClassAppScreens.FeedChannelFragment -> {
                     Timber.d("[Timber] Menu FeedChannelFragment")
                     binding.topAppBar.inflateMenu(R.menu.upper_navdrawer_feedchannel_menu)
+
+                    // Actualiza el filtro con el valor del setting global de "showUnreadOnly"
                     mainSharedViewModel.setSelectedFeedOptionsReadFlag(!showUnreadOnlyPref)
                 }
                 is SealedClassAppScreens.ContentsFragment -> {
@@ -214,10 +217,20 @@ class MainActivity : AppCompatActivity() {
                     BottomSheetMarkAsReadOptionsMenuFragment(tituloMenu).show(supportFragmentManager, "submenu")
                 }
                 R.id.nav_mark_as_unread -> {
-                    //val id = sharedViewModel.lastSelectedFeedChannelItemWithFeed.id
                     Timber.d("[Timber] Mark as unread")
                     sharedViewModel.updateItemReadStatus(false)
                     navController.popBackStack()
+                    Toast.makeText(this, getString(R.string.msg_marked_as_unread), Toast.LENGTH_SHORT).show()
+                }
+                R.id.nav_mark_as_read_later -> {
+                    Timber.d("[Timber] Change read later status")
+                    val readLater = sharedViewModel.updateItemReadLaterStatus()
+                    navController.popBackStack()
+                    if (readLater) {
+                        Toast.makeText(this, getString(R.string.msg_marked_for_read_later), Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this, getString(R.string.msg_unmarked_for_read_later), Toast.LENGTH_SHORT).show()
+                    }
                 }
                 R.id.nav_settings -> {
                     Timber.d("[Timber] Settings")
@@ -305,8 +318,12 @@ class MainActivity : AppCompatActivity() {
                 expandableItemLongClick = false
             }
 
+            /**
+             * Controlador de selección (click) de item (noticia/post) a visualizar
+             */
             expandableListView!!.setOnChildClickListener { parent, v, groupPosition, childPosition, id ->
                 if (expandableItemLongClick) {
+                    // LONG-CLICK
                     Timber.d("[Timber] expandableListView!!.setOnChildClickListener(LONG CLICK!)")
                     expandableItemLongClick = false
 
@@ -315,6 +332,7 @@ class MainActivity : AppCompatActivity() {
 
                     return@setOnChildClickListener true
                 } else {
+                    // CLICK NORMAL
                     Timber.d(
                         "[Timber] expandableListView!!.setOnChildClickListener(groupPosition = %d, childPosition = %d)",
                         groupPosition,

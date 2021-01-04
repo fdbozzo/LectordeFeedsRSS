@@ -8,6 +8,8 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.SelectedFeedOptions
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssApiStatus
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
+import com.blogspot.fdbozzo.lectorfeedsrss.util.toInt
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -66,39 +68,9 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     val lastSelectedFeedChannelItemWithFeed: DomainFeedChannelItemWithFeed
         get() = _lastSelectedFeedChannelItemWithFeed
 
-    fun setActiveScreen(sealedClassAppScreens: SealedClassAppScreens) {
-        _selectedScreen.value = sealedClassAppScreens
-        Timber.d("[Timber] Pantalla activa: %s", sealedClassAppScreens)
-    }
-
-    fun navigateToContentsWithUrl(feedChannelItemUrl: String, feedChannelItemId: Long) {
-        _selectedFeedChannelItemWithFeed.value =
-            DomainFeedChannelItemWithFeed(link = feedChannelItemUrl, id = feedChannelItemId)
-    }
-
-    fun navigateToContentsWithUrlIsDone() {
-        _lastSelectedFeedChannelItemWithFeed = _selectedFeedChannelItemWithFeed.value!!
-        _selectedFeedChannelItemWithFeed.value = null
-        updateItemReadStatus(true)
-    }
-
-    fun updateItemReadStatus(read: Boolean) {
-        val id =
-            lastSelectedFeedChannelItemWithFeed.id // selectedFeedChannelItemWithFeed.value!!.id
-        Timber.d(
-            "[Timber] feedRepository.updateItemReadStatus(id=%d,read=%b)",
-            id,
-            true
-        )
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                feedRepository.updateReadStatus(id, read)
-            }
-        }
-    }
-
     /**
-     * Conecta items al origen de BBDD para actualización automática
+     * Conecta el LiveData "items" a la consulta de BBDD para actualización automática cuando cambien
+     * los valores del filtro LiveData "selectedFeedOptions"
      */
     val items: LiveData<List<DomainFeedChannelItemWithFeed>> =
         Transformations.switchMap(selectedFeedOptions) { selectedFeedOptions ->
@@ -107,8 +79,80 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
         }
 
 
+
+    fun setActiveScreen(sealedClassAppScreens: SealedClassAppScreens) {
+        _selectedScreen.value = sealedClassAppScreens
+        Timber.d("[Timber] Pantalla activa: %s", sealedClassAppScreens)
+    }
+
     /**
-     * Llamar a getRssFeedData() en el init para obtener los datos inmediatamente.
+     * Se configura el link y el id del FeedChannelItem para que el observer lo cargue.
+     */
+    fun navigateToContentsWithUrl(feedChannelItemUrl: String, feedChannelItemId: Long) {
+        // VER SI NO CONVIENE CARGAR LOS DATOS DEL REGISTRO A MOSTRAR EN UNA VARIABLE CONSULTABLE
+        // Y SI LO DEL "selected"..." DEL SIGUIENTE MÉTODO NO DEBERÍA IR AQUÍ
+        _selectedFeedChannelItemWithFeed.value =
+            DomainFeedChannelItemWithFeed(link = feedChannelItemUrl, id = feedChannelItemId)
+
+        /*
+        viewModelScope.launch {
+            _selectedFeedChannelItemWithFeed.value = withContext(Dispatchers.IO) {
+                return@withContext feedRepository.getFeedChannelItemWithFeed(feedChannelItemId)
+            }
+            Timber.d("[Timber] feedRepository.getFeedWithLinkName")
+        }
+         */
+    }
+
+    fun navigateToContentsWithUrlIsDone() {
+        _lastSelectedFeedChannelItemWithFeed = _selectedFeedChannelItemWithFeed.value!!.copy()
+        _selectedFeedChannelItemWithFeed.value = null
+        updateItemReadStatus(true)
+    }
+
+    /**
+     * Actualiza el estado del flag "read" del item elegido
+     */
+    fun updateItemReadStatus(read: Boolean) {
+        val id = lastSelectedFeedChannelItemWithFeed.id // selectedFeedChannelItemWithFeed.value!!.id
+        Timber.d("[Timber] feedRepository.updateItemReadStatus(id=%d,read=%b)", id, true)
+        if (id != null) {
+            viewModelScope.launch {
+                withContext(Dispatchers.IO) {
+                    feedRepository.updateReadStatus(id, read)
+                    //_lastSelectedFeedChannelItemWithFeed.read = read.toInt()
+                    // ACTUALIZAR VARIABLE CON REGISTRO ACTUAL AQUÍ
+                }
+            }
+        }
+    }
+
+    /**
+     * Actualiza el estado del flag "read_later" del item elegido
+     */
+    fun updateItemReadLaterStatus(): Boolean {
+        //val id = lastSelectedFeedChannelItemWithFeed.id
+        /*
+        val id = lastSelectedFeedChannelItemWithFeedId.value
+        val readLater = lastSelectedFeedChannelItemWithFeed.readLater != 1
+        Timber.d(
+            "[Timber] feedRepository.updateItemReadStatus(id=%d,readLater=%b)",
+            id,
+            readLater
+        )
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                feedRepository.updateReadLaterStatus(id, readLater)
+                _lastSelectedFeedChannelItemWithFeed.readLater = readLater.toInt()
+            }
+        }
+
+         */
+        return false // readLater
+    }
+
+    /**
+     * Configurar el LiveData apiBaseUrl en el init para obtener los datos inmediatamente.
      */
     init {
         Timber.d("[Timber] MainSharedViewModel.init() - apiBaseUrl se cambia a 'https://hardzone.es'")

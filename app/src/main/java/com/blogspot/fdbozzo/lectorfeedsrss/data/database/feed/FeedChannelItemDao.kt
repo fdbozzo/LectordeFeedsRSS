@@ -1,5 +1,6 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
@@ -29,6 +30,9 @@ interface FeedChannelItemDao {
     @Query("UPDATE feed_channel_item_table SET read = :read WHERE id = :id")
     fun updateReadStatus(id: Long ,read: Int): Int
 
+    @Query("UPDATE feed_channel_item_table SET read_later = :readLater WHERE id = :id")
+    fun updateReadLaterStatus(id: Long ,readLater: Int): Int
+
     /**
      *
      * @param key Id del FeedChannelItem a buscar
@@ -53,7 +57,7 @@ interface FeedChannelItemDao {
     fun getAllFeedChannelItems(): Flow<List<FeedChannelItem>>
 
     /**
-     * Selecciona y retorna todos los datos de la tabla no leídos,
+     * Selecciona y retorna todos los datos de la tabla filtrados y
      * ordenados por fecha de publicación descendente.
      */
     @Query(
@@ -69,6 +73,17 @@ interface FeedChannelItemDao {
     fun getFilteredFeedChannelItemsWithFeed(linkName: String, favorite: Int, readLater: Int, read: Int): Flow<List<FeedChannelItemWithFeed>>
 
     /**
+     * Devuelve el item del id indicado e información extra sobre el feed del mismo
+     */
+    @Query(
+        """SELECT ft.link_name,fcit.* 
+        FROM feed_channel_item_table fcit 
+        INNER JOIN feed_table ft ON fcit.feed_id = ft.id 
+        WHERE fcit.id = :id"""
+    )
+    fun getFeedChannelItemWithFeed(id: Long): FeedChannelItemWithFeed
+
+    /**
      * Selecciona y retorna el último item.
      */
     @Query("SELECT * FROM feed_channel_item_table ORDER BY id DESC LIMIT 1")
@@ -77,12 +92,18 @@ interface FeedChannelItemDao {
     /**
      * Selecciona y retorna el contentEncoded con el Id indicado.
      */
+    /*
     @Query("SELECT * from feed_channel_item_table WHERE id = :key")
     fun getFeedItemWithId(key: Long): Flow<FeedChannelItem>
+
+     */
 
     /**
      * Selecciona y retorna el contentEncoded con el link indicado.
      */
+    /*
     @Query("SELECT * from feed_channel_item_table WHERE link = :link")
     fun getFeedItemWithLink(link: String): Flow<FeedChannelItem>
+
+     */
 }

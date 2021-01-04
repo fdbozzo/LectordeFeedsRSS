@@ -1,6 +1,7 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.domain
 
 import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannel as ServerFeedChannel
@@ -136,8 +137,16 @@ class FeedRepository(
         return localDataSource.getFeedWithLinkName(linkName)
     }
 
+    fun getFeedChannelItemWithFeed(id: Long): DomainFeedChannelItemWithFeed {
+        return localDataSource.getFeedChannelItemWithFeed(id)
+    }
+
     fun updateReadStatus(id: Long ,read: Boolean): Int {
         return localDataSource.updateReadStatus(id, read)
+    }
+
+    fun updateReadLaterStatus(id: Long ,readLater: Boolean): Int {
+        return localDataSource.updateReadLaterStatus(id, readLater)
     }
 
 }
@@ -187,9 +196,10 @@ interface LocalDataSource {
     suspend fun saveFeedChannelItems(feedChannelItems: List<DomainFeedChannelItem>)
     suspend fun saveFeedChannelItemsFromServer(feedChannelItems: List<ServerFeedChannelItem>)
     suspend fun getFeedChannelItems(): Flow<List<DomainFeedChannelItem>>
-    fun getFeedChannelItems2(): Flow<List<DomainFeedChannelItem>>
+    fun getFeedChannelItemWithFeed(id: Long): DomainFeedChannelItemWithFeed
     fun getFeedChannelItemsWithFeed(selectedFeedOptions: SelectedFeedOptions): Flow<List<DomainFeedChannelItemWithFeed>>
     fun updateReadStatus(id: Long ,read: Boolean): Int
+    fun updateReadLaterStatus(id: Long ,readLater: Boolean): Int
 
 }
 

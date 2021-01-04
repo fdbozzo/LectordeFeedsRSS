@@ -47,6 +47,7 @@ class FeedChannelAdapter(
             binding.feedChannelItemWithFeed = feedChannelItemWithFeed
             binding.viewModel = viewModel
             //binding.clickListener = clickListener
+            Timber.d("[Timber] ViewHolder.bind(%s)", feedChannelItemWithFeed.link)
             binding.executePendingBindings()
         }
 
@@ -66,7 +67,8 @@ class FeedChannelAdapter(
 class FeedContentsDiff : DiffUtil.ItemCallback<DomainFeedChannelItem>() {
 
     override fun areItemsTheSame(oldChannelItem: DomainFeedChannelItem, newChannelItem: DomainFeedChannelItem): Boolean {
-        return oldChannelItem.pubDate == newChannelItem.pubDate
+        //return oldChannelItem.pubDate == newChannelItem.pubDate
+        return oldChannelItem.id == newChannelItem.id
     }
 
     override fun areContentsTheSame(oldChannelItem: DomainFeedChannelItem, newChannelItem: DomainFeedChannelItem): Boolean {

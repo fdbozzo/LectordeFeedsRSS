@@ -68,6 +68,7 @@ class FeedChannelFragment : Fragment() {
                 //adapter.data = it   // Esto solo lo usa el RecyclerView.Adapter
                 //adapter.submitList(it)
                 //initRecyclerView(it)
+                Timber.i("[Timber] onViewCreated() - mainSharedViewModel.items (CAMBIO)")
                 binding.recyclerView.adapter = FeedChannelAdapter(it, sharedViewModel, requireContext())
             }
         })
