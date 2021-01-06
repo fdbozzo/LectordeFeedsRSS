@@ -232,6 +232,7 @@ class MainActivity : AppCompatActivity() {
                 is SealedClassAppScreens.FeedChannelFragment -> {
                     Timber.d("[Timber] Menu FeedChannelFragment")
                     binding.topAppBar.inflateMenu(R.menu.upper_navdrawer_feedchannel_menu)
+                    binding.topAppBar.setTitle(R.string.screen_title_all_feeds)
 
                     // Actualiza el filtro con el valor del setting global de "showUnreadOnly"
                     mainSharedViewModel.setSelectedFeedOptionsReadFlag(!showUnreadOnlyPref)
