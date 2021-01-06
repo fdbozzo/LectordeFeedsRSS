@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
@@ -24,16 +25,17 @@ import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetFeedOptionsMenuFra
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetGroupOptionsMenuFragment
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetMarkAsReadOptionsMenuFragment
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var binding: ActivityMainBinding
+
     //private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var mainSharedViewModel: MainSharedViewModel
     private lateinit var mAuth: FirebaseAuth
@@ -59,7 +61,11 @@ class MainActivity : AppCompatActivity() {
         Timber.d("[Timber] onCreate() - mainSharedViewModel")
         val localDatabase = FeedDatabase.getInstance(applicationContext)
         val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
-        val sharedViewModel: MainSharedViewModel by viewModels { MainSharedViewModel.Factory(feedRepository) }
+        val sharedViewModel: MainSharedViewModel by viewModels {
+            MainSharedViewModel.Factory(
+                feedRepository
+            )
+        }
         mainSharedViewModel = sharedViewModel
         sharedViewModel.testigo = "MainActivity"
         mainSharedViewModel.setActiveScreen(SealedClassAppScreens.MainActivity)
@@ -94,6 +100,19 @@ class MainActivity : AppCompatActivity() {
 
                 mainSharedViewModel.getFeeds()
             }
+        })
+
+        mainSharedViewModel.selectedFeedChannelItemId.observe(this, Observer {
+            Timber.d("[Timber] (Observer) selectedFeedChannelItemId= %d", it)
+        })
+
+        mainSharedViewModel.autoUpdatedSelectedFeedChannelItemWithFeed.observe(this, Observer {
+            Timber.d(
+                "[Timber] (Observer) lastSelectedFeedChannelItemWithFeed(%d) = %s",
+                it.id,
+                it.link
+            )
+            //mainSharedViewModel.setLastSelectedFeedChannelItemWithFeed(it)
         })
 
 
@@ -174,6 +193,27 @@ class MainActivity : AppCompatActivity() {
         )
          */
 
+        mainSharedViewModel.readLaterStatus.observe(this, Observer { readLater ->
+            readLater?.let {
+                when (readLater) {
+                    true -> {
+                        Toast.makeText(
+                            this,
+                            getString(R.string.msg_marked_for_read_later),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    false -> {
+                        Toast.makeText(
+                            this,
+                            getString(R.string.msg_unmarked_for_read_later),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        })
+
         /**
          * Cargar menú superior según el fragmento cargado
          */
@@ -181,7 +221,8 @@ class MainActivity : AppCompatActivity() {
             binding.topAppBar.menu.clear()
 
             // Carga preferencia para "show_unread_only"
-            showUnreadOnlyPref = sharedPreferences.getBoolean(getString(R.string.pref_show_unread_only), false)
+            showUnreadOnlyPref =
+                sharedPreferences.getBoolean(getString(R.string.pref_show_unread_only), false)
             Timber.d("[Timber] selectedScreen.observe: showUnreadOnlyPref = %s", showUnreadOnlyPref)
 
             when (it) {
@@ -198,6 +239,7 @@ class MainActivity : AppCompatActivity() {
                 is SealedClassAppScreens.ContentsFragment -> {
                     Timber.d("[Timber] Menu ContentsFragment")
                     binding.topAppBar.inflateMenu(R.menu.upper_navdrawer_feedchannelitem_menu)
+                    binding.topAppBar.title = ""
                 }
                 is SealedClassAppScreens.SettingsFragment -> {
                     Timber.d("[Timber] Menu SettingsFragment")
@@ -214,30 +256,35 @@ class MainActivity : AppCompatActivity() {
             when (it.itemId) {
                 R.id.nav_mark_all_as_read -> {
                     val tituloMenu = "Mark as read"
-                    BottomSheetMarkAsReadOptionsMenuFragment(tituloMenu).show(supportFragmentManager, "submenu")
+                    BottomSheetMarkAsReadOptionsMenuFragment(tituloMenu).show(
+                        supportFragmentManager,
+                        "submenu"
+                    )
                 }
                 R.id.nav_mark_as_unread -> {
                     Timber.d("[Timber] Mark as unread")
                     sharedViewModel.updateItemReadStatus(false)
                     navController.popBackStack()
-                    Toast.makeText(this, getString(R.string.msg_marked_as_unread), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        applicationContext,
+                        getString(R.string.msg_marked_as_unread),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 R.id.nav_mark_as_read_later -> {
                     Timber.d("[Timber] Change read later status")
-                    val readLater = sharedViewModel.updateItemReadLaterStatus()
+                    sharedViewModel.updateItemReadLaterStatus()
                     navController.popBackStack()
-                    if (readLater) {
-                        Toast.makeText(this, getString(R.string.msg_marked_for_read_later), Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(this, getString(R.string.msg_unmarked_for_read_later), Toast.LENGTH_SHORT).show()
-                    }
                 }
                 R.id.nav_settings -> {
                     Timber.d("[Timber] Settings")
                     navigateToSettings()
                 }
                 else -> {
-                    Timber.d("[Timber] topAppBar.setOnMenuItemClickListener(%s)", it.itemId.toString())
+                    Timber.d(
+                        "[Timber] topAppBar.setOnMenuItemClickListener(%s)",
+                        it.itemId.toString()
+                    )
                 }
             }
             false
@@ -264,6 +311,7 @@ class MainActivity : AppCompatActivity() {
 
         Toast.makeText(this, "Favorites...", Toast.LENGTH_SHORT).show()
         mainSharedViewModel.setSelectedFeedOptions(SelectedFeedOptions().also { it.setFavoriteTrue() })
+        binding.topAppBar.setTitle(R.string.screen_title_favorites)
     }
 
     private fun setSelectToReadLater() {
@@ -272,6 +320,7 @@ class MainActivity : AppCompatActivity() {
 
         Toast.makeText(this, "Read Later...", Toast.LENGTH_SHORT).show()
         mainSharedViewModel.setSelectedFeedOptions(SelectedFeedOptions().also { it.setReadLaterTrue() })
+        binding.topAppBar.setTitle(R.string.screen_title_read_later)
     }
 
     private fun logout() {
@@ -291,6 +340,7 @@ class MainActivity : AppCompatActivity() {
 
         Toast.makeText(this, "All feeds...", Toast.LENGTH_SHORT).show()
         mainSharedViewModel.setSelectedFeedOptions(SelectedFeedOptions())
+        binding.topAppBar.setTitle(R.string.screen_title_all_feeds)
     }
 
     private fun setupDrawerExpandableListView(listData: HashMap<String, List<String>>) {
@@ -319,7 +369,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             /**
-             * Controlador de selección (click) de item (noticia/post) a visualizar
+             * Controlador de selección (click) de Feed para mostrar sus noticias
              */
             expandableListView!!.setOnChildClickListener { parent, v, groupPosition, childPosition, id ->
                 if (expandableItemLongClick) {
@@ -327,8 +377,12 @@ class MainActivity : AppCompatActivity() {
                     Timber.d("[Timber] expandableListView!!.setOnChildClickListener(LONG CLICK!)")
                     expandableItemLongClick = false
 
-                    val tituloMenu = listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition]
-                    BottomSheetFeedOptionsMenuFragment(tituloMenu).show(supportFragmentManager, "submenu")
+                    val tituloMenu =
+                        listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition]
+                    BottomSheetFeedOptionsMenuFragment(tituloMenu).show(
+                        supportFragmentManager,
+                        "submenu"
+                    )
 
                     return@setOnChildClickListener true
                 } else {
@@ -339,7 +393,8 @@ class MainActivity : AppCompatActivity() {
                         childPosition
                     )
 
-                    val linkName = listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition]
+                    val linkName =
+                        listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition]
                     mainSharedViewModel.getFeedWithLinkNameAndSetApiBaseUrl(linkName)
 
                     expandableItemLongClick = false
@@ -353,7 +408,10 @@ class MainActivity : AppCompatActivity() {
                     expandableItemLongClick = false
 
                     val tituloMenu = (titleList as ArrayList<String>)[groupPosition]
-                    BottomSheetGroupOptionsMenuFragment(tituloMenu).show(supportFragmentManager, "submenu")
+                    BottomSheetGroupOptionsMenuFragment(tituloMenu).show(
+                        supportFragmentManager,
+                        "submenu"
+                    )
 
                     return@setOnGroupClickListener true
                 } else {
@@ -371,10 +429,12 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     override fun onStart() {
         super.onStart()
-        Timber.d("[Timber] onStart() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.testigo)
+        Timber.d(
+            "[Timber] onStart() - mainSharedViewModel.fragmento: %s",
+            mainSharedViewModel.testigo
+        )
         mainSharedViewModel.testigo = MainActivity::class.java.canonicalName
     }
 

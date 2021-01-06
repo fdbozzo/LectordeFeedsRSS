@@ -42,4 +42,8 @@
     <string name="msg_marked_for_read_later">Marked for read later</string>
     <string name="msg_unmarked_for_read_later">Unmarked for read later</string>
     <string name="msg_marked_as_unread">Marked as unread</string>
+    <string name="title_mark_unmark_as_read_later">Mark/unmark for read later</string>
+    <string name="screen_title_all_feeds">All Feeds</string>
+    <string name="screen_title_read_later">Read later</string>
+    <string name="screen_title_favorites">Favorites</string>
 </resources>

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import com.blogspot.fdbozzo.lectorfeedsrss.MainSharedViewModel
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
@@ -13,6 +14,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.ContentsFragmentBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
+import timber.log.Timber
 
 class ContentsFragment : Fragment() {
 

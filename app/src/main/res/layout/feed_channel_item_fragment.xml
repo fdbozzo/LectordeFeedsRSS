@@ -16,8 +16,11 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{() -> viewModel.navigateToContentsWithUrl(feedChannelItemWithFeed.link,feedChannelItemWithFeed.id)}"
+        android:onClick="@{() -> viewModel.setSelectedFeedChannelItemId(feedChannelItemWithFeed.id)}"
         tools:context=".MainActivity">
+        <!--
+        android:onClick="@{() -> viewModel.navigateToContentsWithUrl(feedChannelItemWithFeed.link,feedChannelItemWithFeed.id)}"
+        -->
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

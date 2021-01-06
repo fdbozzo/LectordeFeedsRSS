@@ -47,7 +47,7 @@ class FeedChannelAdapter(
             binding.feedChannelItemWithFeed = feedChannelItemWithFeed
             binding.viewModel = viewModel
             //binding.clickListener = clickListener
-            Timber.d("[Timber] ViewHolder.bind(%s)", feedChannelItemWithFeed.link)
+            //Timber.d("[Timber] ViewHolder.bind(%s)", feedChannelItemWithFeed.link)
             binding.executePendingBindings()
         }
 

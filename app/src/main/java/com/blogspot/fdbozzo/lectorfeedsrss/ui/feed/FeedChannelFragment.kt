@@ -74,6 +74,7 @@ class FeedChannelFragment : Fragment() {
         })
 
         /** Observer para el navigateToFeedContentsItem **/
+        /*
         sharedViewModel.selectedFeedChannelItemWithFeed.observe(viewLifecycleOwner, Observer { feedChannelItemWithFeed ->
             feedChannelItemWithFeed?.let {
                 val action =
@@ -82,6 +83,23 @@ class FeedChannelFragment : Fragment() {
                     )
                 //NavHostFragment.findNavController(this).navigate(action)
                 findNavController().navigate(action)
+                sharedViewModel.navigateToContentsWithUrlIsDone()
+            }
+        })
+         */
+        sharedViewModel.navigateToContents.observe(viewLifecycleOwner, Observer {
+            if (it == true && sharedViewModel.lastSelectedFeedChannelItemWithFeed != null) {
+                val action =
+                    sharedViewModel.lastSelectedFeedChannelItemWithFeed?.let { it1 ->
+                        FeedChannelFragmentDirections.actionFeedContentsFragmentToContentsFragment(
+                            sharedViewModel.lastSelectedFeedChannelItemWithFeed!!.link,
+                            it1.id
+                        )
+                    }
+                //NavHostFragment.findNavController(this).navigate(action)
+                if (action != null) {
+                    findNavController().navigate(action)
+                }
                 sharedViewModel.navigateToContentsWithUrlIsDone()
             }
         })

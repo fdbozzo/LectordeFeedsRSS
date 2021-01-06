@@ -27,14 +27,16 @@
 
         <TextView
             android:id="@+id/nav_today"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="@string/title_today"
             android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/img_today"
-            app:layout_constraintBottom_toBottomOf="@id/img_today" />
+            app:layout_constraintTop_toTopOf="@id/img_today"
+            app:layout_constraintBottom_toBottomOf="@id/img_today"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <ImageView
             android:id="@+id/img_nav_favorites"
@@ -52,7 +54,7 @@
 
         <TextView
             android:id="@+id/nav_favorites"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="@string/title_favorites"
@@ -60,7 +62,8 @@
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/img_nav_favorites"
             app:layout_constraintTop_toTopOf="@id/img_nav_favorites"
-            app:layout_constraintBottom_toBottomOf="@id/img_nav_favorites"/>
+            app:layout_constraintBottom_toBottomOf="@id/img_nav_favorites"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <ImageView
             android:id="@+id/img_all"
@@ -78,15 +81,16 @@
 
         <TextView
             android:id="@+id/nav_all"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="@string/title_all"
             android:textSize="12sp"
             android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/img_all"
             app:layout_constraintStart_toEndOf="@id/img_all"
             app:layout_constraintTop_toTopOf="@id/img_all"
-            app:layout_constraintBottom_toBottomOf="@id/img_all"/>
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <ImageView
             android:id="@+id/img_read_later"
@@ -104,7 +108,7 @@
 
         <TextView
             android:id="@+id/nav_read_later"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="@string/title_read_later"
@@ -112,7 +116,8 @@
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/img_read_later"
             app:layout_constraintTop_toTopOf="@id/img_read_later"
-            app:layout_constraintBottom_toBottomOf="@id/img_read_later"/>
+            app:layout_constraintBottom_toBottomOf="@id/img_read_later"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <com.blogspot.fdbozzo.lectorfeedsrss.ui.drawer.NonScrollingExpandableListView
             android:id="@+id/expandableListView"
@@ -140,7 +145,7 @@
 
         <TextView
             android:id="@+id/nav_settings"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="@string/title_settings"
@@ -148,7 +153,8 @@
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/img_nav_settings"
             app:layout_constraintTop_toTopOf="@id/img_nav_settings"
-            app:layout_constraintBottom_toBottomOf="@id/img_nav_settings"/>
+            app:layout_constraintBottom_toBottomOf="@id/img_nav_settings"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <ImageView
             android:id="@+id/img_logout"
@@ -165,7 +171,7 @@
 
         <TextView
             android:id="@+id/nav_logout"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="@string/title_logout"
@@ -173,7 +179,8 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/img_logout"
             app:layout_constraintStart_toEndOf="@id/img_logout"
-            app:layout_constraintTop_toTopOf="@+id/img_logout" />
+            app:layout_constraintTop_toTopOf="@+id/img_logout"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,13 +19,14 @@
 
             <TextView
                 android:id="@+id/txtTituloMenu"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:text="Nombre del item"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
@@ -40,12 +41,13 @@
 
             <TextView
                 android:id="@+id/txtMarkAsRead"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="@string/menu_option_mark_as_read_all_articles"
                 app:layout_constraintBottom_toBottomOf="@+id/imgMarkAsRead"
                 app:layout_constraintStart_toEndOf="@+id/imgMarkAsRead"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/imgMarkAsRead" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,5 @@
 package com.blogspot.fdbozzo.lectorfeedsrss
 
-import android.content.Context
 import androidx.lifecycle.*
 import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
@@ -8,8 +7,8 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.SelectedFeedOptions
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssApiStatus
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
+import com.blogspot.fdbozzo.lectorfeedsrss.util.toBoolean
 import com.blogspot.fdbozzo.lectorfeedsrss.util.toInt
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -63,10 +62,30 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     val selectedFeedChannelItemWithFeed: LiveData<DomainFeedChannelItemWithFeed?>
         get() = _selectedFeedChannelItemWithFeed
 
-    private var _lastSelectedFeedChannelItemWithFeed: DomainFeedChannelItemWithFeed =
+    /**
+     * Mantiene los datos actualizados del último registro seleccionado.
+     * Es actualizado por el observer de autoUpdatedSelectedFeedChannelItemWithFeed.
+     */
+    private var _lastSelectedFeedChannelItemWithFeed: DomainFeedChannelItemWithFeed? =
         DomainFeedChannelItemWithFeed()
-    val lastSelectedFeedChannelItemWithFeed: DomainFeedChannelItemWithFeed
+    val lastSelectedFeedChannelItemWithFeed: DomainFeedChannelItemWithFeed?
         get() = _lastSelectedFeedChannelItemWithFeed
+
+    /**
+     * Guarda temporalmente el registro seleccionado (con id y link)
+     */
+    private var _selectedFeedChannelItemId = MutableLiveData<Long>()
+    val selectedFeedChannelItemId: LiveData<Long>
+        get() = _selectedFeedChannelItemId
+
+    /**
+     * Conecta el LiveData lastSelectedFeedChannelItemWithFeed al registro seleccionado
+     * con el ID = selectedFeedChannelItemId
+     */
+    val autoUpdatedSelectedFeedChannelItemWithFeed: LiveData<DomainFeedChannelItemWithFeed> =
+        Transformations.switchMap(selectedFeedChannelItemId) { id ->
+            feedRepository.getFeedChannelItemWithFeedFlow(id).asLiveData()
+        }
 
     /**
      * Conecta el LiveData "items" a la consulta de BBDD para actualización automática cuando cambien
@@ -78,6 +97,19 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
                 .asLiveData()
         }
 
+    /**
+     * Controla la navegación al contenido para leer
+     */
+    private var _navigateToContents = MutableLiveData<Boolean?>()
+    val navigateToContents: LiveData<Boolean?>
+        get() = _navigateToContents
+
+    /**
+     * ReadLaterStatus contiene el estado de ReadLater: true/false/null
+     */
+    private var _readLaterStatus = MutableLiveData<Boolean?>()
+    val readLaterStatus: LiveData<Boolean?>
+        get() = _readLaterStatus
 
 
     fun setActiveScreen(sealedClassAppScreens: SealedClassAppScreens) {
@@ -87,41 +119,60 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
 
     /**
      * Se configura el link y el id del FeedChannelItem para que el observer lo cargue.
+     * Este método se llama desde el propio layout "feed_channel_item_fragment.xml"
      */
     fun navigateToContentsWithUrl(feedChannelItemUrl: String, feedChannelItemId: Long) {
         // VER SI NO CONVIENE CARGAR LOS DATOS DEL REGISTRO A MOSTRAR EN UNA VARIABLE CONSULTABLE
         // Y SI LO DEL "selected"..." DEL SIGUIENTE MÉTODO NO DEBERÍA IR AQUÍ
-        _selectedFeedChannelItemWithFeed.value =
-            DomainFeedChannelItemWithFeed(link = feedChannelItemUrl, id = feedChannelItemId)
-
-        /*
         viewModelScope.launch {
-            _selectedFeedChannelItemWithFeed.value = withContext(Dispatchers.IO) {
-                return@withContext feedRepository.getFeedChannelItemWithFeed(feedChannelItemId)
-            }
-            Timber.d("[Timber] feedRepository.getFeedWithLinkName")
+            Timber.d(
+                "[Timber] navigateToContentsWithUrl(%s, %d)",
+                feedChannelItemUrl,
+                feedChannelItemId
+            )
+            //_selectedFeedChannelItemId.value = feedChannelItemId
+            //updateItemReadStatus(true)
+
+            /*
+            _selectedFeedChannelItemWithFeed.value =
+                DomainFeedChannelItemWithFeed(link = feedChannelItemUrl, id = feedChannelItemId)
+
+             */
         }
-         */
+
+
+        /* FUNCIONA
+        viewModelScope.launch {
+            val feedChannelItemWithFeed: DomainFeedChannelItemWithFeed? = withContext(Dispatchers.IO) {
+                val feedChannelItemWithFeed = feedRepository.getFeedChannelItemWithFeed(feedChannelItemId)
+                if (feedChannelItemWithFeed != null) {
+                    Timber.d(
+                        "[Timber] (navigateToContentsWithUrl) feedRepository.getFeedChannelItemWithFeed(%d)? -> %s",
+                        feedChannelItemId,
+                        feedChannelItemWithFeed.link
+                    )
+                }
+                return@withContext feedChannelItemWithFeed
+            }
+        }
+        */
     }
 
     fun navigateToContentsWithUrlIsDone() {
-        _lastSelectedFeedChannelItemWithFeed = _selectedFeedChannelItemWithFeed.value!!.copy()
+        Timber.d("[Timber] navigateToContentsWithUrlIsDone()")
         _selectedFeedChannelItemWithFeed.value = null
-        updateItemReadStatus(true)
+        //updateItemReadStatus(true)
+        _navigateToContents.value = null
     }
 
     /**
      * Actualiza el estado del flag "read" del item elegido
      */
-    fun updateItemReadStatus(read: Boolean) {
-        val id = lastSelectedFeedChannelItemWithFeed.id // selectedFeedChannelItemWithFeed.value!!.id
-        Timber.d("[Timber] feedRepository.updateItemReadStatus(id=%d,read=%b)", id, true)
+    fun updateItemReadStatus(read: Boolean, id: Long? = selectedFeedChannelItemId.value) {
         if (id != null) {
             viewModelScope.launch {
                 withContext(Dispatchers.IO) {
                     feedRepository.updateReadStatus(id, read)
-                    //_lastSelectedFeedChannelItemWithFeed.read = read.toInt()
-                    // ACTUALIZAR VARIABLE CON REGISTRO ACTUAL AQUÍ
                 }
             }
         }
@@ -130,25 +181,28 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     /**
      * Actualiza el estado del flag "read_later" del item elegido
      */
-    fun updateItemReadLaterStatus(): Boolean {
-        //val id = lastSelectedFeedChannelItemWithFeed.id
-        /*
-        val id = lastSelectedFeedChannelItemWithFeedId.value
-        val readLater = lastSelectedFeedChannelItemWithFeed.readLater != 1
-        Timber.d(
-            "[Timber] feedRepository.updateItemReadStatus(id=%d,readLater=%b)",
-            id,
-            readLater
-        )
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                feedRepository.updateReadLaterStatus(id, readLater)
-                _lastSelectedFeedChannelItemWithFeed.readLater = readLater.toInt()
+    fun updateItemReadLaterStatus(id: Long? = selectedFeedChannelItemId.value) {
+        if (id != null) {
+            //val readLater = lastSelectedFeedChannelItemWithFeed.readLater != 1
+            viewModelScope.launch {
+                withContext(Dispatchers.IO) {
+                    try {
+                        feedRepository.updateInverseReadLaterStatus(id)
+                        _lastSelectedFeedChannelItemWithFeed =
+                            feedRepository.getFeedChannelItemWithFeed(id)
+                        val readLater = _lastSelectedFeedChannelItemWithFeed?.readLater?.toBoolean()
+                        _readLaterStatus.postValue(readLater)
+                        Timber.d(
+                            "[Timber] (GET) feedRepository.updateItemReadStatus(id=%d, readLaterD=%b)",
+                            id,
+                            readLater
+                        )
+                    } catch (e: Exception) {
+                        Timber.d("[Timber] updateItemReadLaterStatus.Exception: %s.", e.localizedMessage)
+                    }
+                }
             }
         }
-
-         */
-        return false // readLater
     }
 
     /**
@@ -225,7 +279,29 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
             "[Timber] MainSharedViewModel.setSelectedFeed(DomainFeed.linkName = '%s')",
             selectedFeedOptions.linkName
         )
-        _selectedFeedOptions.postValue(selectedFeedOptions)
+        _selectedFeedOptions.value = selectedFeedOptions
+    }
+
+    /**
+     * Configura el ID del regitro elegido desde el layout xml, que a su vez actualiza
+     * la variable local del registro seleccionado.
+     */
+    fun setSelectedFeedChannelItemId(id: Long) {
+        viewModelScope.launch {
+            _selectedFeedChannelItemId.value = id
+            updateItemReadStatus(true)
+            _lastSelectedFeedChannelItemWithFeed = feedRepository.getFeedChannelItemWithFeed(id)
+            _navigateToContents.value = true
+        }
+    }
+
+    /**
+     * Actualiza la variable _lastSelectedFeedChannelItemWithFeed con todos los datos
+     * actualizados del último registro seleccionado
+     */
+    fun setLastSelectedFeedChannelItemWithFeed(feedChannelItemWithFeed: DomainFeedChannelItemWithFeed) {
+        _lastSelectedFeedChannelItemWithFeed = feedChannelItemWithFeed
+        Timber.d("[Timber] setLastSelectedFeedChannelItemWithFeed()")
     }
 
     /**
@@ -426,5 +502,4 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
             return MainSharedViewModel(feedRepository) as T
         }
     }
-
 }

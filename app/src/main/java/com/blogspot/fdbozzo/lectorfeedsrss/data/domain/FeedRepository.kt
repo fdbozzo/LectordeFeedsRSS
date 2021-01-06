@@ -1,5 +1,6 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.domain
 
+import androidx.lifecycle.LiveData
 import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
@@ -24,9 +25,10 @@ class FeedRepository(
     /**
      * Devolver los feeds guardados en BBDD
      */
-    fun getFilteredFeeds(selectedFeedOptions: SelectedFeedOptions): Flow<List<DomainFeedChannelItemWithFeed>> = localDataSource.getFeedChannelItemsWithFeed(
-        selectedFeedOptions
-    )
+    fun getFilteredFeeds(selectedFeedOptions: SelectedFeedOptions): Flow<List<DomainFeedChannelItemWithFeed>> =
+        localDataSource.getFeedChannelItemsWithFeed(
+            selectedFeedOptions
+        )
 
     /**
      * Buscar los feeds en la red
@@ -45,7 +47,7 @@ class FeedRepository(
                 /**
                  * Guardar feeds en Room
                  */
-                Timber.d("[Timber] FeedRepository.checkNetworkFeeds() - Guardar las ${serverFeed.channel.channelItems?.size?:0} noticias de  ${apiBaseUrl}")
+                Timber.d("[Timber] FeedRepository.checkNetworkFeeds() - Guardar las ${serverFeed.channel.channelItems?.size ?: 0} noticias de  ${apiBaseUrl}")
                 saveNetworkFeeds(serverFeed)
 
                 /**
@@ -137,16 +139,23 @@ class FeedRepository(
         return localDataSource.getFeedWithLinkName(linkName)
     }
 
-    fun getFeedChannelItemWithFeed(id: Long): DomainFeedChannelItemWithFeed {
+    suspend fun getFeedChannelItemWithFeed(id: Long): DomainFeedChannelItemWithFeed? {
         return localDataSource.getFeedChannelItemWithFeed(id)
     }
 
-    fun updateReadStatus(id: Long ,read: Boolean): Int {
+    fun getFeedChannelItemWithFeedFlow(id: Long): Flow<DomainFeedChannelItemWithFeed> =
+        localDataSource.getFeedChannelItemWithFeedFlow(id)
+
+    suspend fun updateReadStatus(id: Long, read: Boolean): Int {
         return localDataSource.updateReadStatus(id, read)
     }
 
-    fun updateReadLaterStatus(id: Long ,readLater: Boolean): Int {
+    suspend fun updateReadLaterStatus(id: Long, readLater: Boolean): Int {
         return localDataSource.updateReadLaterStatus(id, readLater)
+    }
+
+    fun updateInverseReadLaterStatus(id: Long): Int {
+        return localDataSource.updateInverseReadLaterStatus(id)
     }
 
 }
@@ -196,10 +205,12 @@ interface LocalDataSource {
     suspend fun saveFeedChannelItems(feedChannelItems: List<DomainFeedChannelItem>)
     suspend fun saveFeedChannelItemsFromServer(feedChannelItems: List<ServerFeedChannelItem>)
     suspend fun getFeedChannelItems(): Flow<List<DomainFeedChannelItem>>
-    fun getFeedChannelItemWithFeed(id: Long): DomainFeedChannelItemWithFeed
+    suspend fun getFeedChannelItemWithFeed(id: Long): DomainFeedChannelItemWithFeed?
+    fun getFeedChannelItemWithFeedFlow(id: Long): Flow<DomainFeedChannelItemWithFeed>
     fun getFeedChannelItemsWithFeed(selectedFeedOptions: SelectedFeedOptions): Flow<List<DomainFeedChannelItemWithFeed>>
-    fun updateReadStatus(id: Long ,read: Boolean): Int
-    fun updateReadLaterStatus(id: Long ,readLater: Boolean): Int
+    suspend fun updateReadStatus(id: Long, read: Boolean): Int
+    suspend fun updateReadLaterStatus(id: Long, readLater: Boolean): Int
+    fun updateInverseReadLaterStatus(id: Long): Int
 
 }
 

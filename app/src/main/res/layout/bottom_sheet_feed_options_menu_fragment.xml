@@ -19,13 +19,14 @@
 
             <TextView
                 android:id="@+id/txtTituloMenu"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:text="Nombre del item"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
@@ -40,12 +41,13 @@
 
             <TextView
                 android:id="@+id/txtMarkAsRead"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="@string/menu_option_mark_as_read"
                 app:layout_constraintBottom_toBottomOf="@+id/imgMarkAsRead"
                 app:layout_constraintStart_toEndOf="@+id/imgMarkAsRead"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/imgMarkAsRead" />
 
             <ImageView
@@ -60,12 +62,13 @@
 
             <TextView
                 android:id="@+id/txtRename"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="@string/menu_option_rename"
                 app:layout_constraintBottom_toBottomOf="@+id/imgRename"
                 app:layout_constraintStart_toEndOf="@+id/imgRename"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/imgRename" />
 
             <ImageView
@@ -80,12 +83,13 @@
 
             <TextView
                 android:id="@+id/txtRemoveFromFavorites"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="@string/menu_option_remove_from_favorites"
                 app:layout_constraintBottom_toBottomOf="@+id/imgRemoveFromFavorites"
                 app:layout_constraintStart_toEndOf="@+id/imgRemoveFromFavorites"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/imgRemoveFromFavorites" />
 
             <ImageView
@@ -100,12 +104,13 @@
 
             <TextView
                 android:id="@+id/txtUnfollow"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="@string/menu_option_unfollow"
                 app:layout_constraintBottom_toBottomOf="@+id/imgUnfollow"
                 app:layout_constraintStart_toEndOf="@+id/imgUnfollow"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/imgUnfollow" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>

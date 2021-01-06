@@ -1,6 +1,7 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.database
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import com.blogspot.fdbozzo.lectorfeedsrss.data.*
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItemWithFeed
@@ -17,11 +18,9 @@ import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannelItem as Serve
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannel as ServerFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.switchMap
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import kotlin.collections.HashMap
 
 class RoomDataSource(db: FeedDatabase) : LocalDataSource {
@@ -233,8 +232,14 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         //}
      */
 
-    override fun getFeedChannelItemWithFeed(id: Long): DomainFeedChannelItemWithFeed =
-        feedChannelItemDao.getFeedChannelItemWithFeed(id).toDomainFeedChannelItemWithFeed()
+    override suspend fun getFeedChannelItemWithFeed(id: Long): DomainFeedChannelItemWithFeed? =
+        feedChannelItemDao.getFeedChannelItemWithFeed(id)?.toDomainFeedChannelItemWithFeed()
+
+    override fun getFeedChannelItemWithFeedFlow(id: Long): Flow<DomainFeedChannelItemWithFeed> {
+        return feedChannelItemDao.getFeedChannelItemWithFeedFlow(id).map {
+            feedChannelItemWithFeed -> feedChannelItemWithFeed.toDomainFeedChannelItemWithFeed()
+        }
+    }
 
     override fun getFeedChannelItemsWithFeed(selectedFeedOptions: SelectedFeedOptions): Flow<List<DomainFeedChannelItemWithFeed>> =
         feedChannelItemDao.getFilteredFeedChannelItemsWithFeed(
@@ -248,12 +253,16 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
             }
         }
 
-    override fun updateReadStatus(id: Long, read: Boolean): Int {
+    override suspend fun updateReadStatus(id: Long, read: Boolean): Int {
         return feedChannelItemDao.updateReadStatus(id, read.toInt())
     }
 
-    override fun updateReadLaterStatus(id: Long, readLater: Boolean): Int {
+    override suspend fun updateReadLaterStatus(id: Long, readLater: Boolean): Int {
         return feedChannelItemDao.updateReadLaterStatus(id, readLater.toInt())
+    }
+
+    override fun updateInverseReadLaterStatus(id: Long): Int {
+        return feedChannelItemDao.updateInverseReadLaterStatus(id)
     }
 
 }

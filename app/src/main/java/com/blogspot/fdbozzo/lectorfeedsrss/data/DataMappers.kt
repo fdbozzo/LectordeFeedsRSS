@@ -1,5 +1,6 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data
 
+import timber.log.Timber
 import com.blogspot.fdbozzo.lectorfeedsrss.util.DateParser.Companion.stringToDate as dpStringToDate
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Feed as RoomFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannel as RoomFeedChannel
@@ -31,6 +32,7 @@ fun RoomFeedChannelItem.toDomainFeedChannelItem(): DomainFeedChannelItem =
 
 fun RoomFeedChannelItemWithFeed.toDomainFeedChannelItemWithFeed(): DomainFeedChannelItemWithFeed =
     DomainFeedChannelItemWithFeed(linkName, id, feedId, title, link, pubDate, description, read, readLater, imageLink)
+
 
 /** DOMAIN **/
 fun DomainGroup.toRoomGroup(): RoomGroup =

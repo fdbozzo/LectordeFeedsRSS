@@ -19,13 +19,14 @@
 
             <TextView
                 android:id="@+id/txtTituloMenu"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:text="Nombre del grupo"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
@@ -40,12 +41,13 @@
 
             <TextView
                 android:id="@+id/txtMarkAsRead"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="@string/menu_option_mark_as_read"
                 app:layout_constraintBottom_toBottomOf="@+id/imgMarkAsRead"
                 app:layout_constraintStart_toEndOf="@+id/imgMarkAsRead"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/imgMarkAsRead" />
 
             <ImageView
@@ -60,12 +62,13 @@
 
             <TextView
                 android:id="@+id/txtRename"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="@string/menu_option_rename"
                 app:layout_constraintBottom_toBottomOf="@+id/imgRename"
                 app:layout_constraintStart_toEndOf="@+id/imgRename"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/imgRename" />
 
             <ImageView
@@ -80,12 +83,13 @@
 
             <TextView
                 android:id="@+id/txtDelete"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="@string/menu_option_delete"
                 app:layout_constraintBottom_toBottomOf="@+id/imgDelete"
                 app:layout_constraintStart_toEndOf="@+id/imgDelete"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/imgDelete" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
