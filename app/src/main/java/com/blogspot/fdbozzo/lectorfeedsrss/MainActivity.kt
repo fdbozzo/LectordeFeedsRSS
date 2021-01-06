@@ -244,6 +244,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 is SealedClassAppScreens.SettingsFragment -> {
                     Timber.d("[Timber] Menu SettingsFragment")
+                    binding.topAppBar.setTitle(R.string.screen_title_settings)
                 }
                 else -> Unit
             }
