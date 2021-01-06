@@ -238,12 +238,16 @@ class MainActivity : AppCompatActivity() {
                     val feedOptionsValue = mainSharedViewModel.selectedFeedOptions.value
 
                     if (feedOptionsValue != null) {
+                        // Actualizo el título de la ventana de acuerdo a la selección de opciones activas
                         when {
                             feedOptionsValue.readLater -> {
                                 binding.topAppBar.setTitle(R.string.screen_title_read_later)
                             }
                             feedOptionsValue.favorite -> {
                                 binding.topAppBar.setTitle(R.string.screen_title_favorites)
+                            }
+                            feedOptionsValue.linkName != "%" -> {
+                                binding.topAppBar.title = feedOptionsValue.linkName
                             }
                             else -> {
                                 binding.topAppBar.setTitle(R.string.screen_title_all_feeds)
