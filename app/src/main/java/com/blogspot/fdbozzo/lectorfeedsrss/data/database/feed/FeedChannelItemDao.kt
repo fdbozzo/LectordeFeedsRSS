@@ -1,6 +1,5 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
@@ -35,6 +34,9 @@ interface FeedChannelItemDao {
 
     @Query("UPDATE feed_channel_item_table SET read_later = (1 - read_later) WHERE id = :id")
     fun updateInverseReadLaterStatus(id: Long): Int
+
+    @Query("UPDATE feed_channel_item_table SET read = 1 WHERE feed_id = :feedId")
+    suspend fun updateFeedReadStatus(feedId: Long): Int
 
     /**
      *

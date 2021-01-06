@@ -111,6 +111,11 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     val readLaterStatus: LiveData<Boolean?>
         get() = _readLaterStatus
 
+    /**
+     * Guarda el título (nombre de feed) del menú abierto
+     */
+    var tituloMenuFeed = ""
+
 
     fun setActiveScreen(sealedClassAppScreens: SealedClassAppScreens) {
         _selectedScreen.value = sealedClassAppScreens
@@ -204,6 +209,27 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
             }
         }
     }
+
+    /**
+     * Actualiza el estado del flag "read" del item elegido
+     */
+    fun updateMarkFeedAsRead(linkName: String) {
+
+        Timber.d("[Timber] updateMarkFeedAsRead(%s)", linkName)
+
+        //if (id != null) {
+            viewModelScope.launch {
+                withContext(Dispatchers.IO) {
+                    val feed = feedRepository.getFeedWithLinkName(linkName)
+
+                    if (feed != null) {
+                        feedRepository.updateFeedReadStatus(feed.id)
+                    }
+                }
+            }
+        //}
+    }
+
 
     /**
      * Configurar el LiveData apiBaseUrl en el init para obtener los datos inmediatamente.

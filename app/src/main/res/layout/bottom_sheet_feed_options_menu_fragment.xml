@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="viewModel"
+            type="com.blogspot.fdbozzo.lectorfeedsrss.MainSharedViewModel"/>
     </data>
 
     <FrameLayout
@@ -45,6 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="@string/menu_option_mark_as_read"
+                android:onClick="@{() -> viewModel.updateMarkFeedAsRead(viewModel.tituloMenuFeed)}"
                 app:layout_constraintBottom_toBottomOf="@+id/imgMarkAsRead"
                 app:layout_constraintStart_toEndOf="@+id/imgMarkAsRead"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -56,6 +59,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imgMarkAsRead"
                 app:srcCompat="@drawable/icons8_rename_24" />
@@ -66,9 +70,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="@string/menu_option_rename"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/imgRename"
-                app:layout_constraintStart_toEndOf="@+id/imgRename"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imgRename"
                 app:layout_constraintTop_toTopOf="@+id/imgRename" />
 
             <ImageView

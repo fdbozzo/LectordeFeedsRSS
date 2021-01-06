@@ -265,4 +265,7 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         return feedChannelItemDao.updateInverseReadLaterStatus(id)
     }
 
+    override suspend fun updateFeedReadStatus(feedId: Long): Int {
+        return feedChannelItemDao.updateFeedReadStatus(feedId)
+    }
 }

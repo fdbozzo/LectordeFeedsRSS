@@ -108,11 +108,10 @@ class MainActivity : AppCompatActivity() {
 
         mainSharedViewModel.autoUpdatedSelectedFeedChannelItemWithFeed.observe(this, Observer {
             Timber.d(
-                "[Timber] (Observer) lastSelectedFeedChannelItemWithFeed(%d) = %s",
+                "[Timber] (Observer) autoUpdatedSelectedFeedChannelItemWithFeed(%d) = %s",
                 it.id,
                 it.link
             )
-            //mainSharedViewModel.setLastSelectedFeedChannelItemWithFeed(it)
         })
 
 
@@ -193,6 +192,9 @@ class MainActivity : AppCompatActivity() {
         )
          */
 
+        /**
+         * Mostrar un toast con el estado cambiado de "ReadLater"
+         */
         mainSharedViewModel.readLaterStatus.observe(this, Observer { readLater ->
             readLater?.let {
                 when (readLater) {
@@ -232,7 +234,23 @@ class MainActivity : AppCompatActivity() {
                 is SealedClassAppScreens.FeedChannelFragment -> {
                     Timber.d("[Timber] Menu FeedChannelFragment")
                     binding.topAppBar.inflateMenu(R.menu.upper_navdrawer_feedchannel_menu)
-                    binding.topAppBar.setTitle(R.string.screen_title_all_feeds)
+
+                    val feedOptionsValue = mainSharedViewModel.selectedFeedOptions.value
+
+                    if (feedOptionsValue != null) {
+                        when {
+                            feedOptionsValue.readLater -> {
+                                binding.topAppBar.setTitle(R.string.screen_title_read_later)
+                            }
+                            feedOptionsValue.favorite -> {
+                                binding.topAppBar.setTitle(R.string.screen_title_favorites)
+                            }
+                            else -> {
+                                binding.topAppBar.setTitle(R.string.screen_title_all_feeds)
+                            }
+                        }
+                    }
+
 
                     // Actualiza el filtro con el valor del setting global de "showUnreadOnly"
                     mainSharedViewModel.setSelectedFeedOptionsReadFlag(!showUnreadOnlyPref)
@@ -398,6 +416,7 @@ class MainActivity : AppCompatActivity() {
                     val linkName =
                         listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition]
                     mainSharedViewModel.getFeedWithLinkNameAndSetApiBaseUrl(linkName)
+                    binding.topAppBar.title = linkName
 
                     expandableItemLongClick = false
                 }

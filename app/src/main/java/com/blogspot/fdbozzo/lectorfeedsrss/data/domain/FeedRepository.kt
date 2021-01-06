@@ -158,6 +158,10 @@ class FeedRepository(
         return localDataSource.updateInverseReadLaterStatus(id)
     }
 
+    suspend fun updateFeedReadStatus(feedId: Long): Int {
+        return  localDataSource.updateFeedReadStatus(feedId)
+    }
+
 }
 
 interface LocalDataSource {
@@ -211,6 +215,7 @@ interface LocalDataSource {
     suspend fun updateReadStatus(id: Long, read: Boolean): Int
     suspend fun updateReadLaterStatus(id: Long, readLater: Boolean): Int
     fun updateInverseReadLaterStatus(id: Long): Int
+    suspend fun updateFeedReadStatus(feedId: Long): Int
 
 }
 
