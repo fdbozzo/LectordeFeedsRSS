@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import com.blogspot.fdbozzo.lectorfeedsrss.MainSharedViewModel
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
@@ -14,6 +16,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.FeedChannelFragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
 
 class BottomSheetFeedOptionsMenuFragment(val tituloMenu: String): BottomSheetDialogFragment() {
@@ -43,9 +46,42 @@ class BottomSheetFeedOptionsMenuFragment(val tituloMenu: String): BottomSheetDia
         mainSharedViewModel.tituloMenuFeed = tituloMenu
         binding.viewModel = mainSharedViewModel
 
+        binding.txtTituloMenu.text = tituloMenu
+        binding.fragment = this
+
+
         return binding.root
         //return inflater.inflate(R.layout.bottom_sheet_group_options_menu_fragment, container, false)
     }
+
+    fun updateMarkFeedAsReadFromBottomSheetFeedMenu(titulo: String) {
+        Timber.d("[Timber] (BottomSheetFragment) updateMarkFeedAsReadFromBottomSheetFeedMenu(%s)", titulo)
+        mainSharedViewModel.updateMarkFeedAsRead(titulo)
+        dismiss()
+    }
+
+    fun removeFeedFromFavorites(nombre: String) {
+        Timber.d("[Timber] (BottomSheetFragment) removeFeedFromFavorites(%s)", nombre)
+        //mainSharedViewModel.renameGroup(nombre)
+        // TODO: SE DEBE LLAMAR AL MISMO METODO DEL VIEWMODEL, PARA QUE LE PONGA EL FLAG favorite=0 AL FEED
+        dismiss()
+    }
+
+    fun addFeedToFavorites(nombre: String) {
+        Timber.d("[Timber] (BottomSheetFragment) addFeedToFavorites(%s)", nombre)
+        //mainSharedViewModel.renameGroup(nombre)
+        // TODO: SE DEBE LLAMAR AL MISMO METODO DEL VIEWMODEL, PARA QUE LE PONGA EL FLAG favorite=1 AL FEED
+        dismiss()
+    }
+
+    fun unfollowFeed(titulo: String) {
+        Timber.d("[Timber] (BottomSheetFragment) unfollowFeed(%s)", titulo)
+        //mainSharedViewModel.updateMarkGroupAsReadFromBottomSheetFeedMenu(titulo)
+        // TODO: SE DEBE LLAMAR A LA PANTALLA DE CONFIRMACIÓN (SI/NO) DE UNFOLLOW FEED (QUE LO BORRA DE BBDD)
+        dismiss()
+    }
+
+
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -60,7 +96,6 @@ class BottomSheetFeedOptionsMenuFragment(val tituloMenu: String): BottomSheetDia
 
          */
 
-        binding.txtTituloMenu.text = tituloMenu
 
         /*
         listViewOptions.adapter = ArrayAdapter<String>(

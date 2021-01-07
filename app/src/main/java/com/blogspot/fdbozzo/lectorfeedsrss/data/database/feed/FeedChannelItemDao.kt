@@ -27,16 +27,34 @@ interface FeedChannelItemDao {
     fun update(feedChannelItem: FeedChannelItem): Int
 
     @Query("UPDATE feed_channel_item_table SET read = :read WHERE id = :id")
-    suspend fun updateReadStatus(id: Long ,read: Int): Int
+    suspend fun updateReadStatus(id: Long, read: Int): Int
 
     @Query("UPDATE feed_channel_item_table SET read_later = :readLater WHERE id = :id")
-    suspend fun updateReadLaterStatus(id: Long ,readLater: Int): Int
+    suspend fun updateReadLaterStatus(id: Long, readLater: Int): Int
 
     @Query("UPDATE feed_channel_item_table SET read_later = (1 - read_later) WHERE id = :id")
     fun updateInverseReadLaterStatus(id: Long): Int
 
+    /**
+     * Actualiza la marca de leido del Feed indicado
+     */
     @Query("UPDATE feed_channel_item_table SET read = 1 WHERE feed_id = :feedId")
     suspend fun updateFeedReadStatus(feedId: Long): Int
+
+    /**
+     * Actualiza la marca de leido del Feed indicado
+     */
+    @Query(
+        """UPDATE feed_channel_item_table
+        SET read = 1
+        WHERE feed_channel_item_table.feed_id IN (
+            SELECT fcit.feed_id FROM feed_channel_item_table fcit
+            INNER JOIN feed_table ft ON fcit.feed_id = ft.id
+            INNER JOIN group_table gt ON ft.group_id = gt.id
+            WHERE gt.id = :gropId
+        )"""
+    )
+    suspend fun updateGroupFeedReadStatus(gropId: Long): Int
 
     /**
      *
@@ -75,7 +93,12 @@ interface FeedChannelItemDao {
         AND ft.link_name LIKE :linkName
         ORDER BY fcit.pub_date DESC"""
     )
-    fun getFilteredFeedChannelItemsWithFeed(linkName: String, favorite: Int, readLater: Int, read: Int): Flow<List<FeedChannelItemWithFeed>>
+    fun getFilteredFeedChannelItemsWithFeed(
+        linkName: String,
+        favorite: Int,
+        readLater: Int,
+        read: Int
+    ): Flow<List<FeedChannelItemWithFeed>>
 
     /**
      * Devuelve el item del id indicado e información extra sobre el feed del mismo

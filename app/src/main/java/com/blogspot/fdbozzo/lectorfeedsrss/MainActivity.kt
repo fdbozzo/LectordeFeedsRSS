@@ -195,6 +195,7 @@ class MainActivity : AppCompatActivity() {
         /**
          * Mostrar un toast con el estado cambiado de "ReadLater"
          */
+        /*
         mainSharedViewModel.readLaterStatus.observe(this, Observer { readLater ->
             readLater?.let {
                 when (readLater) {
@@ -215,6 +216,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+         */
 
         /**
          * Cargar menú superior según el fragmento cargado
@@ -282,7 +284,7 @@ class MainActivity : AppCompatActivity() {
                     val tituloMenu = "Mark as read"
                     BottomSheetMarkAsReadOptionsMenuFragment(tituloMenu).show(
                         supportFragmentManager,
-                        "submenu"
+                        "submenu_all_feeds"
                     )
                 }
                 R.id.nav_mark_as_unread -> {
@@ -427,6 +429,9 @@ class MainActivity : AppCompatActivity() {
                 false
             }
 
+            /**
+             * Controlador de selección (click) de Grupo para mostrar sus feeds
+             */
             expandableListView!!.setOnGroupClickListener { parent, v, groupPosition, id ->
                 if (expandableItemLongClick) {
                     Timber.d("[Timber] expandableListView!!.setOnGroupClickListener(LONG CLICK!)")

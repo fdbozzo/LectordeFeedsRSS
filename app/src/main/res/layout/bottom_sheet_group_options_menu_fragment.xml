@@ -4,7 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="viewModel"
+            type="com.blogspot.fdbozzo.lectorfeedsrss.MainSharedViewModel"/>
+        <variable
+            name="fragment"
+            type="com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetGroupOptionsMenuFragment"/>
     </data>
 
     <FrameLayout
@@ -23,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="Nombre del grupo"
+                tools:text="Nombre del grupo"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -35,6 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
+                android:onClick="@{() -> fragment.updateMarkGroupAsReadFromBottomSheetFeedMenu(viewModel.tituloMenuGroup)}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txtTituloMenu"
                 app:srcCompat="@drawable/ic_mark_as_read_holo_light_24dp" />
@@ -45,6 +51,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="@string/menu_option_mark_as_read"
+                android:onClick="@{() -> fragment.updateMarkGroupAsReadFromBottomSheetFeedMenu(viewModel.tituloMenuGroup)}"
                 app:layout_constraintBottom_toBottomOf="@+id/imgMarkAsRead"
                 app:layout_constraintStart_toEndOf="@+id/imgMarkAsRead"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -56,6 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
+                android:onClick="@{() -> fragment.renameGroup(viewModel.tituloMenuGroup)}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imgMarkAsRead"
                 app:srcCompat="@drawable/icons8_rename_24" />
@@ -66,6 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="@string/menu_option_rename"
+                android:onClick="@{() -> fragment.renameGroup(viewModel.tituloMenuGroup)}"
                 app:layout_constraintBottom_toBottomOf="@+id/imgRename"
                 app:layout_constraintStart_toEndOf="@+id/imgRename"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -77,6 +86,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
+                android:onClick="@{() -> fragment.deleteGroup(viewModel.tituloMenuGroup)}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imgRename"
                 app:srcCompat="@drawable/ic_delete_holo_light_24dp" />
@@ -87,6 +97,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="@string/menu_option_delete"
+                android:onClick="@{() -> fragment.deleteGroup(viewModel.tituloMenuGroup)}"
                 app:layout_constraintBottom_toBottomOf="@+id/imgDelete"
                 app:layout_constraintStart_toEndOf="@+id/imgDelete"
                 app:layout_constraintEnd_toEndOf="parent"

@@ -107,9 +107,11 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     /**
      * ReadLaterStatus contiene el estado de ReadLater: true/false/null
      */
+    /*
     private var _readLaterStatus = MutableLiveData<Boolean?>()
     val readLaterStatus: LiveData<Boolean?>
         get() = _readLaterStatus
+     */
 
     /**
      * Guarda el título (nombre de feed) del menú abierto
@@ -117,57 +119,34 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     var tituloMenuFeed = ""
 
 
+    /**
+     * Guarda el título (nombre de grupo) del menú abierto
+     */
+    var tituloMenuGroup = ""
+
+    /**
+     * LiveData para mensajes SnackBar
+     */
+    private var _snackBarMessage = MutableLiveData<Int?>()
+    val snackBarMessage: LiveData<Int?>
+        get() = _snackBarMessage
+
+
     fun setActiveScreen(sealedClassAppScreens: SealedClassAppScreens) {
         _selectedScreen.value = sealedClassAppScreens
         Timber.d("[Timber] Pantalla activa: %s", sealedClassAppScreens)
     }
 
-    /**
-     * Se configura el link y el id del FeedChannelItem para que el observer lo cargue.
-     * Este método se llama desde el propio layout "feed_channel_item_fragment.xml"
-     */
-    fun navigateToContentsWithUrl(feedChannelItemUrl: String, feedChannelItemId: Long) {
-        // VER SI NO CONVIENE CARGAR LOS DATOS DEL REGISTRO A MOSTRAR EN UNA VARIABLE CONSULTABLE
-        // Y SI LO DEL "selected"..." DEL SIGUIENTE MÉTODO NO DEBERÍA IR AQUÍ
-        viewModelScope.launch {
-            Timber.d(
-                "[Timber] navigateToContentsWithUrl(%s, %d)",
-                feedChannelItemUrl,
-                feedChannelItemId
-            )
-            //_selectedFeedChannelItemId.value = feedChannelItemId
-            //updateItemReadStatus(true)
-
-            /*
-            _selectedFeedChannelItemWithFeed.value =
-                DomainFeedChannelItemWithFeed(link = feedChannelItemUrl, id = feedChannelItemId)
-
-             */
-        }
-
-
-        /* FUNCIONA
-        viewModelScope.launch {
-            val feedChannelItemWithFeed: DomainFeedChannelItemWithFeed? = withContext(Dispatchers.IO) {
-                val feedChannelItemWithFeed = feedRepository.getFeedChannelItemWithFeed(feedChannelItemId)
-                if (feedChannelItemWithFeed != null) {
-                    Timber.d(
-                        "[Timber] (navigateToContentsWithUrl) feedRepository.getFeedChannelItemWithFeed(%d)? -> %s",
-                        feedChannelItemId,
-                        feedChannelItemWithFeed.link
-                    )
-                }
-                return@withContext feedChannelItemWithFeed
-            }
-        }
-        */
-    }
 
     fun navigateToContentsWithUrlIsDone() {
         Timber.d("[Timber] navigateToContentsWithUrlIsDone()")
         _selectedFeedChannelItemWithFeed.value = null
         //updateItemReadStatus(true)
         _navigateToContents.value = null
+    }
+
+    fun snackBarMessageDone() {
+        _snackBarMessage.value = null
     }
 
     /**
@@ -196,7 +175,13 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
                         _lastSelectedFeedChannelItemWithFeed =
                             feedRepository.getFeedChannelItemWithFeed(id)
                         val readLater = _lastSelectedFeedChannelItemWithFeed?.readLater?.toBoolean()
-                        _readLaterStatus.postValue(readLater)
+                        //_readLaterStatus.postValue(readLater)
+
+                        when (readLater) {
+                            true -> _snackBarMessage.postValue(R.string.msg_marked_for_read_later)
+                            false -> _snackBarMessage.postValue(R.string.msg_unmarked_for_read_later)
+                        }
+
                         Timber.d(
                             "[Timber] (GET) feedRepository.updateItemReadStatus(id=%d, readLaterD=%b)",
                             id,
@@ -224,9 +209,31 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
 
                     if (feed != null) {
                         feedRepository.updateFeedReadStatus(feed.id)
+                        _snackBarMessage.postValue(R.string.msg_marked_as_read)
                     }
                 }
             }
+        //}
+    }
+
+    /**
+     * Actualiza el estado del flag "read" del grupo elegido
+     */
+    fun updateMarkGroupAsRead(groupName: String) {
+
+        Timber.d("[Timber] updateMarkGroupAsRead(%s)", groupName)
+
+        //if (id != null) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val groupId = feedRepository.getGroupIdByName(groupName)
+
+                if (groupId != null) {
+                    feedRepository.updateGroupFeedReadStatus(groupId)
+                    _snackBarMessage.postValue(R.string.msg_marked_as_read)
+                }
+            }
+        }
         //}
     }
 

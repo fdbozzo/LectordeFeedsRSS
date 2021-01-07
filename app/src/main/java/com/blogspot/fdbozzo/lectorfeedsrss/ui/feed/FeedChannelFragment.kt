@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
@@ -18,6 +20,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.FeedChannelFragmentBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -63,7 +66,7 @@ class FeedChannelFragment : Fragment() {
 
 
         /** Observer para los items actualizados y su reflejo en el recycler **/
-        sharedViewModel.items.observe(viewLifecycleOwner, Observer {
+        mainSharedViewModel.items.observe(viewLifecycleOwner, Observer {
             it?.let {
                 //adapter.data = it   // Esto solo lo usa el RecyclerView.Adapter
                 //adapter.submitList(it)
@@ -87,7 +90,7 @@ class FeedChannelFragment : Fragment() {
             }
         })
          */
-        sharedViewModel.navigateToContents.observe(viewLifecycleOwner, Observer {
+        mainSharedViewModel.navigateToContents.observe(viewLifecycleOwner, Observer {
             if (it == true && sharedViewModel.lastSelectedFeedChannelItemWithFeed != null) {
                 val action =
                     sharedViewModel.lastSelectedFeedChannelItemWithFeed?.let { it1 ->
@@ -103,21 +106,6 @@ class FeedChannelFragment : Fragment() {
                 sharedViewModel.navigateToContentsWithUrlIsDone()
             }
         })
-
-        /** Observer para el Snackbar **/
-        /*
-        sharedModel.showSnackBarEvent.observe(viewLifecycleOwner, Observer {
-            if (it == true) { // Observed state is true.
-                Snackbar.make(
-                    requireActivity().findViewById(android.R.id.contentEncoded),
-                    getString(R.string.cleared_message),
-                    Snackbar.LENGTH_LONG // How long to display the message.
-                ).show()
-                sleepTrackerViewModel.doneShowingSnackbar()
-            }
-        })
-
-         */
 
 
 
@@ -138,21 +126,23 @@ class FeedChannelFragment : Fragment() {
             navController.navigate(R.id.nav_login)
         }
 
-    }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        //viewModelFeed = ViewModelProvider(this).get(FeedChannelViewModel::class.java)
-        // TODO: Use the ViewModel
-    }
+        /** Observer para el Snackbar **/
+        mainSharedViewModel.snackBarMessage.observe(viewLifecycleOwner, Observer { messageRId ->
+            if (messageRId != null) { // Observed state is true.
+                val v = activity?.findViewById<CoordinatorLayout>(R.id.mainCoordinatorLayout)
+                Timber.d("[Timber] (FeedChannelFragment) sharedViewModel.snackBarMessage.observe: %s", getString(messageRId))
+                if (v != null) {
+                    Snackbar.make(
+                        v,
+                        getString(messageRId),
+                        Snackbar.LENGTH_LONG // How long to display the message.
+                    ).show()
+                }
+                mainSharedViewModel.snackBarMessageDone()
+            }
+        })
 
-    /*
-    private fun initRecyclerView(list: List<DomainFeedChannelItem>) {
-        //val recyclerview: RecyclerView = findViewById(R.id.recycler_view)
-        val recyclerview2 = binding.recyclerView
-        recyclerview2.adapter = FeedChannelAdapter(list, sharedModel, requireContext())
     }
-     */
-
 
 }
