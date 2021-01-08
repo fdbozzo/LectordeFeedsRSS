@@ -80,22 +80,21 @@ class BottomSheetFeedOptionsMenuFragment(val tituloMenu: String, val feed: Domai
         dismiss()
     }
 
-    fun removeFeedFromFavorites(nombre: String) {
-        Timber.d("[Timber] (BottomSheetFragment) removeFeedFromFavorites(%s)", nombre)
-        mainSharedViewModel.updateFeedFavoriteState(nombre, false)
+    fun removeFeedFromFavorites(titulo: String) {
+        Timber.d("[Timber] (BottomSheetFragment) removeFeedFromFavorites(%s)", titulo)
+        mainSharedViewModel.updateFeedFavoriteState(titulo, false)
         dismiss()
     }
 
-    fun addFeedToFavorites(nombre: String) {
-        Timber.d("[Timber] (BottomSheetFragment) addFeedToFavorites(%s)", nombre)
-        mainSharedViewModel.updateFeedFavoriteState(nombre, true)
+    fun addFeedToFavorites(titulo: String) {
+        Timber.d("[Timber] (BottomSheetFragment) addFeedToFavorites(%s)", titulo)
+        mainSharedViewModel.updateFeedFavoriteState(titulo, true)
         dismiss()
     }
 
     fun unfollowFeed(titulo: String) {
         Timber.d("[Timber] (BottomSheetFragment) unfollowFeed(%s)", titulo)
-        //mainSharedViewModel.updateMarkGroupAsReadFromBottomSheetFeedMenu(titulo)
-        // TODO: SE DEBE LLAMAR A LA PANTALLA DE CONFIRMACIÓN (SI/NO) DE UNFOLLOW FEED (QUE LO BORRA DE BBDD)
+        mainSharedViewModel.deleteFeed(titulo)
         dismiss()
     }
 

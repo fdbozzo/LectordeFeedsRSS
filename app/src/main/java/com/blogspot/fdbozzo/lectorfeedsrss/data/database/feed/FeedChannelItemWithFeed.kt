@@ -10,6 +10,9 @@ import java.util.*
  */
 data class FeedChannelItemWithFeed(
 
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0L,
+
     @ColumnInfo(name = "link_name")
     var linkName: String = "",
 
@@ -33,8 +36,4 @@ data class FeedChannelItemWithFeed(
     @ColumnInfo(name = "image_link")
     var imageLink: String = ""
 
-) {
-    @PrimaryKey(autoGenerate = true)
-    var id: Long = 0L
-
-}
+)

@@ -43,6 +43,9 @@ interface FeedDao {
     @Query("SELECT id from feed_table WHERE link = :link")
     fun get(link: String): Long
 
+    @Delete
+    fun delete(feed: Feed): Int
+
     /**
      * Borra todos los datos de la tabla
      */

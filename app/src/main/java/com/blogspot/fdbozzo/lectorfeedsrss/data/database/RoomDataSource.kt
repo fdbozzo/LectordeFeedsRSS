@@ -1,10 +1,6 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.database
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.map
-import androidx.lifecycle.switchMap
 import com.blogspot.fdbozzo.lectorfeedsrss.data.*
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as DomainFeedChannel
@@ -20,7 +16,6 @@ import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import kotlin.collections.HashMap
 
 class RoomDataSource(db: FeedDatabase) : LocalDataSource {
@@ -30,7 +25,9 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
     private val feedChannelItemDao = db.getFeedChannelItemDao()
     private val groupDao = db.getGroupDao()
 
-    /** GROUP **/
+    /**
+     * GROUP
+     */
     override suspend fun groupIsEmpty(): Boolean =
         withContext(Dispatchers.IO) {
             groupDao.groupCount() <= 0
@@ -77,11 +74,11 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
             }
         }
 
-    override fun delete(group: Group): Int {
+    override fun deleteGroup(group: Group): Int {
         return groupDao.delete(group)
     }
 
-    override suspend fun deleteAll(): Int {
+    override suspend fun deleteAllGroups(): Int {
         var cant = 0
         withContext(Dispatchers.IO) {
             cant = groupDao.deleteAll()
@@ -89,7 +86,9 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         return cant
     }
 
-    /** FEED **/
+    /**
+     * FEED
+     */
     override suspend fun feedIsEmpty(): Boolean {
         TODO("Not yet implemented")
     }
@@ -140,7 +139,13 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         return feedDao.updateFeedFavoriteState(id, favorite.toInt())
     }
 
-    /** FEED-CHANNEL **/
+    override suspend fun deleteFeed(feed: DomainFeed): Int {
+        return feedDao.delete(feed.toRoomFeed())
+    }
+
+    /**
+     * FEED-CHANNEL
+     */
     /*
     override suspend fun feedChannelIsEmpty(): Boolean {
         TODO("Not yet implemented")
@@ -195,7 +200,9 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
     override fun getFeedWithLinkName(linkName: String): DomainFeed =
         feedDao.getFeedWithLinkName(linkName).toDomainFeed()
 
-    /** FEED-CHANNEL-ITEM **/
+    /**
+     * FEED-CHANNEL-ITEM
+     */
     override suspend fun feedChannelItemsIsEmpty(): Boolean =
         withContext(Dispatchers.IO) { feedChannelItemDao.feedChannelItemCount() <= 0 }
 

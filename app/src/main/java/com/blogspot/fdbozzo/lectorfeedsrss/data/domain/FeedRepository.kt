@@ -1,8 +1,6 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.domain
 
-import androidx.lifecycle.LiveData
 import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannel as ServerFeedChannel
@@ -111,7 +109,7 @@ class FeedRepository(
      * GROUP
      */
     suspend fun deleteAllLocalGroups(): Int {
-        return localDataSource.deleteAll()
+        return localDataSource.deleteAllGroups()
     }
 
     suspend fun saveLocalGroup(group: DomainGroup): Long {
@@ -147,6 +145,10 @@ class FeedRepository(
 
     fun getFeedWithLinkName(linkName: String): DomainFeed {
         return localDataSource.getFeedWithLinkName(linkName)
+    }
+
+    suspend fun deleteFeed(feed: DomainFeed): Int {
+        return localDataSource.deleteFeed(feed)
     }
 
     /**
@@ -193,8 +195,8 @@ interface LocalDataSource {
     suspend fun getGroupIdByName(name: String): Long
     suspend fun getGroupById(key: Long): DomainGroup
     suspend fun getGroups(): Flow<List<DomainGroup>>
-    fun delete(group: Group): Int
-    suspend fun deleteAll(): Int
+    fun deleteGroup(group: Group): Int
+    suspend fun deleteAllGroups(): Int
     suspend fun getGroupsWithFeeds(): HashMap<String, List<String>>
 
     /**
@@ -208,6 +210,7 @@ interface LocalDataSource {
     suspend fun getFeedIdByLink(link: String): Long
     fun getFeedWithLinkName(linkName: String): DomainFeed
     suspend fun updateFeedFavoriteState(id: Long, favorite: Boolean): Int
+    suspend fun deleteFeed(feed: DomainFeed): Int
 
     /**
      * FeedChannel

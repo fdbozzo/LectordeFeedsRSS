@@ -277,6 +277,31 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
 
 
     /**
+     * Actualiza el estado del flag "read" del item elegido
+     */
+    fun deleteFeed(linkName: String) {
+
+        //if (id != null) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val feed = feedRepository.getFeedWithLinkName(linkName)
+
+                val deleted = feedRepository.deleteFeed(feed)
+
+                if (deleted > 0) {
+                    _snackBarMessage.postValue(R.string.msg_source_removed)
+                } else {
+                    _snackBarMessage.postValue(R.string.msg_operation_not_executed)
+                }
+
+                Timber.d("[Timber] deleteFeed(%s): id=%d, deleted=%d", linkName, feed.id, deleted)
+            }
+        }
+        //}
+    }
+
+
+    /**
      * Obtiene el Feed con el nombre (linkName) indicado
      */
     suspend fun getFeedWithLinkName(linkName: String): DomainFeed {

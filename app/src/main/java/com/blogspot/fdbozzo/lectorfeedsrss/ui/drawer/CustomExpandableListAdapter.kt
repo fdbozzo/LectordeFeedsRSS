@@ -37,7 +37,12 @@ class CustomExpandableListAdapter internal constructor(
     }
 
     override fun getChildrenCount(listPosition: Int): Int {
-        return this.dataList[this.titleList[listPosition]]!!.size
+        return if (this.dataList[this.titleList[listPosition]] == null ||
+            this.dataList[this.titleList[listPosition]]?.get(0) == null) {
+            0
+        } else {
+            this.dataList[this.titleList[listPosition]]!!.size
+        }
     }
 
     override fun getGroup(listPosition: Int): Any {

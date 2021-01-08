@@ -39,23 +39,24 @@ fun DomainGroup.toRoomGroup(): RoomGroup =
     RoomGroup(groupName)
 
 fun DomainFeed.toRoomFeed(): RoomFeed =
-    RoomFeed(groupId, linkName, link, favorite)
+    RoomFeed(id, groupId, linkName, link, favorite)
 
 fun DomainFeedChannel.toRoomFeedChannel(): RoomFeedChannel =
     RoomFeedChannel(feedId, title, description, copyright, link, pubDate)
 
 fun DomainFeedChannelItem.toRoomFeedChannelItem(): RoomFeedChannelItem =
-    RoomFeedChannelItem(feedId, title, link, pubDate, description, read, readLater, imageLink)
+    RoomFeedChannelItem(id, feedId, title, link, pubDate, description, read, readLater, imageLink)
 
 /** SERVER **/
 fun ServerFeed.toRoomFeed(): RoomFeed =
-    RoomFeed(groupId, linkName, link, favorite)
+    RoomFeed(id, groupId, linkName, link, favorite)
 
 fun ServerFeedChannel.toRoomFeedChannel(): RoomFeedChannel =
     RoomFeedChannel(feedId, title, description, copyright, link, pubDate)
 
 fun ServerFeedChannelItem.toRoomFeedChannelItem(): RoomFeedChannelItem =
     RoomFeedChannelItem(
+        id,
         feedId,
         title,
         link,
