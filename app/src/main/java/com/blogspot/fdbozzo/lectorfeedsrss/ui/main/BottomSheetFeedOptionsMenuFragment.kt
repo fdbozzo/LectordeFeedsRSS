@@ -1,14 +1,10 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.ui.main
 
-import android.opengl.Visibility
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import com.blogspot.fdbozzo.lectorfeedsrss.MainSharedViewModel
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
@@ -16,12 +12,8 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.BottomSheetFeedOptionsMenuFragmentBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
-import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
-import com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.FeedChannelFragment
 import com.blogspot.fdbozzo.lectorfeedsrss.util.toBoolean
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class BottomSheetFeedOptionsMenuFragment(val tituloMenu: String, val feed: DomainFeed): BottomSheetDialogFragment() {
@@ -31,9 +23,10 @@ class BottomSheetFeedOptionsMenuFragment(val tituloMenu: String, val feed: Domai
     // onDestroyView.
     private val binding get() = _binding!!
     private lateinit var mainSharedViewModel: MainSharedViewModel
-    var addFeedToFavoritesVisibility = View.GONE
-    var removeFeedFromFavoritesVisibility = View.GONE
-
+    private var _addFeedToFavoritesVisibility = View.GONE
+    val addFeedToFavoritesVisibility get() = _addFeedToFavoritesVisibility
+    private var _removeFeedFromFavoritesVisibility = View.GONE
+    val removeFeedFromFavoritesVisibility get() = _removeFeedFromFavoritesVisibility
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,17 +47,17 @@ class BottomSheetFeedOptionsMenuFragment(val tituloMenu: String, val feed: Domai
         mainSharedViewModel.tituloMenuFeed = tituloMenu
 
         if (feed.favorite.toBoolean()) {
-            addFeedToFavoritesVisibility = View.GONE
-            removeFeedFromFavoritesVisibility = View.VISIBLE
+            _addFeedToFavoritesVisibility = View.GONE
+            _removeFeedFromFavoritesVisibility = View.VISIBLE
         } else {
-            addFeedToFavoritesVisibility = View.VISIBLE
-            removeFeedFromFavoritesVisibility = View.GONE
+            _addFeedToFavoritesVisibility = View.VISIBLE
+            _removeFeedFromFavoritesVisibility = View.GONE
         }
 
         Timber.d("[Timber] BOTTOM SHEET -> addFeedToFavoritesVisibility: %s",
-            if (addFeedToFavoritesVisibility == View.VISIBLE) "VISIBLE" else "GONE")
+            if (_addFeedToFavoritesVisibility == View.VISIBLE) "VISIBLE" else "GONE")
         Timber.d("[Timber] BOTTOM SHEET -> removeFeedFromFavoritesVisibility: %s",
-            if (removeFeedFromFavoritesVisibility == View.VISIBLE) "VISIBLE" else "GONE")
+            if (_removeFeedFromFavoritesVisibility == View.VISIBLE) "VISIBLE" else "GONE")
 
         binding.viewModel = mainSharedViewModel
         binding.txtTituloMenu.text = tituloMenu
