@@ -139,7 +139,7 @@ class FeedRepository(
         return localDataSource.updateFeedFavoriteState(id, favorite)
     }
 
-    suspend fun getGroupsWithFeeds(): HashMap<String, List<String>> {
+    fun getGroupsWithFeeds(): Flow<HashMap<String, List<String>>> {
         return localDataSource.getGroupsWithFeeds()
     }
 
@@ -154,7 +154,7 @@ class FeedRepository(
     /**
      * FEEDCHANNELITEM
      */
-    suspend fun getFeedChannelItemWithFeed(id: Long): DomainFeedChannelItemWithFeed? {
+    fun getFeedChannelItemWithFeed(id: Long): DomainFeedChannelItemWithFeed? {
         return localDataSource.getFeedChannelItemWithFeed(id)
     }
 
@@ -197,7 +197,7 @@ interface LocalDataSource {
     suspend fun getGroups(): Flow<List<DomainGroup>>
     fun deleteGroup(group: Group): Int
     suspend fun deleteAllGroups(): Int
-    suspend fun getGroupsWithFeeds(): HashMap<String, List<String>>
+    fun getGroupsWithFeeds(): Flow<HashMap<String, List<String>>>
 
     /**
      * Feed
@@ -230,7 +230,7 @@ interface LocalDataSource {
     suspend fun saveFeedChannelItems(feedChannelItems: List<DomainFeedChannelItem>)
     suspend fun saveFeedChannelItemsFromServer(feedChannelItems: List<ServerFeedChannelItem>)
     suspend fun getFeedChannelItems(): Flow<List<DomainFeedChannelItem>>
-    suspend fun getFeedChannelItemWithFeed(id: Long): DomainFeedChannelItemWithFeed?
+    fun getFeedChannelItemWithFeed(id: Long): DomainFeedChannelItemWithFeed?
     fun getFeedChannelItemWithFeedFlow(id: Long): Flow<DomainFeedChannelItemWithFeed>
     fun getFeedChannelItemsWithFeed(selectedFeedOptions: SelectedFeedOptions): Flow<List<DomainFeedChannelItemWithFeed>>
     suspend fun updateReadStatus(id: Long, read: Boolean): Int

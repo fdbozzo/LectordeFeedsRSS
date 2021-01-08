@@ -95,6 +95,6 @@ interface FeedDao {
         FROM group_table 
         LEFT JOIN feed_table ON feed_table.group_id = group_table.id"""
     )
-    fun getGroupsWithFeedPairs(): List<Feed.GroupWithFeedPair>?
+    fun getGroupsWithFeedPairs(): Flow<List<Feed.GroupWithFeedPair>>
 
 }

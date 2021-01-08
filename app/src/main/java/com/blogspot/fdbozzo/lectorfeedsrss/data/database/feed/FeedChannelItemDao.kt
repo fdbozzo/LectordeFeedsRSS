@@ -109,7 +109,7 @@ interface FeedChannelItemDao {
         INNER JOIN feed_table ft ON fcit.feed_id = ft.id 
         WHERE fcit.id = :id"""
     )
-    suspend fun getFeedChannelItemWithFeed(id: Long): FeedChannelItemWithFeed?
+    fun getFeedChannelItemWithFeed(id: Long): FeedChannelItemWithFeed?
 
     @Query(
         """SELECT ft.link_name,fcit.* 

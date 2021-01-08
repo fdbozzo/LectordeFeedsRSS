@@ -1,6 +1,7 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.database
 
 import com.blogspot.fdbozzo.lectorfeedsrss.data.*
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as DomainFeedChannel
@@ -120,6 +121,7 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
             }
         }
 
+    /*
     override suspend fun getGroupsWithFeeds(): HashMap<String, List<String>> {
         var lista: HashMap<String, List<String>> = HashMap()
 
@@ -133,6 +135,17 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         }
 
         return lista
+    }
+     */
+
+    override fun getGroupsWithFeeds(): Flow<HashMap<String, List<String>>> {
+        return feedDao.getGroupsWithFeedPairs().map { list ->
+                list.groupByTo(
+                    HashMap(),
+                    { it.group.groupName },
+                    { it.feed?.linkName }
+                )
+            } as Flow<HashMap<String, List<String>>>
     }
 
     override suspend fun updateFeedFavoriteState(id: Long, favorite: Boolean): Int {
@@ -234,16 +247,7 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
             }
         }
 
-    /*
-    override fun getFeedChannelItemWithFeed(id: Long): Flow<DomainFeedChannelItemWithFeed> =
-        //withContext(Dispatchers.IO) {
-            feedChannelItemDao.getFeedChannelItemWithFeed(id).map {
-                it.toDomainFeedChannelItemWithFeed()
-            }
-        //}
-     */
-
-    override suspend fun getFeedChannelItemWithFeed(id: Long): DomainFeedChannelItemWithFeed? =
+    override fun getFeedChannelItemWithFeed(id: Long): DomainFeedChannelItemWithFeed? =
         feedChannelItemDao.getFeedChannelItemWithFeed(id)?.toDomainFeedChannelItemWithFeed()
 
     override fun getFeedChannelItemWithFeedFlow(id: Long): Flow<DomainFeedChannelItemWithFeed> {
