@@ -1,5 +1,6 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.ui.main
 
+import android.opengl.Visibility
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,25 +8,31 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.blogspot.fdbozzo.lectorfeedsrss.MainSharedViewModel
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.BottomSheetFeedOptionsMenuFragmentBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.FeedChannelFragment
+import com.blogspot.fdbozzo.lectorfeedsrss.util.toBoolean
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class BottomSheetFeedOptionsMenuFragment(val tituloMenu: String): BottomSheetDialogFragment() {
+class BottomSheetFeedOptionsMenuFragment(val tituloMenu: String, val feed: DomainFeed): BottomSheetDialogFragment() {
 
     private var _binding: BottomSheetFeedOptionsMenuFragmentBinding? = null
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
     private lateinit var mainSharedViewModel: MainSharedViewModel
+    var addFeedToFavoritesVisibility = View.GONE
+    var removeFeedFromFavoritesVisibility = View.GONE
 
 
     override fun onCreateView(
@@ -34,7 +41,8 @@ class BottomSheetFeedOptionsMenuFragment(val tituloMenu: String): BottomSheetDia
         savedInstanceState: Bundle?
     ): View? {
         _binding = BottomSheetFeedOptionsMenuFragmentBinding.inflate(inflater, container, false)
-        Timber.d("[Timber] onCreateView() -- BOTTOM SHEET (%s)", tituloMenu)
+        Timber.d("[Timber] BottomSheetFeedOptionsMenuFragment.onCreateView() -- BOTTOM SHEET (%s) -> Feed encontrado: %s, favorite=%d",
+            tituloMenu, feed, feed.favorite)
 
         val localDatabase = FeedDatabase.getInstance(requireContext())
         val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
@@ -44,11 +52,23 @@ class BottomSheetFeedOptionsMenuFragment(val tituloMenu: String): BottomSheetDia
         binding.lifecycleOwner = this // Para que LiveData sea consciente del LifeCycle y se actualice la uI
 
         mainSharedViewModel.tituloMenuFeed = tituloMenu
-        binding.viewModel = mainSharedViewModel
 
+        if (feed.favorite.toBoolean()) {
+            addFeedToFavoritesVisibility = View.GONE
+            removeFeedFromFavoritesVisibility = View.VISIBLE
+        } else {
+            addFeedToFavoritesVisibility = View.VISIBLE
+            removeFeedFromFavoritesVisibility = View.GONE
+        }
+
+        Timber.d("[Timber] BOTTOM SHEET -> addFeedToFavoritesVisibility: %s",
+            if (addFeedToFavoritesVisibility == View.VISIBLE) "VISIBLE" else "GONE")
+        Timber.d("[Timber] BOTTOM SHEET -> removeFeedFromFavoritesVisibility: %s",
+            if (removeFeedFromFavoritesVisibility == View.VISIBLE) "VISIBLE" else "GONE")
+
+        binding.viewModel = mainSharedViewModel
         binding.txtTituloMenu.text = tituloMenu
         binding.fragment = this
-
 
         return binding.root
         //return inflater.inflate(R.layout.bottom_sheet_group_options_menu_fragment, container, false)
@@ -62,15 +82,13 @@ class BottomSheetFeedOptionsMenuFragment(val tituloMenu: String): BottomSheetDia
 
     fun removeFeedFromFavorites(nombre: String) {
         Timber.d("[Timber] (BottomSheetFragment) removeFeedFromFavorites(%s)", nombre)
-        //mainSharedViewModel.renameGroup(nombre)
-        // TODO: SE DEBE LLAMAR AL MISMO METODO DEL VIEWMODEL, PARA QUE LE PONGA EL FLAG favorite=0 AL FEED
+        mainSharedViewModel.updateFeedFavoriteState(nombre, false)
         dismiss()
     }
 
     fun addFeedToFavorites(nombre: String) {
         Timber.d("[Timber] (BottomSheetFragment) addFeedToFavorites(%s)", nombre)
-        //mainSharedViewModel.renameGroup(nombre)
-        // TODO: SE DEBE LLAMAR AL MISMO METODO DEL VIEWMODEL, PARA QUE LE PONGA EL FLAG favorite=1 AL FEED
+        mainSharedViewModel.updateFeedFavoriteState(nombre, true)
         dismiss()
     }
 

@@ -107,20 +107,15 @@ class FeedRepository(
         }
     }
 
+    /**
+     * GROUP
+     */
     suspend fun deleteAllLocalGroups(): Int {
         return localDataSource.deleteAll()
     }
 
     suspend fun saveLocalGroup(group: DomainGroup): Long {
         return localDataSource.saveGroup(group)
-    }
-
-    suspend fun saveLocalFeed(feed: DomainFeed): Long {
-        return localDataSource.saveFeed(feed)
-    }
-
-    suspend fun saveLocalFeedChannel(feedChannel: DomainFeedChannel): Long {
-        return localDataSource.saveFeedChannel(feedChannel)
     }
 
     suspend fun getGroupById(key: Long): DomainGroup {
@@ -131,6 +126,21 @@ class FeedRepository(
         return localDataSource.getGroupIdByName(name)
     }
 
+    /**
+     * FEED
+     */
+    suspend fun saveLocalFeed(feed: DomainFeed): Long {
+        return localDataSource.saveFeed(feed)
+    }
+
+    suspend fun saveLocalFeedChannel(feedChannel: DomainFeedChannel): Long {
+        return localDataSource.saveFeedChannel(feedChannel)
+    }
+
+    suspend fun updateFeedFavoriteState(id: Long, favorite: Boolean): Int {
+        return localDataSource.updateFeedFavoriteState(id, favorite)
+    }
+
     suspend fun getGroupsWithFeeds(): HashMap<String, List<String>> {
         return localDataSource.getGroupsWithFeeds()
     }
@@ -139,6 +149,9 @@ class FeedRepository(
         return localDataSource.getFeedWithLinkName(linkName)
     }
 
+    /**
+     * FEEDCHANNELITEM
+     */
     suspend fun getFeedChannelItemWithFeed(id: Long): DomainFeedChannelItemWithFeed? {
         return localDataSource.getFeedChannelItemWithFeed(id)
     }
@@ -194,6 +207,7 @@ interface LocalDataSource {
     suspend fun getFeeds(): Flow<List<DomainFeed>>
     suspend fun getFeedIdByLink(link: String): Long
     fun getFeedWithLinkName(linkName: String): DomainFeed
+    suspend fun updateFeedFavoriteState(id: Long, favorite: Boolean): Int
 
     /**
      * FeedChannel

@@ -11,6 +11,9 @@
         <variable
             name="fragment"
             type="com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetFeedOptionsMenuFragment"/>
+        <variable
+            name="feed"
+            type="com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed" />
     </data>
 
     <FrameLayout
@@ -83,14 +86,40 @@
                 app:layout_constraintTop_toTopOf="@+id/imgRename" />
 
             <ImageView
+                android:id="@+id/imgAddToFavorites"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:onClick="@{() -> fragment.addFeedToFavorites(viewModel.tituloMenuFeed)}"
+                android:visibility="@{fragment.addFeedToFavoritesVisibility}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imgRename"
+                app:srcCompat="@drawable/ic_favorites_holo_light_24dp" />
+
+            <TextView
+                android:id="@+id/txtAddToFavorites"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/menu_option_add_to_favorites"
+                android:onClick="@{() -> fragment.addFeedToFavorites(viewModel.tituloMenuFeed)}"
+                android:visibility="@{fragment.addFeedToFavoritesVisibility}"
+                app:layout_constraintBottom_toBottomOf="@+id/imgAddToFavorites"
+                app:layout_constraintStart_toEndOf="@+id/imgAddToFavorites"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/imgAddToFavorites" />
+
+            <ImageView
                 android:id="@+id/imgRemoveFromFavorites"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:onClick="@{() -> fragment.removeFeedFromFavorites(viewModel.tituloMenuFeed)}"
+                android:visibility="@{fragment.removeFeedFromFavoritesVisibility}"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imgRename"
+                app:layout_constraintTop_toBottomOf="@+id/imgAddToFavorites"
                 app:srcCompat="@drawable/ic_favorites_holo_light_24dp" />
 
             <TextView
@@ -100,6 +129,7 @@
                 android:layout_marginStart="16dp"
                 android:text="@string/menu_option_remove_from_favorites"
                 android:onClick="@{() -> fragment.removeFeedFromFavorites(viewModel.tituloMenuFeed)}"
+                android:visibility="@{fragment.removeFeedFromFavoritesVisibility}"
                 app:layout_constraintBottom_toBottomOf="@+id/imgRemoveFromFavorites"
                 app:layout_constraintStart_toEndOf="@+id/imgRemoveFromFavorites"
                 app:layout_constraintEnd_toEndOf="parent"

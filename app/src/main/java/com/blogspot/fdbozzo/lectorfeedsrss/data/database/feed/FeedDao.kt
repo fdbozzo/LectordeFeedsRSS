@@ -22,6 +22,12 @@ interface FeedDao {
     fun update(feed: Feed): Int
 
     /**
+     * Agrega o quita el feed de favoritos
+     */
+    @Query("UPDATE feed_table SET favorite = :favorite WHERE id = :id")
+    suspend fun updateFeedFavoriteState(id: Long, favorite: Int): Int
+
+    /**
      * Selecciona y retorna la fila que coincide con la clave indicada
      *
      * @param key feed a buscar

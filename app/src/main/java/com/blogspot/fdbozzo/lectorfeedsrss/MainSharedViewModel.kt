@@ -125,12 +125,24 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     var tituloMenuGroup = ""
 
     /**
-     * LiveData para mensajes SnackBar
+     * LiveData para mensajes SnackBar, donde se indica el R.string.id del mensaje
      */
     private var _snackBarMessage = MutableLiveData<Int?>()
     val snackBarMessage: LiveData<Int?>
         get() = _snackBarMessage
 
+
+    /**
+     * Configurar el LiveData apiBaseUrl en el init para obtener los datos inmediatamente.
+     */
+    init {
+        Timber.d("[Timber] MainSharedViewModel.init() - apiBaseUrl se cambia a 'https://hardzone.es'")
+        _apiBaseUrl.value = "https://hardzone.es"
+
+        // Cargamos datos iniciales en el drawer
+        viewModelScope.launch { setupInitialDrawerMenuData() }
+
+    }
 
     fun setActiveScreen(sealedClassAppScreens: SealedClassAppScreens) {
         _selectedScreen.value = sealedClassAppScreens
@@ -239,15 +251,46 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
 
 
     /**
-     * Configurar el LiveData apiBaseUrl en el init para obtener los datos inmediatamente.
+     * Actualiza el estado del flag "read" del item elegido
      */
-    init {
-        Timber.d("[Timber] MainSharedViewModel.init() - apiBaseUrl se cambia a 'https://hardzone.es'")
-        _apiBaseUrl.value = "https://hardzone.es"
+    fun updateFeedFavoriteState(linkName: String, favorite: Boolean) {
 
-        // Cargamos datos iniciales en el drawer
-        viewModelScope.launch { setupInitialDrawerMenuData() }
+        Timber.d("[Timber] updateFeedFavoriteState(%s)", linkName)
 
+        //if (id != null) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val feed = feedRepository.getFeedWithLinkName(linkName)
+
+                if (feed != null) {
+                    feedRepository.updateFeedFavoriteState(feed.id, favorite)
+                    if (favorite) {
+                        _snackBarMessage.postValue(R.string.msg_added_to_favorites)
+                    } else {
+                        _snackBarMessage.postValue(R.string.msg_removed_from_favorites)
+                    }
+                }
+            }
+        }
+        //}
+    }
+
+
+    /**
+     * Obtiene el Feed con el nombre (linkName) indicado
+     */
+    suspend fun getFeedWithLinkName(linkName: String): DomainFeed {
+        Timber.d("[Timber] getFeedWithLinkName(%s)", linkName)
+
+        lateinit var feed: DomainFeed
+        //if (id != null) {
+        //viewModelScope.launch {
+            feed = withContext(Dispatchers.IO) {
+                return@withContext feedRepository.getFeedWithLinkName(linkName)
+            }
+        //}
+        return feed
+        //}
     }
 
     /**

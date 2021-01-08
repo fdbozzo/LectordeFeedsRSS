@@ -136,6 +136,10 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         return lista
     }
 
+    override suspend fun updateFeedFavoriteState(id: Long, favorite: Boolean): Int {
+        return feedDao.updateFeedFavoriteState(id, favorite.toInt())
+    }
+
     /** FEED-CHANNEL **/
     /*
     override suspend fun feedChannelIsEmpty(): Boolean {

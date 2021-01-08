@@ -25,10 +25,13 @@ import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetFeedOptionsMenuFra
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetGroupOptionsMenuFragment
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetMarkAsReadOptionsMenuFragment
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
+import com.blogspot.fdbozzo.lectorfeedsrss.util.toBoolean
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
@@ -192,31 +195,6 @@ class MainActivity : AppCompatActivity() {
         )
          */
 
-        /**
-         * Mostrar un toast con el estado cambiado de "ReadLater"
-         */
-        /*
-        mainSharedViewModel.readLaterStatus.observe(this, Observer { readLater ->
-            readLater?.let {
-                when (readLater) {
-                    true -> {
-                        Toast.makeText(
-                            this,
-                            getString(R.string.msg_marked_for_read_later),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    false -> {
-                        Toast.makeText(
-                            this,
-                            getString(R.string.msg_unmarked_for_read_later),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            }
-        })
-         */
 
         /**
          * Cargar menú superior según el fragmento cargado
@@ -400,15 +378,26 @@ class MainActivity : AppCompatActivity() {
             expandableListView!!.setOnChildClickListener { parent, v, groupPosition, childPosition, id ->
                 if (expandableItemLongClick) {
                     // LONG-CLICK
-                    Timber.d("[Timber] expandableListView!!.setOnChildClickListener(LONG CLICK!)")
-                    expandableItemLongClick = false
+                    //lifecycleScope.launch {
+                        Timber.d("[Timber] expandableListView!!.setOnChildClickListener(LONG CLICK!)")
+                        expandableItemLongClick = false
 
-                    val tituloMenu =
-                        listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition]
-                    BottomSheetFeedOptionsMenuFragment(tituloMenu).show(
-                        supportFragmentManager,
-                        "submenu"
-                    )
+                        val tituloMenu =
+                            listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition]
+
+                    lifecycleScope.launch {
+                        val feed = mainSharedViewModel.getFeedWithLinkName(tituloMenu)
+                        Timber.d("[Timber] expandableListView!!.setOnChildClickListener(LONG CLICK!) -> Feed encontrado: %s, favorite=%d",
+                            feed, feed.favorite)
+
+                        // Cargar el menú
+                        BottomSheetFeedOptionsMenuFragment(tituloMenu, feed).show(
+                            supportFragmentManager,
+                            "submenu"
+                        )
+                    }
+
+                    //}
 
                     return@setOnChildClickListener true
                 } else {
@@ -438,6 +427,7 @@ class MainActivity : AppCompatActivity() {
                     expandableItemLongClick = false
 
                     val tituloMenu = (titleList as ArrayList<String>)[groupPosition]
+
                     BottomSheetGroupOptionsMenuFragment(tituloMenu).show(
                         supportFragmentManager,
                         "submenu"
