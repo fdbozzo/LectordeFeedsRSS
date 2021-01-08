@@ -65,7 +65,7 @@ class GroupDaoTableTests {
         val group = Group()
         val insId1 = groupDao.insert(group)
         val lastGroup = groupDao.getLastGroup()
-        Assert.assertEquals("Uncategorized", lastGroup?.groupName)
+        Assert.assertEquals(Group.DEFAULT_NAME, lastGroup?.groupName)
     }
 
     @Test
@@ -138,7 +138,7 @@ class GroupDaoTableTests {
         val insId2 = groupDao.insert(group)
 
         // Test
-        group = groupDao.get(2)?: Group()
+        group = groupDao.getGroupById(2)?: Group()
 
         // Verify
         Assert.assertEquals(2, group.id)

@@ -1,7 +1,6 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.database
 
 import com.blogspot.fdbozzo.lectorfeedsrss.data.*
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as DomainFeedChannel
@@ -47,7 +46,7 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
     override suspend fun getGroupIdByName(name: String): Long {
         var id = 0L
         withContext(Dispatchers.IO) {
-            id = groupDao.get(name)
+            id = groupDao.getGroupIdByName(name)
         }
         return id
     }
@@ -55,16 +54,16 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
     override suspend fun getGroupById(key: Long): DomainGroup {
         var group: DomainGroup
         withContext(Dispatchers.IO) {
-            val rGroup = groupDao.get(key)
+            val rGroup = groupDao.getGroupById(key)
             group = rGroup?.toDomainGroup() ?: DomainGroup()
         }
         return group
     }
 
-    override suspend fun getGroupWithName(name: String): DomainGroup =
-        withContext(Dispatchers.IO) {
-            groupDao.getGroupWithName(name).toDomainGroup()
-        }
+    override fun getGroupByName(groupName: String): DomainGroup =
+        //withContext(Dispatchers.IO) {
+            groupDao.getGroupByName(groupName).toDomainGroup()
+        //}
 
     override suspend fun getGroups(): Flow<List<DomainGroup>> =
         withContext(Dispatchers.IO) {

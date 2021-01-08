@@ -2,6 +2,7 @@ package com.blogspot.fdbozzo.lectorfeedsrss
 
 import androidx.lifecycle.*
 import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.SelectedFeedOptions
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssApiStatus
@@ -299,6 +300,41 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
         }
     }
 
+    /**
+     * Actualiza el estado del flag "read" del item elegido
+     */
+    fun deleteGroup(linkName: String) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                var deleted = 0
+                deleted = when (linkName) {
+                    Group.DEFAULT_NAME -> 0
+                    else -> feedRepository.deleteGroupByName(linkName)
+                }
+
+                if (deleted > 0) {
+                    _snackBarMessage.postValue(R.string.msg_group_removed)
+                } else {
+                    _snackBarMessage.postValue(R.string.msg_operation_not_executed)
+                }
+
+                Timber.d("[Timber] deleteGroup(%s): deleted=%d", linkName, deleted)
+            }
+        }
+    }
+
+
+    /**
+     * Obtiene el Feed con el nombre (linkName) indicado
+     */
+    suspend fun getGroupByName(groupName: String): DomainGroup {
+        Timber.d("[Timber] getGroupByName(%s)", groupName)
+
+        val group: DomainGroup = withContext(Dispatchers.IO) {
+            feedRepository.getGroupByName(groupName)
+        }
+        return group
+    }
 
     /**
      * Obtiene el Feed con el nombre (linkName) indicado

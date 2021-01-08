@@ -36,7 +36,7 @@ fun RoomFeedChannelItemWithFeed.toDomainFeedChannelItemWithFeed(): DomainFeedCha
 
 /** DOMAIN **/
 fun DomainGroup.toRoomGroup(): RoomGroup =
-    RoomGroup(groupName)
+    RoomGroup(id, groupName)
 
 fun DomainFeed.toRoomFeed(): RoomFeed =
     RoomFeed(id, groupId, linkName, link, favorite)

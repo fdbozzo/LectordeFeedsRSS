@@ -32,7 +32,7 @@ interface GroupDao {
      * @param key Group a buscar
      */
     @Query("SELECT * from group_table WHERE id = :key")
-    fun get(key: Long): Group?
+    fun getGroupById(key: Long): Group?
 
     /**
      * Selecciona y retorna la fila que coincide con la clave indicada
@@ -40,7 +40,7 @@ interface GroupDao {
      * @param name Group a buscar
      */
     @Query("SELECT id from group_table WHERE group_name = :name")
-    fun get(name: String): Long
+    fun getGroupIdByName(name: String): Long
 
     /**
      * Borra todos los datos de la tabla
@@ -67,14 +67,16 @@ interface GroupDao {
     /**
      * Selecciona y retorna el Group con el Id indicado.
      */
+    /*
     @Query("SELECT * from group_table WHERE id = :key")
     fun getGroupWithId(key: Long): Group
+     */
 
     /**
      * Selecciona y retorna el Group con el link indicado.
      */
     @Query("SELECT * from group_table WHERE group_name = :groupName")
-    fun getGroupWithName(groupName: String): Group
+    fun getGroupByName(groupName: String): Group
 
     /**
      * Esta función se usa para los items (grupo / feed) del menú del Drawer

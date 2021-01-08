@@ -2,6 +2,7 @@ package com.blogspot.fdbozzo.lectorfeedsrss.data.domain
 
 import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
+import com.blogspot.fdbozzo.lectorfeedsrss.data.toRoomGroup
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannel as ServerFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannelItem as ServerFeedChannelItem
@@ -124,6 +125,16 @@ class FeedRepository(
         return localDataSource.getGroupIdByName(name)
     }
 
+    suspend fun getGroupByName(groupName: String): DomainGroup {
+        return localDataSource.getGroupByName(groupName)
+    }
+
+    fun deleteGroupByName(groupName: String): Int {
+        val group = localDataSource.getGroupByName(groupName)
+        Timber.d("FeedRepository.deleteGroupByName(%s) = %s", groupName, group.id)
+        return localDataSource.deleteGroup(group.toRoomGroup())
+    }
+
     /**
      * FEED
      */
@@ -149,6 +160,10 @@ class FeedRepository(
 
     suspend fun deleteFeed(feed: DomainFeed): Int {
         return localDataSource.deleteFeed(feed)
+    }
+
+    fun deleteGroup(group: Group): Int {
+        return localDataSource.deleteGroup(group)
     }
 
     /**
@@ -191,9 +206,9 @@ interface LocalDataSource {
     suspend fun groupIsEmpty(): Boolean
     suspend fun groupSize(): Int
     suspend fun saveGroup(group: DomainGroup): Long
-    suspend fun getGroupWithName(name: String): DomainGroup
     suspend fun getGroupIdByName(name: String): Long
     suspend fun getGroupById(key: Long): DomainGroup
+    fun getGroupByName(groupName: String): DomainGroup
     suspend fun getGroups(): Flow<List<DomainGroup>>
     fun deleteGroup(group: Group): Int
     suspend fun deleteAllGroups(): Int

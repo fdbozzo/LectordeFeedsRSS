@@ -397,8 +397,6 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
 
-                    //}
-
                     return@setOnChildClickListener true
                 } else {
                     // CLICK NORMAL
@@ -428,10 +426,17 @@ class MainActivity : AppCompatActivity() {
 
                     val tituloMenu = (titleList as ArrayList<String>)[groupPosition]
 
-                    BottomSheetGroupOptionsMenuFragment(tituloMenu).show(
-                        supportFragmentManager,
-                        "submenu"
-                    )
+                    lifecycleScope.launch {
+                        val group = mainSharedViewModel.getGroupByName(tituloMenu)
+                        Timber.d("[Timber] expandableListView!!.setOnChildClickListener(LONG CLICK!) -> Group encontrado: %d, name=%s",
+                            group.id, group.groupName)
+
+                        // Cargar el menú
+                        BottomSheetGroupOptionsMenuFragment(tituloMenu, group).show(
+                            supportFragmentManager,
+                            "submenu"
+                        )
+                    }
 
                     return@setOnGroupClickListener true
                 } else {
