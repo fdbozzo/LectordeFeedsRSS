@@ -200,7 +200,10 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
                             readLater
                         )
                     } catch (e: Exception) {
-                        Timber.d("[Timber] updateItemReadLaterStatus.Exception: %s.", e.localizedMessage)
+                        Timber.d(
+                            "[Timber] updateItemReadLaterStatus.Exception: %s.",
+                            e.localizedMessage
+                        )
                     }
                 }
             }
@@ -215,16 +218,16 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
         Timber.d("[Timber] updateMarkFeedAsRead(%s)", linkName)
 
         //if (id != null) {
-            viewModelScope.launch {
-                withContext(Dispatchers.IO) {
-                    val feed = feedRepository.getFeedWithLinkName(linkName)
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val feed = feedRepository.getFeedWithLinkName(linkName)
 
-                    if (feed != null) {
-                        feedRepository.updateFeedReadStatus(feed.id)
-                        _snackBarMessage.postValue(R.string.msg_marked_as_read)
-                    }
+                if (feed != null) {
+                    feedRepository.updateFeedReadStatus(feed.id)
+                    _snackBarMessage.postValue(R.string.msg_marked_as_read)
                 }
             }
+        }
         //}
     }
 
@@ -280,12 +283,9 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
      * Actualiza el estado del flag "read" del item elegido
      */
     fun deleteFeed(linkName: String) {
-
-        //if (id != null) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 val feed = feedRepository.getFeedWithLinkName(linkName)
-
                 val deleted = feedRepository.deleteFeed(feed)
 
                 if (deleted > 0) {
@@ -297,7 +297,6 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
                 Timber.d("[Timber] deleteFeed(%s): id=%d, deleted=%d", linkName, feed.id, deleted)
             }
         }
-        //}
     }
 
 
@@ -307,15 +306,10 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     suspend fun getFeedWithLinkName(linkName: String): DomainFeed {
         Timber.d("[Timber] getFeedWithLinkName(%s)", linkName)
 
-        lateinit var feed: DomainFeed
-        //if (id != null) {
-        //viewModelScope.launch {
-            feed = withContext(Dispatchers.IO) {
-                return@withContext feedRepository.getFeedWithLinkName(linkName)
-            }
-        //}
+        val feed: DomainFeed = withContext(Dispatchers.IO) {
+            feedRepository.getFeedWithLinkName(linkName)
+        }
         return feed
-        //}
     }
 
     /**
@@ -391,7 +385,8 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
         viewModelScope.launch {
             _selectedFeedChannelItemId.value = id
             updateItemReadStatus(true)
-            _lastSelectedFeedChannelItemWithFeed = feedRepository.getFeedChannelItemWithFeed(id)
+            _lastSelectedFeedChannelItemWithFeed =
+                withContext(Dispatchers.IO) { feedRepository.getFeedChannelItemWithFeed(id) }
             _navigateToContents.value = true
         }
     }
@@ -541,7 +536,8 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     /**
      * Lista de valores del menú Drawer
      */
-    val menuData: LiveData<HashMap<String, List<String>>> = feedRepository.getGroupsWithFeeds().asLiveData()
+    val menuData: LiveData<HashMap<String, List<String>>> =
+        feedRepository.getGroupsWithFeeds().asLiveData()
 
 
     class Factory(private val feedRepository: FeedRepository) :
