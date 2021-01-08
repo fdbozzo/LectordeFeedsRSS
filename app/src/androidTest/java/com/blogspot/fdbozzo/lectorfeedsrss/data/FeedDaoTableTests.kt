@@ -175,14 +175,11 @@ class FeedDaoTableTests {
         val idF2 = feedDao.insert(feed)
         feedDao.getLastFeed() ?: throw Exception("lastFeed(2) es null")
 
-        val gp = feedDao.getGroupsWithFeedPairs<Any>()
+        val gp = getValue(feedDao.getGroupsWithFeedPairs().asLiveData())
         //val gp = groupDao.getGroupsWithFeeds()
 
         Assert.assertNotEquals(null, gp)
-
-        if (gp != null) {
-            Assert.assertEquals(2, gp.size)
-        }
+        Assert.assertEquals(2, gp.size)
     }
 
     @Test

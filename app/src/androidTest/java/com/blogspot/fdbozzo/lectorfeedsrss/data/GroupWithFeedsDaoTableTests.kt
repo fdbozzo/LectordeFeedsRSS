@@ -62,10 +62,10 @@ class GroupWithFeedsDaoTableTests {
         group.groupName = "Another group"
         val insId2 = groupDao.insert(group)
         // feed 1, group 1
-        var feed = Feed(insId1, "HardZone", "https://hardzone.es")
+        var feed = Feed(groupId = insId1, linkName = "HardZone", link = "https://hardzone.es")
         feedDao.insert(feed)
         // feed 2, group 2
-        feed = Feed(insId2, "Mozilla", "http://blog.mozilla.com")
+        feed = Feed(groupId = insId2, linkName = "Mozilla", link = "http://blog.mozilla.com")
         feedDao.insert(feed)
 
         // Test
