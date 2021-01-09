@@ -23,7 +23,6 @@ class FeedChannelAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        Timber.d("onCreateViewHolder")
         return ViewHolder.from(parent)
     }
 
@@ -31,6 +30,7 @@ class FeedChannelAdapter(
         //val item = getItem(position)
         val item = list[position]
         holder.bind(item, sharedViewViewModel)
+        Timber.d("onBindViewHolder(pos=%d) id=%d, linki=%s", position, item.id, item.link)
     }
 
     override fun getItemCount(): Int = list.size

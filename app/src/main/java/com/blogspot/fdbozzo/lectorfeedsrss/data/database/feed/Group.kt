@@ -11,13 +11,13 @@ import androidx.room.*
 )
 data class Group(
 
-    @PrimaryKey(autoGenerate = true)
-    var id: Long = 0L,
-
     @ColumnInfo(name = "group_name", defaultValue = DEFAULT_NAME)
     var groupName: String = DEFAULT_NAME
 
 ) {
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0L
+
     companion object {
         const val DEFAULT_NAME = "Uncategorized"
     }

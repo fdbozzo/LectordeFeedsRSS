@@ -36,27 +36,26 @@ fun RoomFeedChannelItemWithFeed.toDomainFeedChannelItemWithFeed(): DomainFeedCha
 
 /** DOMAIN **/
 fun DomainGroup.toRoomGroup(): RoomGroup =
-    RoomGroup(id, groupName)
+    RoomGroup(groupName).also {it.id = this.id}
 
 fun DomainFeed.toRoomFeed(): RoomFeed =
-    RoomFeed(id, groupId, linkName, link, favorite)
+    RoomFeed(groupId, linkName, link, favorite).also {it.id = this.id}
 
 fun DomainFeedChannel.toRoomFeedChannel(): RoomFeedChannel =
     RoomFeedChannel(feedId, title, description, copyright, link, pubDate)
 
 fun DomainFeedChannelItem.toRoomFeedChannelItem(): RoomFeedChannelItem =
-    RoomFeedChannelItem(id, feedId, title, link, pubDate, description, read, readLater, imageLink)
+    RoomFeedChannelItem(feedId, title, link, pubDate, description, read, readLater, imageLink).also {it.id = this.id}
 
 /** SERVER **/
 fun ServerFeed.toRoomFeed(): RoomFeed =
-    RoomFeed(id, groupId, linkName, link, favorite)
+    RoomFeed(groupId, linkName, link, favorite)
 
 fun ServerFeedChannel.toRoomFeedChannel(): RoomFeedChannel =
     RoomFeedChannel(feedId, title, description, copyright, link, pubDate)
 
 fun ServerFeedChannelItem.toRoomFeedChannelItem(): RoomFeedChannelItem =
     RoomFeedChannelItem(
-        id,
         feedId,
         title,
         link,
@@ -71,8 +70,9 @@ fun ServerFeed.toDomainFeed(): DomainFeed =
 
 fun ServerFeedChannel.toDomainFeedChannel(): DomainFeedChannel =
     DomainFeedChannel(id, feedId, title, description, copyright,
-        link = if (this.links.isNotEmpty()) (this.links[this.links.size - 1].text) else "",
-        pubDate, (channelItems as List<ServerFeedChannelItem>).map {
+        link = if (this.links.isNotEmpty()) (this.links[this.links.size - 1].text) else "https://nonexistent.com",
+        pubDate,
+        (channelItems as List<ServerFeedChannelItem>).map {
             it.toDomainFeedChannelItem()
         })
 

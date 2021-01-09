@@ -50,11 +50,13 @@ class RssFeedDataSource(): RemoteDataSource {
                             Timber.d(feedChannelItem.size.toString())
 
                             for (i in feedChannelItem.indices) {
+                                /*
                                 Timber.d("[Timber] index %d %s", i, feedChannelItem[i].title)
                                 Timber.d("[Timber] index %d %s", i, feedChannelItem[i].link)
                                 Timber.d("[Timber] index %d %s", i, feedChannelItem[i].pubDate)
                                 //Timber.d("[Timber] index %d %s", i, articles[i].description)
                                 //Timber.d("[Timber] index %d %s", i, articles[i].guid)
+                                 */
 
                                 /**
                                  * Obtener un link de imagen para mostrar en el item.

@@ -68,27 +68,47 @@ class BottomSheetFeedOptionsMenuFragment(val tituloMenu: String, val feed: Domai
     }
 
     fun updateMarkFeedAsReadFromBottomSheetFeedMenu(titulo: String) {
-        Timber.d("[Timber] (BottomSheetFragment) updateMarkFeedAsReadFromBottomSheetFeedMenu(%s)", titulo)
-        mainSharedViewModel.updateMarkFeedAsRead(titulo)
-        dismiss()
+        try {
+            Timber.d("[Timber] (BottomSheetFeedFragment) updateMarkFeedAsReadFromBottomSheetFeedMenu(%s)", titulo)
+            mainSharedViewModel.updateMarkFeedAsRead(titulo)
+            dismiss()
+
+        } catch (e: Exception) {
+            Timber.d(e, "[Timber] (BottomSheetFeedFragment) updateMarkFeedAsReadFromBottomSheetFeedMenu() ERROR: %s", e.message)
+        }
     }
 
     fun removeFeedFromFavorites(titulo: String) {
-        Timber.d("[Timber] (BottomSheetFragment) removeFeedFromFavorites(%s)", titulo)
-        mainSharedViewModel.updateFeedFavoriteState(titulo, false)
-        dismiss()
+        try {
+            Timber.d("[Timber] (BottomSheetFeedFragment) removeFeedFromFavorites(%s)", titulo)
+            mainSharedViewModel.updateFeedFavoriteState(titulo, false)
+            dismiss()
+
+        } catch (e: Exception) {
+            Timber.d(e, "[Timber] (BottomSheetFeedFragment) removeFeedFromFavorites() ERROR: %s", e.message)
+        }
     }
 
     fun addFeedToFavorites(titulo: String) {
-        Timber.d("[Timber] (BottomSheetFragment) addFeedToFavorites(%s)", titulo)
-        mainSharedViewModel.updateFeedFavoriteState(titulo, true)
-        dismiss()
+        try {
+            Timber.d("[Timber] (BottomSheetFeedFragment) addFeedToFavorites(%s)", titulo)
+            mainSharedViewModel.updateFeedFavoriteState(titulo, true)
+            dismiss()
+
+        } catch (e: Exception) {
+            Timber.d(e, "[Timber] (BottomSheetFeedFragment) addFeedToFavorites() ERROR: %s", e.message)
+        }
     }
 
     fun unfollowFeed(titulo: String) {
-        Timber.d("[Timber] (BottomSheetFragment) unfollowFeed(%s)", titulo)
-        mainSharedViewModel.deleteFeed(titulo)
-        dismiss()
+        try {
+            Timber.d("[Timber] (BottomSheetFeedFragment) unfollowFeed(%s)", titulo)
+            mainSharedViewModel.deleteFeed(titulo)
+            dismiss()
+
+        } catch (e: Exception) {
+            Timber.d(e, "[Timber] (BottomSheetFeedFragment) unfollowFeed() ERROR: %s", e.message)
+        }
     }
 
 

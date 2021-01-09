@@ -16,6 +16,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import kotlin.collections.HashMap
 
 class RoomDataSource(db: FeedDatabase) : LocalDataSource {
@@ -30,10 +31,12 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
      */
     override suspend fun groupIsEmpty(): Boolean =
         withContext(Dispatchers.IO) {
-            groupDao.groupCount() <= 0
+            val cnt = groupDao.groupCount()
+            println("[Timber] groupIsEmpty(): cnt = $cnt")
+            return@withContext cnt <= 0
         }
 
-    override suspend fun groupSize(): Int = withContext(Dispatchers.IO) { groupDao.groupCount() }
+    override suspend fun groupSize(): Long = withContext(Dispatchers.IO) {groupDao.groupCount()}
 
     override suspend fun saveGroup(group: DomainGroup): Long {
         var groupId = 0L
@@ -43,11 +46,12 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         return groupId
     }
 
-    override suspend fun getGroupIdByName(name: String): Long {
-        var id = 0L
-        withContext(Dispatchers.IO) {
-            id = groupDao.getGroupIdByName(name)
+    override suspend fun getGroupIdByName(name: String): Long? {
+        val id = withContext(Dispatchers.IO) {
+            println("[Timber] getGroupIdByName(name = $name)")
+            return@withContext groupDao.getGroupIdByName(name)
         }
+        println("[Timber] getGroupIdByName(name = $name): return id = $id")
         return id
     }
 
@@ -60,10 +64,10 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         return group
     }
 
-    override fun getGroupByName(groupName: String): DomainGroup =
-        //withContext(Dispatchers.IO) {
-            groupDao.getGroupByName(groupName).toDomainGroup()
-        //}
+    override suspend fun getGroupByName(groupName: String): DomainGroup? =
+        withContext(Dispatchers.IO) {
+            groupDao.getGroupByName(groupName)?.toDomainGroup()
+        }
 
     override suspend fun getGroups(): Flow<List<DomainGroup>> =
         withContext(Dispatchers.IO) {
@@ -74,16 +78,16 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
             }
         }
 
-    override fun deleteGroup(group: Group): Int {
-        return groupDao.delete(group)
+    override suspend fun deleteGroup(group: Group): Int {
+        return withContext(Dispatchers.IO) {
+            groupDao.delete(group)
+        }
     }
 
     override suspend fun deleteAllGroups(): Int {
-        var cant = 0
-        withContext(Dispatchers.IO) {
-            cant = groupDao.deleteAll()
+        return withContext(Dispatchers.IO) {
+            groupDao.deleteAll()
         }
-        return cant
     }
 
     /**
@@ -96,19 +100,27 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
     override suspend fun feedSize(): Int = withContext(Dispatchers.IO) { feedDao.feedCount() }
 
     override suspend fun saveFeed(feed: DomainFeed): Long {
-        var feedId = 0L
+        var feedCnt = 0L
         withContext(Dispatchers.IO) {
-            feedId = feedDao.insert(feed.toRoomFeed())
+            try {
+                feedCnt = feedDao.insert(feed.toRoomFeed())
+            } catch (e: Exception) {
+                Timber.d("[Timber] ERROR: saveFeedFromServer(%s)", feed)
+            }
         }
-        return feedId
+        return feedCnt
     }
 
     override suspend fun saveFeedFromServer(feed: ServerFeed): Long {
-        var feedId = 0L
+        var feedCnt = 0L
         withContext(Dispatchers.IO) {
-            feedId = feedDao.insert(feed.toRoomFeed())
+            try {
+                feedCnt = feedDao.insert(feed.toRoomFeed())
+            } catch (e: Exception) {
+                Timber.d("[Timber] ERROR: saveFeedFromServer(%s)", feed)
+            }
         }
-        return feedId
+        return feedCnt
     }
 
     override suspend fun getFeeds(): Flow<List<DomainFeed>> =
@@ -120,39 +132,22 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
             }
         }
 
-    /*
-    override suspend fun getGroupsWithFeeds(): HashMap<String, List<String>> {
-        var lista: HashMap<String, List<String>> = HashMap()
-
-        withContext(Dispatchers.IO) {
-            lista = (feedDao.getGroupsWithFeedPairs()?.groupByTo(
+    override fun getGroupsWithFeeds(): Flow<HashMap<String, List<String>>> {
+        return feedDao.getGroupsWithFeedPairs().map { list ->
+            list.groupByTo(
                 HashMap(),
                 { it.group.groupName },
                 { it.feed?.linkName }
-            ) as HashMap<String, List<String>>?)!!
-
-        }
-
-        return lista
-    }
-     */
-
-    override fun getGroupsWithFeeds(): Flow<HashMap<String, List<String>>> {
-        return feedDao.getGroupsWithFeedPairs().map { list ->
-                list.groupByTo(
-                    HashMap(),
-                    { it.group.groupName },
-                    { it.feed?.linkName }
-                )
-            } as Flow<HashMap<String, List<String>>>
+            )
+        } as Flow<HashMap<String, List<String>>>
     }
 
     override suspend fun updateFeedFavoriteState(id: Long, favorite: Boolean): Int {
-        return feedDao.updateFeedFavoriteState(id, favorite.toInt())
+        return withContext(Dispatchers.IO) {feedDao.updateFeedFavoriteState(id, favorite.toInt())}
     }
 
     override suspend fun deleteFeed(feed: DomainFeed): Int {
-        return feedDao.delete(feed.toRoomFeed())
+        return withContext(Dispatchers.IO) {feedDao.delete(feed.toRoomFeed())}
     }
 
     /**
@@ -186,7 +181,7 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         return feedChannelId
     }
 
-    override suspend fun getFeedChannel(feedId: Int): Flow<DomainFeedChannel> =
+    override suspend fun getFeedChannel(feedId: Long): Flow<DomainFeedChannel> =
         withContext(Dispatchers.IO) {
             feedChannelDao.get(feedId).map {
                 it.toDomainFeedChannel()
@@ -194,23 +189,19 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         }
 
     override suspend fun getFeedIdByLink(link: String): Long {
-        var feedId = 0L
-        withContext(Dispatchers.IO) {
-            feedId = feedDao.get(link)
+        return withContext(Dispatchers.IO) {
+            feedDao.get(link)
         }
-        return feedId
     }
 
     override suspend fun getFeedChannelIdByFeedId(feedId: Long): Long {
-        var feedChannelId = 0L
-        withContext(Dispatchers.IO) {
-            feedChannelId = feedChannelDao.getFeedChannelIdByFeedId(feedId)
+        return withContext(Dispatchers.IO) {
+            feedChannelDao.getFeedChannelIdByFeedId(feedId)
         }
-        return feedChannelId
     }
 
-    override fun getFeedWithLinkName(linkName: String): DomainFeed =
-        feedDao.getFeedWithLinkName(linkName).toDomainFeed()
+    override suspend fun getFeedWithLinkName(linkName: String): DomainFeed =
+        withContext(Dispatchers.IO) {feedDao.getFeedWithLinkName(linkName).toDomainFeed()}
 
     /**
      * FEED-CHANNEL-ITEM
@@ -232,6 +223,7 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
     override suspend fun saveFeedChannelItemsFromServer(feedChannelItems: List<ServerFeedChannelItem>) {
         withContext(Dispatchers.IO) {
             feedChannelItemDao.insert(feedChannelItems.map { serverFeedChannelItem ->
+                Timber.d("[Timber] serverFeedChannelItem = %s", serverFeedChannelItem.toString())
                 serverFeedChannelItem.toRoomFeedChannelItem()
             })
         }
@@ -246,12 +238,14 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
             }
         }
 
-    override fun getFeedChannelItemWithFeed(id: Long): DomainFeedChannelItemWithFeed? =
-        feedChannelItemDao.getFeedChannelItemWithFeed(id)?.toDomainFeedChannelItemWithFeed()
+    override suspend fun getFeedChannelItemWithFeed(id: Long): DomainFeedChannelItemWithFeed? =
+        withContext(Dispatchers.IO) {
+            feedChannelItemDao.getFeedChannelItemWithFeed(id)?.toDomainFeedChannelItemWithFeed()
+        }
 
     override fun getFeedChannelItemWithFeedFlow(id: Long): Flow<DomainFeedChannelItemWithFeed> {
-        return feedChannelItemDao.getFeedChannelItemWithFeedFlow(id).map {
-            feedChannelItemWithFeed -> feedChannelItemWithFeed.toDomainFeedChannelItemWithFeed()
+        return feedChannelItemDao.getFeedChannelItemWithFeedFlow(id).map { feedChannelItemWithFeed ->
+            feedChannelItemWithFeed.toDomainFeedChannelItemWithFeed()
         }
     }
 
@@ -268,22 +262,22 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         }
 
     override suspend fun updateReadStatus(id: Long, read: Boolean): Int {
-        return feedChannelItemDao.updateReadStatus(id, read.toInt())
+        return withContext(Dispatchers.IO) {feedChannelItemDao.updateReadStatus(id, read.toInt())}
     }
 
     override suspend fun updateReadLaterStatus(id: Long, readLater: Boolean): Int {
-        return feedChannelItemDao.updateReadLaterStatus(id, readLater.toInt())
+        return withContext(Dispatchers.IO) {feedChannelItemDao.updateReadLaterStatus(id, readLater.toInt())}
     }
 
-    override fun updateInverseReadLaterStatus(id: Long): Int {
-        return feedChannelItemDao.updateInverseReadLaterStatus(id)
+    override suspend fun updateInverseReadLaterStatus(id: Long): Int {
+        return withContext(Dispatchers.IO) {feedChannelItemDao.updateInverseReadLaterStatus(id)}
     }
 
     override suspend fun updateFeedReadStatus(feedId: Long): Int {
-        return feedChannelItemDao.updateFeedReadStatus(feedId)
+        return withContext(Dispatchers.IO) {feedChannelItemDao.updateFeedReadStatus(feedId)}
     }
 
     override suspend fun updateGroupFeedReadStatus(gropId: Long): Int {
-        return  feedChannelItemDao.updateGroupFeedReadStatus(gropId)
+        return withContext(Dispatchers.IO) {feedChannelItemDao.updateGroupFeedReadStatus(gropId)}
     }
 }

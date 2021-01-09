@@ -14,7 +14,7 @@ interface FeedChannelItemDao {
      * @param feedChannelItem nuevo valor a insertar
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(feedChannelItem: FeedChannelItem): Long
+    suspend fun insert(feedChannelItem: FeedChannelItem): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(feedChannelItems: List<FeedChannelItem>)
@@ -24,7 +24,7 @@ interface FeedChannelItemDao {
      * @param feedChannelItem nuevo valor a reemplazar
      */
     @Update
-    fun update(feedChannelItem: FeedChannelItem): Int
+    suspend fun update(feedChannelItem: FeedChannelItem): Int
 
     @Query("UPDATE feed_channel_item_table SET read = :read WHERE id = :id")
     suspend fun updateReadStatus(id: Long, read: Int): Int
@@ -33,7 +33,7 @@ interface FeedChannelItemDao {
     suspend fun updateReadLaterStatus(id: Long, readLater: Int): Int
 
     @Query("UPDATE feed_channel_item_table SET read_later = (1 - read_later) WHERE id = :id")
-    fun updateInverseReadLaterStatus(id: Long): Int
+    suspend fun updateInverseReadLaterStatus(id: Long): Int
 
     /**
      * Actualiza la marca de leido del Feed indicado
@@ -61,16 +61,16 @@ interface FeedChannelItemDao {
      * @param key Id del FeedChannelItem a buscar
      */
     @Query("SELECT * from feed_channel_item_table WHERE id = :key")
-    fun get(key: Long): FeedChannelItem
+    suspend fun get(key: Long): FeedChannelItem
 
     /**
      * Borra todos los datos de la tabla
      */
     @Query("DELETE FROM feed_channel_item_table")
-    fun clear()
+    suspend fun clear()
 
     @Query("SELECT COUNT(id) FROM feed_channel_item_table")
-    fun feedChannelItemCount(): Int
+    suspend fun feedChannelItemCount(): Int
 
     /**
      * Selecciona y retorna todos los datos de la tabla no leídos,
@@ -109,7 +109,7 @@ interface FeedChannelItemDao {
         INNER JOIN feed_table ft ON fcit.feed_id = ft.id 
         WHERE fcit.id = :id"""
     )
-    fun getFeedChannelItemWithFeed(id: Long): FeedChannelItemWithFeed?
+    suspend fun getFeedChannelItemWithFeed(id: Long): FeedChannelItemWithFeed?
 
     @Query(
         """SELECT ft.link_name,fcit.* 
@@ -123,7 +123,7 @@ interface FeedChannelItemDao {
      * Selecciona y retorna el último item.
      */
     @Query("SELECT * FROM feed_channel_item_table ORDER BY id DESC LIMIT 1")
-    fun getLastFeedItem(): FeedChannelItem?
+    suspend fun getLastFeedItem(): FeedChannelItem?
 
     /**
      * Selecciona y retorna el contentEncoded con el Id indicado.

@@ -26,9 +26,6 @@ import java.util.*
 )
 data class FeedChannelItem(
 
-    @PrimaryKey(autoGenerate = true)
-    var id: Long = 0L,
-
     @ColumnInfo(name = "feed_id", index = true)
     var feedId: Long = 0L,
 
@@ -50,4 +47,8 @@ data class FeedChannelItem(
     @ColumnInfo(name = "image_link")
     var imageLink: String = ""
 
-)
+) {
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0L
+
+}

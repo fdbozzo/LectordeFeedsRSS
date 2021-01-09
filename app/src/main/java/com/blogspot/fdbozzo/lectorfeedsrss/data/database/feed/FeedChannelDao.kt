@@ -14,14 +14,14 @@ interface FeedChannelDao {
      * @param feedItem nuevo valor a insertar
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(feedChannel: FeedChannel) : Long
+    suspend fun insert(feedChannel: FeedChannel) : Long
 
     /**
      *
      * @param feedItem nuevo valor a reemplazar
      */
     @Update
-    fun update(feedChannel: FeedChannel): Int
+    suspend fun update(feedChannel: FeedChannel): Int
 
     /**
      *
@@ -35,23 +35,23 @@ interface FeedChannelDao {
      * @param feedId Id del Feed del que buscar su channel
      */
     @Query("SELECT * FROM feed_channel_table WHERE feed_id = :feedId")
-    fun get(feedId: Int) : Flow<FeedChannel>
+    fun get(feedId: Long) : Flow<FeedChannel>
 
     /**
      *
      * @param feedId Id del Feed del que buscar su channelId
      */
     @Query("SELECT id FROM feed_channel_table WHERE feed_id = :feedId")
-    fun getFeedChannelIdByFeedId(feedId: Long) : Long
+    suspend fun getFeedChannelIdByFeedId(feedId: Long) : Long
 
     /**
      * Borra todos los datos de la tabla
      */
     @Query("DELETE FROM feed_channel_table")
-    fun clear()
+    suspend fun clear()
 
     @Query("SELECT COUNT(id) FROM feed_channel_table")
-    fun groupCount(): Int
+    suspend fun groupCount(): Int
 
     /**
      * Selecciona y retorna todos los datos de la tabla,

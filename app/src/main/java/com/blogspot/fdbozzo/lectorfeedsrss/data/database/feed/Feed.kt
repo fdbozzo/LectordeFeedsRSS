@@ -26,9 +26,6 @@ import androidx.room.*
 )
 data class Feed constructor(
 
-    @PrimaryKey(autoGenerate = true)
-    var id: Long = 0L,
-
     @ColumnInfo(name = "group_id", index = true)
     var groupId: Long = 1L,
 
@@ -47,6 +44,9 @@ data class Feed constructor(
     @Ignore
     var version: String? = null
 ) {
+
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0L
 
     /**
      *

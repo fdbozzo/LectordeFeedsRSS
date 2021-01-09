@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 interface FeedDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(feed: Feed): Long
+    suspend fun insert(feed: Feed): Long
 
     /**
      * Cuando se actualiza una fila con un valor existente en la columna,
@@ -19,7 +19,7 @@ interface FeedDao {
      * @param feed nuevo valor a escribir
      */
     @Update
-    fun update(feed: Feed): Int
+    suspend fun update(feed: Feed): Int
 
     /**
      * Agrega o quita el feed de favoritos
@@ -33,7 +33,7 @@ interface FeedDao {
      * @param key feed a buscar
      */
     @Query("SELECT * from feed_table WHERE id = :key")
-    fun get(key: Long): Feed
+    suspend fun get(key: Long): Feed
 
     /**
      * Selecciona y retorna la fila que coincide con la clave indicada
@@ -41,19 +41,19 @@ interface FeedDao {
      * @param link feed a buscar
      */
     @Query("SELECT id from feed_table WHERE link = :link")
-    fun get(link: String): Long
+    suspend fun get(link: String): Long
 
     @Delete
-    fun delete(feed: Feed): Int
+    suspend fun delete(feed: Feed): Int
 
     /**
      * Borra todos los datos de la tabla
      */
     @Query("DELETE FROM feed_table")
-    fun clear()
+    suspend fun clear()
 
     @Query("SELECT COUNT(id) FROM feed_table")
-    fun feedCount(): Int
+    suspend fun feedCount(): Int
 
     /**
      * Selecciona y retorna todos los datos de la tabla,
@@ -66,25 +66,25 @@ interface FeedDao {
      * Selecciona y retorna el último feed.
      */
     @Query("SELECT * FROM feed_table ORDER BY id DESC LIMIT 1")
-    fun getLastFeed(): Feed?
+    suspend fun getLastFeed(): Feed?
 
     /**
      * Selecciona y retorna el feed con el Id indicado.
      */
     @Query("SELECT * from feed_table WHERE id = :key")
-    fun getFeedWithId(key: Long): Feed
+    suspend fun getFeedWithId(key: Long): Feed
 
     /**
      * Selecciona y retorna el feed con el link indicado.
      */
     @Query("SELECT * from feed_table WHERE link = :link")
-    fun getFeedWithLink(link: String): Feed
+    suspend fun getFeedWithLink(link: String): Feed
 
     /**
      * Selecciona y retorna el feed con el linkName indicado.
      */
     @Query("SELECT * from feed_table WHERE link_name = :linkName")
-    fun getFeedWithLinkName(linkName: String): Feed
+    suspend fun getFeedWithLinkName(linkName: String): Feed
 
     //@SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Transaction

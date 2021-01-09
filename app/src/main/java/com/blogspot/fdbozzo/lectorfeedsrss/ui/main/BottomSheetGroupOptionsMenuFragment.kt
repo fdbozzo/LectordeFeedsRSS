@@ -67,22 +67,37 @@ class BottomSheetGroupOptionsMenuFragment(val tituloMenu: String, val group: Gro
     }
 
     fun updateMarkGroupAsReadFromBottomSheetFeedMenu(titulo: String) {
-        Timber.d("[Timber] (BottomSheetFragment) updateMarkGroupAsReadFromBottomSheetFeedMenu(%s)", titulo)
-        mainSharedViewModel.updateMarkGroupAsRead(titulo)
-        dismiss()
+        try {
+            Timber.d("[Timber] (BottomSheetGroupFragment) updateMarkGroupAsReadFromBottomSheetFeedMenu(%s)", titulo)
+            mainSharedViewModel.updateMarkGroupAsRead(titulo)
+            dismiss()
+
+        } catch (e: Exception) {
+            Timber.d(e, "[Timber] (BottomSheetGroupFragment) updateMarkFeedAsReadFromBottomSheetFeedMenu() ERROR: %s", e.message)
+        }
     }
 
     fun renameGroup(nombre: String) {
-        Timber.d("[Timber] (BottomSheetFragment) renameGroup(%s)", nombre)
-        //mainSharedViewModel.renameGroup(nombre)
-        // TODO: SE DEBE LLAMAR A LA PANTALLA DE RENAME GROUP
-        dismiss()
+        try {
+            Timber.d("[Timber] (BottomSheetGroupFragment) renameGroup(%s)", nombre)
+            //mainSharedViewModel.renameGroup(nombre)
+            // TODO: SE DEBE LLAMAR A LA PANTALLA DE RENAME GROUP
+            dismiss()
+
+        } catch (e: Exception) {
+            Timber.d(e, "[Timber] (BottomSheetGroupFragment) updateMarkFeedAsReadFromBottomSheetFeedMenu() ERROR: %s", e.message)
+        }
     }
 
     fun deleteGroup(titulo: String) {
-        Timber.d("[Timber] (BottomSheetFragment) deleteGroup(%s)", titulo)
-        mainSharedViewModel.deleteGroup(titulo)
-        dismiss()
+        try {
+            Timber.d("[Timber] (BottomSheetGroupFragment) deleteGroup(%s)", titulo)
+            mainSharedViewModel.deleteGroup(titulo)
+            dismiss()
+
+        } catch (e: Exception) {
+            Timber.d(e, "[Timber] (BottomSheetGroupFragment) deleteGroup() ERROR: %s", e.message)
+        }
     }
 
 

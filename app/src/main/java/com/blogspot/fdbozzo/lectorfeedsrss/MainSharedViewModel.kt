@@ -9,7 +9,6 @@ import com.blogspot.fdbozzo.lectorfeedsrss.network.RssApiStatus
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
 import com.blogspot.fdbozzo.lectorfeedsrss.util.toBoolean
-import com.blogspot.fdbozzo.lectorfeedsrss.util.toInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -221,7 +220,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
         //if (id != null) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                val feed = feedRepository.getFeedWithLinkName(linkName)
+                val feed = feedRepository.getFeedByLinkName(linkName)
 
                 if (feed != null) {
                     feedRepository.updateFeedReadStatus(feed.id)
@@ -264,7 +263,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
         //if (id != null) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                val feed = feedRepository.getFeedWithLinkName(linkName)
+                val feed = feedRepository.getFeedByLinkName(linkName)
 
                 if (feed != null) {
                     feedRepository.updateFeedFavoriteState(feed.id, favorite)
@@ -286,7 +285,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     fun deleteFeed(linkName: String) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                val feed = feedRepository.getFeedWithLinkName(linkName)
+                val feed = feedRepository.getFeedByLinkName(linkName)
                 val deleted = feedRepository.deleteFeed(feed)
 
                 if (deleted > 0) {
@@ -327,10 +326,10 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     /**
      * Obtiene el Feed con el nombre (linkName) indicado
      */
-    suspend fun getGroupByName(groupName: String): DomainGroup {
+    suspend fun getGroupByName(groupName: String): DomainGroup? {
         Timber.d("[Timber] getGroupByName(%s)", groupName)
 
-        val group: DomainGroup = withContext(Dispatchers.IO) {
+        val group: DomainGroup? = withContext(Dispatchers.IO) {
             feedRepository.getGroupByName(groupName)
         }
         return group
@@ -343,7 +342,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
         Timber.d("[Timber] getFeedWithLinkName(%s)", linkName)
 
         val feed: DomainFeed = withContext(Dispatchers.IO) {
-            feedRepository.getFeedWithLinkName(linkName)
+            feedRepository.getFeedByLinkName(linkName)
         }
         return feed
     }
@@ -357,7 +356,6 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
             return
 
         viewModelScope.launch {
-
             rssApiResponse = feedRepository.checkNetworkFeeds(_apiBaseUrl.value!!)
 
             when (rssApiResponse) {
@@ -385,7 +383,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     fun getFeedWithLinkNameAndSetApiBaseUrl(linkName: String) {
         viewModelScope.launch {
             val feed = withContext(Dispatchers.IO) {
-                feedRepository.getFeedWithLinkName(linkName)
+                feedRepository.getFeedByLinkName(linkName)
             }
             Timber.d(
                 "[Timber] feedRepository.getFeedWithLinkName(%s) = %s",
@@ -419,6 +417,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
      */
     fun setSelectedFeedChannelItemId(id: Long) {
         viewModelScope.launch {
+            Timber.d("[Timber] setSelectedFeedChannelItemId(id=%d)", id)
             _selectedFeedChannelItemId.value = id
             updateItemReadStatus(true)
             _lastSelectedFeedChannelItemWithFeed =
@@ -470,98 +469,115 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
 
         // Compruebo si existe el último grupo, y si no existe borro toto y relleno
         val groupId = feedRepository.getGroupIdByName("Hardware")
-        Timber.d("[Timber] setupInitialDrawerMenuData() - group.id = %d", groupId)
 
-        if (groupId != 0L) {
+        if (groupId != null && groupId != 0L) {
             /**
              * Si groupId != 0 significa que se encontró el grupo buscado,
              * y que entonces no hay que borrar los datos nuevamente.
              */
+            Timber.d("[Timber] setupInitialDrawerMenuData() - group.id = %d  --> Ya hay datos", groupId)
             return
         }
+
+        Timber.d("[Timber] setupInitialDrawerMenuData() - group.id = %d --> Se recrean las opciones", groupId)
 
         // Borro la bbdd
         feedRepository.deleteAllLocalGroups()
 
-        val gId1 = feedRepository.saveLocalGroup(DomainGroup()) // "Uncategorized"
-        val fId1 = feedRepository.saveLocalFeed(
-            DomainFeed(
-                groupId = gId1,
-                linkName = "Stéphane Graber's website",
-                link = "https://stgraber.org"
-            )
+        // G1-F1
+        var gname = Group.DEFAULT_NAME
+        feedRepository.saveLocalGroup(DomainGroup()) // "Uncategorized"
+        var gId = feedRepository.getGroupIdByName(gname) ?: throw Exception("setupInitialDrawerMenuData [G1-F1]: gId = null")
+        var feed = DomainFeed(
+            groupId = gId,
+            linkName = "Stéphane Graber's website",
+            link = "https://stgraber.org"
         )
-        val cId1 = feedRepository.saveLocalFeedChannel(
+        feedRepository.saveLocalFeed(feed)
+        var fId = feedRepository.getFeedIdByLink(feed.link)
+        feedRepository.saveLocalFeedChannel(
             DomainFeedChannel(
-                feedId = fId1,
+                feedId = fId,
                 title = "Stéphane Graber's website",
                 description = "Stéphane Graber's Feed",
                 link = "https://stgraber.org/feed"
             )
         )
 
-        val gId2 = feedRepository.saveLocalGroup(DomainGroup(groupName = "Tecnología y Ciencia"))
-        val fId2 = feedRepository.saveLocalFeed(
-            DomainFeed(
-                groupId = gId2,
-                linkName = "HardZone",
-                link = "https://hardzone.es"
-            )
+        // G2-F2
+        gname = "Tecnología y Ciencia"
+        feedRepository.saveLocalGroup(DomainGroup(groupName = gname))
+        gId = feedRepository.getGroupIdByName(gname) ?: throw Exception("setupInitialDrawerMenuData [G1-F1]: gId = null")
+        feed = DomainFeed(
+            groupId = gId,
+            linkName = "HardZone",
+            link = "https://hardzone.es"
         )
-        val cId2 = feedRepository.saveLocalFeedChannel(
+        feedRepository.saveLocalFeed(feed)
+        fId = feedRepository.getFeedIdByLink(feed.link)
+        feedRepository.saveLocalFeedChannel(
             DomainFeedChannel(
-                feedId = fId2,
+                feedId = fId,
                 title = "HardZone",
                 description = "HardZone Feed",
                 link = "https://hardzone.es"
             )
         )
 
-        val gId3 = feedRepository.saveLocalGroup(DomainGroup(groupName = "Hogar"))
-        val fId3 = feedRepository.saveLocalFeed(
-            DomainFeed(
-                groupId = gId3,
-                linkName = "EcoInventos",
-                link = "https://ecoinventos.com"
-            )
+        // G3-F3
+        gname = "Hogar"
+        feedRepository.saveLocalGroup(DomainGroup(groupName = gname))
+        gId = feedRepository.getGroupIdByName(gname) ?: throw Exception("setupInitialDrawerMenuData [G1-F1]: gId = null")
+        feed = DomainFeed(
+            groupId = gId,
+            linkName = "EcoInventos",
+            link = "https://ecoinventos.com"
         )
-        val cId3 = feedRepository.saveLocalFeedChannel(
+        feedRepository.saveLocalFeed(feed)
+        fId = feedRepository.getFeedIdByLink(feed.link)
+        feedRepository.saveLocalFeedChannel(
             DomainFeedChannel(
-                feedId = fId3,
+                feedId = fId,
                 title = "EcoInventos",
                 description = "EcoInventos Feed",
                 link = "https://ecoinventos.com"
             )
         )
 
-        val gId4 = feedRepository.saveLocalGroup(DomainGroup(groupName = "Android"))
-        val fId4 = feedRepository.saveLocalFeed(
-            DomainFeed(
-                groupId = gId4,
-                linkName = "Android Police",
-                link = "https://www.androidpolice.com"
-            )
+        // G4-F4
+        gname = "Android"
+        feedRepository.saveLocalGroup(DomainGroup(groupName = gname))
+        gId = feedRepository.getGroupIdByName(gname) ?: throw Exception("setupInitialDrawerMenuData [G1-F1]: gId = null")
+        feed = DomainFeed(
+            groupId = gId,
+            linkName = "Android Police",
+            link = "https://www.androidpolice.com"
         )
-        val cId4 = feedRepository.saveLocalFeedChannel(
+        feedRepository.saveLocalFeed(feed)
+        fId = feedRepository.getFeedIdByLink(feed.link)
+        feedRepository.saveLocalFeedChannel(
             DomainFeedChannel(
-                feedId = fId4,
+                feedId = fId,
                 title = "Android Police",
                 description = "Android Police Feed",
                 link = "https://www.androidpolice.com"
             )
         )
 
-        val gId5 = feedRepository.saveLocalGroup(DomainGroup(groupName = "Hardware"))
-        val fId5 = feedRepository.saveLocalFeed(
-            DomainFeed(
-                groupId = gId5,
-                linkName = "El Chapuzas Informático",
-                link = "https://elchapuzasinformatico.com"
-            )
+        // G4-F4
+        gname = "Hardware"
+        feedRepository.saveLocalGroup(DomainGroup(groupName = gname))
+        gId = feedRepository.getGroupIdByName(gname) ?: throw Exception("setupInitialDrawerMenuData [G1-F1]: gId = null")
+        feed = DomainFeed(
+            groupId = gId,
+            linkName = "El Chapuzas Informático",
+            link = "https://elchapuzasinformatico.com"
         )
-        val cId5 = feedRepository.saveLocalFeedChannel(
+        feedRepository.saveLocalFeed(feed)
+        fId = feedRepository.getFeedIdByLink(feed.link)
+        feedRepository.saveLocalFeedChannel(
             DomainFeedChannel(
-                feedId = fId5,
+                feedId = fId,
                 title = "El Chapuzas Informático",
                 description = "El Chapuzas Informático Feed",
                 link = "https://elchapuzasinformatico.com"

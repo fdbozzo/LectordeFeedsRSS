@@ -378,23 +378,26 @@ class MainActivity : AppCompatActivity() {
             expandableListView!!.setOnChildClickListener { parent, v, groupPosition, childPosition, id ->
                 if (expandableItemLongClick) {
                     // LONG-CLICK
-                    //lifecycleScope.launch {
+                    try {
                         Timber.d("[Timber] expandableListView!!.setOnChildClickListener(LONG CLICK!)")
                         expandableItemLongClick = false
 
                         val tituloMenu =
                             listData[(titleList as ArrayList<String>)[groupPosition]]!![childPosition]
 
-                    lifecycleScope.launch {
-                        val feed = mainSharedViewModel.getFeedWithLinkName(tituloMenu)
-                        Timber.d("[Timber] expandableListView!!.setOnChildClickListener(LONG CLICK!) -> Feed encontrado: %s, favorite=%d",
-                            feed, feed.favorite)
+                        lifecycleScope.launch {
+                            val feed = mainSharedViewModel.getFeedWithLinkName(tituloMenu)
+                            Timber.d("[Timber] expandableListView!!.setOnChildClickListener(LONG CLICK!) -> Feed encontrado: %s, favorite=%d",
+                                feed, feed.favorite)
 
-                        // Cargar el menú
-                        BottomSheetFeedOptionsMenuFragment(tituloMenu, feed).show(
-                            supportFragmentManager,
-                            "submenu"
-                        )
+                            // Cargar el menú
+                            BottomSheetFeedOptionsMenuFragment(tituloMenu, feed).show(
+                                supportFragmentManager,
+                                "submenu"
+                            )
+                        }
+                    } catch (e: Exception) {
+                        Timber.d(e, "[Timber] expandableListView!!.setOnChildClickListener() ERROR: %s", e.message)
                     }
 
                     return@setOnChildClickListener true
@@ -421,22 +424,29 @@ class MainActivity : AppCompatActivity() {
              */
             expandableListView!!.setOnGroupClickListener { parent, v, groupPosition, id ->
                 if (expandableItemLongClick) {
-                    Timber.d("[Timber] expandableListView!!.setOnGroupClickListener(LONG CLICK!)")
-                    expandableItemLongClick = false
+                    try {
+                        Timber.d("[Timber] expandableListView!!.setOnGroupClickListener(LONG CLICK!)")
+                        expandableItemLongClick = false
 
-                    val tituloMenu = (titleList as ArrayList<String>)[groupPosition]
+                        val tituloMenu = (titleList as ArrayList<String>)[groupPosition]
 
-                    lifecycleScope.launch {
-                        val group = mainSharedViewModel.getGroupByName(tituloMenu)
-                        Timber.d("[Timber] expandableListView!!.setOnChildClickListener(LONG CLICK!) -> Group encontrado: %d, name=%s",
-                            group.id, group.groupName)
+                        lifecycleScope.launch {
+                            val group = mainSharedViewModel.getGroupByName(tituloMenu)
+                                ?: throw Exception("setOnGroupClickListener: group = null")
 
-                        // Cargar el menú
-                        BottomSheetGroupOptionsMenuFragment(tituloMenu, group).show(
-                            supportFragmentManager,
-                            "submenu"
-                        )
+                            Timber.d("[Timber] expandableListView!!.setOnChildClickListener(LONG CLICK!) -> Group encontrado: %d, name=%s",
+                                group.id, group.groupName)
+
+                            // Cargar el menú
+                            BottomSheetGroupOptionsMenuFragment(tituloMenu, group).show(
+                                supportFragmentManager,
+                                "submenu"
+                            )
+                        }
+                    } catch (e: Exception) {
+                        Timber.d(e, "[Timber] expandableListView!!.setOnGroupClickListener() ERROR: %s", e.message)
                     }
+
 
                     return@setOnGroupClickListener true
                 } else {
@@ -448,6 +458,7 @@ class MainActivity : AppCompatActivity() {
 
                     expandableItemLongClick = false
                 }
+
                 false
             }
         }
