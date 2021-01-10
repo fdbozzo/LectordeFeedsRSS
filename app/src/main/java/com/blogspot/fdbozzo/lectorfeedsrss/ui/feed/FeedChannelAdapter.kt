@@ -18,7 +18,7 @@ class FeedChannelAdapter(
 //class FeedChannelAdapter: ListAdapter<FeedChannelItem, FeedChannelAdapter.ViewHolder>(FeedContentsDiff()) {
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        Timber.d("onAttachedToRecyclerView() - list=%s, list.size=%d", list, list.size)
+        //Timber.d("onAttachedToRecyclerView() - list=%s, list.size=%d", list, list.size)
         super.onAttachedToRecyclerView(recyclerView)
     }
 
@@ -29,8 +29,10 @@ class FeedChannelAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         try {
             //val item = getItem(position)
+            /*
             Timber.d("onBindViewHolder(position=%d) list[%d]=%s, id=%d, link=%s",
                 position, position, list[position], list[position].id, list[position].link)
+             */
             val item = list[position]
             holder.bind(item, sharedViewViewModel)
 

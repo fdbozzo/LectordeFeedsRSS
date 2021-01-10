@@ -43,7 +43,7 @@ class FeedChannelFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Timber.d("[Timber] onCreateView")
+        Timber.d("[Timber] FeedChannelFragment.onCreateView")
         _binding = FeedChannelFragmentBinding.inflate(inflater, container, false)
 
         val localDatabase = FeedDatabase.getInstance(requireContext())
@@ -80,20 +80,6 @@ class FeedChannelFragment : Fragment() {
             }
         })
 
-        /** Observer para el navigateToFeedContentsItem **/
-        /*
-        sharedViewModel.selectedFeedChannelItemWithFeed.observe(viewLifecycleOwner, Observer { feedChannelItemWithFeed ->
-            feedChannelItemWithFeed?.let {
-                val action =
-                    FeedChannelFragmentDirections.actionFeedContentsFragmentToContentsFragment(
-                        feedChannelItemWithFeed.link, feedChannelItemWithFeed.id
-                    )
-                //NavHostFragment.findNavController(this).navigate(action)
-                findNavController().navigate(action)
-                sharedViewModel.navigateToContentsWithUrlIsDone()
-            }
-        })
-         */
         mainSharedViewModel.navigateToContents.observe(viewLifecycleOwner, Observer {
             if (it == true && sharedViewModel.lastSelectedFeedChannelItemWithFeed != null) {
                 val action =
@@ -105,7 +91,7 @@ class FeedChannelFragment : Fragment() {
                     }
                 //NavHostFragment.findNavController(this).navigate(action)
                 if (action != null) {
-                    findNavController().navigate(action)
+                    navController.navigate(action)
                 }
                 sharedViewModel.navigateToContentsWithUrlIsDone()
             }
@@ -130,22 +116,6 @@ class FeedChannelFragment : Fragment() {
             navController.navigate(R.id.nav_login)
         }
 
-
-        /** Observer para el Snackbar **/
-        mainSharedViewModel.snackBarMessage.observe(viewLifecycleOwner, Observer { messageRId ->
-            if (messageRId != null) { // Observed state is true.
-                val v = activity?.findViewById<CoordinatorLayout>(R.id.mainCoordinatorLayout)
-                Timber.d("[Timber] (FeedChannelFragment) sharedViewModel.snackBarMessage.observe: %s", getString(messageRId))
-                if (v != null) {
-                    Snackbar.make(
-                        v,
-                        getString(messageRId),
-                        Snackbar.LENGTH_LONG // How long to display the message.
-                    ).show()
-                }
-                mainSharedViewModel.snackBarMessageDone()
-            }
-        })
 
     }
 
