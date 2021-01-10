@@ -134,11 +134,20 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
 
     override fun getGroupsWithFeeds(): Flow<HashMap<String, List<String>>> {
         return feedDao.getGroupsWithFeedPairs().map { list ->
+            // Así sale ordenado
+            list.groupBy(
+                { it.group.groupName },
+                { it.feed?.linkName }
+            )
+
+            /* Así sale desordenado
             list.groupByTo(
                 HashMap(),
                 { it.group.groupName },
                 { it.feed?.linkName }
             )
+
+             */
         } as Flow<HashMap<String, List<String>>>
     }
 

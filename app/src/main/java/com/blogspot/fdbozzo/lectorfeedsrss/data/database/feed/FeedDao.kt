@@ -93,7 +93,8 @@ interface FeedDao {
         group_table.group_name as grp_group_name, 
         feed_table.* 
         FROM group_table 
-        LEFT JOIN feed_table ON feed_table.group_id = group_table.id"""
+        LEFT JOIN feed_table ON feed_table.group_id = feed_table.id
+        ORDER BY group_table.group_name ASC, feed_table.link_name ASC"""
     )
     fun getGroupsWithFeedPairs(): Flow<List<Feed.GroupWithFeedPair>>
 
