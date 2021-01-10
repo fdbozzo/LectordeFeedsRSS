@@ -91,7 +91,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
      * Conecta el LiveData "items" a la consulta de BBDD para actualización automática cuando cambien
      * los valores del filtro LiveData "selectedFeedOptions"
      */
-    val items: LiveData<List<DomainFeedChannelItemWithFeed>> =
+    val items: LiveData<List<DomainFeedChannelItemWithFeed>?> =
         Transformations.switchMap(selectedFeedOptions) { selectedFeedOptions ->
             feedRepository.getFilteredFeeds(selectedFeedOptions)
                 .asLiveData()
@@ -252,6 +252,23 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
         //}
     }
 
+
+    /**
+     * Actualiza el estado del flag "read" de todos los items
+     */
+    fun updateMarkAllFeedAsRead() {
+
+        Timber.d("[Timber] updateMarkAllFeedAsRead()")
+
+        //if (id != null) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                feedRepository.updateMarkAllFeedAsRead()
+                _snackBarMessage.postValue(R.string.msg_marked_as_read)
+            }
+        }
+        //}
+    }
 
     /**
      * Actualiza el estado del flag "read" del item elegido

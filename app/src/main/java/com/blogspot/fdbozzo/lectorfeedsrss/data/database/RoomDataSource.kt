@@ -280,4 +280,8 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
     override suspend fun updateGroupFeedReadStatus(gropId: Long): Int {
         return withContext(Dispatchers.IO) {feedChannelItemDao.updateGroupFeedReadStatus(gropId)}
     }
+
+    override suspend fun updateMarkAllFeedAsRead(): Int {
+        return withContext(Dispatchers.IO) {feedChannelItemDao.updateMarkAllFeedAsRead()}
+    }
 }

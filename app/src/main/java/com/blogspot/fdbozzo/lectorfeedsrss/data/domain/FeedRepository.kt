@@ -264,6 +264,10 @@ class FeedRepository(
         return  localDataSource.updateGroupFeedReadStatus(gropId)
     }
 
+    suspend fun updateMarkAllFeedAsRead(): Int {
+        return localDataSource.updateMarkAllFeedAsRead()
+    }
+
 }
 
 interface LocalDataSource {
@@ -321,7 +325,7 @@ interface LocalDataSource {
     suspend fun updateInverseReadLaterStatus(id: Long): Int
     suspend fun updateFeedReadStatus(feedId: Long): Int
     suspend fun updateGroupFeedReadStatus(gropId: Long): Int
-
+    suspend fun updateMarkAllFeedAsRead(): Int
 }
 
 interface RemoteDataSource {

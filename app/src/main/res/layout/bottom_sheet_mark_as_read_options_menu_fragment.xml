@@ -4,7 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="viewModel"
+            type="com.blogspot.fdbozzo.lectorfeedsrss.MainSharedViewModel"/>
+        <variable
+            name="fragment"
+            type="com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetMarkAsReadOptionsMenuFragment"/>
     </data>
 
     <FrameLayout
@@ -35,6 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
+                android:onClick="@{() -> fragment.updateMarkAllArticlesAsReadFromBottomSheetFeedMenu()}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txtTituloMenu"
                 app:srcCompat="@drawable/ic_mark_as_read_holo_light_24dp" />
@@ -45,6 +51,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="@string/menu_option_mark_as_read_all_articles"
+                android:onClick="@{() -> fragment.updateMarkAllArticlesAsReadFromBottomSheetFeedMenu()}"
                 app:layout_constraintBottom_toBottomOf="@+id/imgMarkAsRead"
                 app:layout_constraintStart_toEndOf="@+id/imgMarkAsRead"
                 app:layout_constraintEnd_toEndOf="parent"

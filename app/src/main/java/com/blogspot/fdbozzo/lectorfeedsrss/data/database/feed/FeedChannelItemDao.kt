@@ -42,6 +42,12 @@ interface FeedChannelItemDao {
     suspend fun updateFeedReadStatus(feedId: Long): Int
 
     /**
+     * Actualiza la marca de leido de todos los Feeds
+     */
+    @Query("UPDATE feed_channel_item_table SET read = 1")
+    suspend fun updateMarkAllFeedAsRead(): Int
+
+    /**
      * Actualiza la marca de leido del Feed indicado
      */
     @Query(

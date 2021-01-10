@@ -67,11 +67,16 @@ class FeedChannelFragment : Fragment() {
         /** Observer para los items actualizados y su reflejo en el recycler **/
         mainSharedViewModel.items.observe(viewLifecycleOwner, Observer {
             it?.let {
-                //adapter.data = it   // Esto solo lo usa el RecyclerView.Adapter
-                //adapter.submitList(it)
-                //initRecyclerView(it)
-                Timber.i("[Timber] onViewCreated() - mainSharedViewModel.items (CAMBIO)")
-                binding.recyclerView.adapter = FeedChannelAdapter(it, sharedViewModel, requireContext())
+                try {
+                    //adapter.data = it   // Esto solo lo usa el RecyclerView.Adapter
+                    //adapter.submitList(it)
+                    //initRecyclerView(it)
+                    Timber.i("[Timber] onViewCreated() - mainSharedViewModel.items.observe (CAMBIO)")
+                    binding.recyclerView.adapter = FeedChannelAdapter(it, sharedViewModel, requireContext())
+
+                } catch (e: Exception) {
+                    Timber.d(e, "[Timber] onViewCreated() - mainSharedViewModel.items.observe ERROR: %s", e.message)
+                }
             }
         })
 
