@@ -5,7 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.blogspot.fdbozzo.lectorfeedsrss.MainSharedViewModel
+import com.blogspot.fdbozzo.lectorfeedsrss.R
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
@@ -13,6 +16,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Group
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group as RoomGroup
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.BottomSheetGroupOptionsMenuFragmentBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
+import com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.FeedChannelFragmentDirections
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import timber.log.Timber
 
@@ -27,6 +31,8 @@ class BottomSheetGroupOptionsMenuFragment(val tituloMenu: String, val group: Gro
     val deleteGroupVisibility get() = _deleteGroupVisibility
     private var _renameGroupVisibility = View.VISIBLE
     val renameGroupVisibility get() = _renameGroupVisibility
+    private lateinit var navController: NavController
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,10 +63,10 @@ class BottomSheetGroupOptionsMenuFragment(val tituloMenu: String, val group: Gro
         Timber.d("[Timber] BOTTOM SHEET -> renameGroupVisibility: %s",
             if (_renameGroupVisibility == View.VISIBLE) "VISIBLE" else "GONE")
 
-
         mainSharedViewModel.tituloMenuGroup = tituloMenu
         binding.viewModel = mainSharedViewModel
         binding.fragment = this
+        navController = findNavController()
 
         return binding.root
         //return inflater.inflate(R.layout.bottom_sheet_group_options_menu_fragment, container, false)
@@ -80,12 +86,13 @@ class BottomSheetGroupOptionsMenuFragment(val tituloMenu: String, val group: Gro
     fun renameGroup(nombre: String) {
         try {
             Timber.d("[Timber] (BottomSheetGroupFragment) renameGroup(%s)", nombre)
-            //mainSharedViewModel.renameGroup(nombre)
-            // TODO: SE DEBE LLAMAR A LA PANTALLA DE RENAME GROUP
+            //navController.navigate(R.id.nav_edit_group)
+            val action = FeedChannelFragmentDirections.actionNavFeedContentsToNavEditGroup(nombre)
+            navController.navigate(action)
             dismiss()
 
         } catch (e: Exception) {
-            Timber.d(e, "[Timber] (BottomSheetGroupFragment) updateMarkFeedAsReadFromBottomSheetFeedMenu() ERROR: %s", e.message)
+            Timber.d(e, "[Timber] (BottomSheetGroupFragment) renameGroup() ERROR: %s", e.message)
         }
     }
 

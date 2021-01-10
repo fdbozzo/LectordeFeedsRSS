@@ -78,12 +78,12 @@ class FeedRepository(
          * Guardar los feeds en BBDD
          */
         try {
-            if (localDataSource.groupIsEmpty()) {
+            if (withContext(Dispatchers.IO) {localDataSource.groupIsEmpty()}) {
                 println("[Timber] 2")
-                localDataSource.saveGroup(DomainGroup())
+                withContext(Dispatchers.IO) {localDataSource.saveGroup(DomainGroup())}
                 println("[Timber] 3")
             }
-            groupId = localDataSource.getGroupIdByName(Group.DEFAULT_NAME)
+            groupId = withContext(Dispatchers.IO) {localDataSource.getGroupIdByName(Group.DEFAULT_NAME)}
             println("[Timber] 4 FeedRepository.saveNetworkFeeds() - GroupId=$groupId")
             Timber.d("[Timber] FeedRepository.saveNetworkFeeds() - GroupId=%d", groupId)
 
@@ -98,11 +98,11 @@ class FeedRepository(
          * Se intenta insertar el Feed y recuperar su id, pero si ya existe devolverá -1
          */
         try {
-            feeds = localDataSource.saveFeedFromServer(serverFeed.also {
+            feeds = withContext(Dispatchers.IO) {localDataSource.saveFeedFromServer(serverFeed.also {
                 it.groupId = groupId?: 0
-            })
+            })}
             println("[Timber] 5")
-            feedId = localDataSource.getFeedIdByLink(serverFeed.link)
+            feedId = withContext(Dispatchers.IO) {localDataSource.getFeedIdByLink(serverFeed.link)}
             println("[Timber] 6 FeedRepository.saveNetworkFeeds(${serverFeed.linkName}): FEED - FeedId=$feedId (count=$feeds)")
 
             Timber.d(
@@ -123,9 +123,9 @@ class FeedRepository(
             /**
              * Se intenta insertar el FeedChannel, pero si ya existe devolverá -1 y se recuperará su id actual
              */
-            feedChannels = localDataSource.saveFeedChannelFromServer(serverFeed.channel)
+            feedChannels = withContext(Dispatchers.IO) {localDataSource.saveFeedChannelFromServer(serverFeed.channel)}
             println("[Timber] 8 feedChannels=$feedChannels")
-            feedChannelId = localDataSource.getFeedChannelIdByFeedId(feedId)
+            feedChannelId = withContext(Dispatchers.IO) {localDataSource.getFeedChannelIdByFeedId(feedId)}
             println("[Timber] 9 feedChannelId=$feedChannelId")
 
             Timber.d(
@@ -154,7 +154,7 @@ class FeedRepository(
                 }
 
                 //println("[Timber] 11 listFeedChannelItem=${}")
-                localDataSource.saveFeedChannelItemsFromServer(listFeedChannelItem)
+                withContext(Dispatchers.IO) {localDataSource.saveFeedChannelItemsFromServer(listFeedChannelItem)}
                 Timber.d(
                     "FeedRepository.saveNetworkFeeds(%s): ITEMS - Guardados",
                     serverFeed.linkName
@@ -170,30 +170,34 @@ class FeedRepository(
      * GROUP
      */
     suspend fun deleteAllLocalGroups(): Int {
-        return localDataSource.deleteAllGroups()
+        return withContext(Dispatchers.IO) {localDataSource.deleteAllGroups()}
     }
 
     suspend fun saveLocalGroup(group: DomainGroup): Long {
-        return localDataSource.saveGroup(group)
+        return withContext(Dispatchers.IO) {localDataSource.saveGroup(group)}
+    }
+
+    suspend fun updateGroup(group: DomainGroup): Int {
+        return withContext(Dispatchers.IO) {localDataSource.updateGroup(group)}
     }
 
     suspend fun getGroupById(key: Long): DomainGroup? {
-        return localDataSource.getGroupById(key)
+        return withContext(Dispatchers.IO) {localDataSource.getGroupById(key)}
     }
 
     suspend fun getGroupIdByName(name: String): Long? {
-        return localDataSource.getGroupIdByName(name)
+        return withContext(Dispatchers.IO) {localDataSource.getGroupIdByName(name)}
     }
 
     suspend fun getGroupByName(groupName: String): DomainGroup? {
-        return localDataSource.getGroupByName(groupName)
+        return withContext(Dispatchers.IO) {localDataSource.getGroupByName(groupName)}
     }
 
     suspend fun deleteGroupByName(groupName: String): Int {
-        val group = localDataSource.getGroupByName(groupName)
+        val group = withContext(Dispatchers.IO) {localDataSource.getGroupByName(groupName)}
         Timber.d("FeedRepository.deleteGroupByName(%s) = %s", groupName, group?.id ?: 0)
         return if (group != null) {
-            localDataSource.deleteGroup(group.toRoomGroup())
+            withContext(Dispatchers.IO) {localDataSource.deleteGroup(group.toRoomGroup())}
         } else {
             0
         }
@@ -203,15 +207,15 @@ class FeedRepository(
      * FEED
      */
     suspend fun saveLocalFeed(feed: DomainFeed): Long {
-        return localDataSource.saveFeed(feed)
+        return withContext(Dispatchers.IO) {localDataSource.saveFeed(feed)}
     }
 
     suspend fun saveLocalFeedChannel(feedChannel: DomainFeedChannel): Long {
-        return localDataSource.saveFeedChannel(feedChannel)
+        return withContext(Dispatchers.IO) {localDataSource.saveFeedChannel(feedChannel)}
     }
 
     suspend fun updateFeedFavoriteState(id: Long, favorite: Boolean): Int {
-        return localDataSource.updateFeedFavoriteState(id, favorite)
+        return withContext(Dispatchers.IO) {localDataSource.updateFeedFavoriteState(id, favorite)}
     }
 
     fun getGroupsWithFeeds(): Flow<HashMap<String, List<String>>> {
@@ -219,53 +223,53 @@ class FeedRepository(
     }
 
     suspend fun getFeedByLinkName(linkName: String): DomainFeed {
-        return localDataSource.getFeedWithLinkName(linkName)
+        return withContext(Dispatchers.IO) {localDataSource.getFeedWithLinkName(linkName)}
     }
 
     suspend fun getFeedIdByLink(link: String): Long {
-        return localDataSource.getFeedIdByLink(link)
+        return withContext(Dispatchers.IO) {localDataSource.getFeedIdByLink(link)}
     }
 
     suspend fun deleteFeed(feed: DomainFeed): Int {
-        return localDataSource.deleteFeed(feed)
+        return withContext(Dispatchers.IO) {localDataSource.deleteFeed(feed)}
     }
 
     suspend fun deleteGroup(group: Group): Int {
-        return localDataSource.deleteGroup(group)
+        return withContext(Dispatchers.IO) {localDataSource.deleteGroup(group)}
     }
 
     /**
      * FEEDCHANNELITEM
      */
     suspend fun getFeedChannelItemWithFeed(id: Long): DomainFeedChannelItemWithFeed? {
-        return localDataSource.getFeedChannelItemWithFeed(id)
+        return withContext(Dispatchers.IO) {localDataSource.getFeedChannelItemWithFeed(id)}
     }
 
     fun getFeedChannelItemWithFeedFlow(id: Long): Flow<DomainFeedChannelItemWithFeed> =
         localDataSource.getFeedChannelItemWithFeedFlow(id)
 
     suspend fun updateReadStatus(id: Long, read: Boolean): Int {
-        return localDataSource.updateReadStatus(id, read)
+        return withContext(Dispatchers.IO) {localDataSource.updateReadStatus(id, read)}
     }
 
     suspend fun updateReadLaterStatus(id: Long, readLater: Boolean): Int {
-        return localDataSource.updateReadLaterStatus(id, readLater)
+        return withContext(Dispatchers.IO) {localDataSource.updateReadLaterStatus(id, readLater)}
     }
 
     suspend fun updateInverseReadLaterStatus(id: Long): Int {
-        return localDataSource.updateInverseReadLaterStatus(id)
+        return withContext(Dispatchers.IO) {localDataSource.updateInverseReadLaterStatus(id)}
     }
 
     suspend fun updateFeedReadStatus(feedId: Long): Int {
-        return  localDataSource.updateFeedReadStatus(feedId)
+        return withContext(Dispatchers.IO) {localDataSource.updateFeedReadStatus(feedId)}
     }
 
     suspend fun updateGroupFeedReadStatus(gropId: Long): Int {
-        return  localDataSource.updateGroupFeedReadStatus(gropId)
+        return withContext(Dispatchers.IO) {localDataSource.updateGroupFeedReadStatus(gropId)}
     }
 
     suspend fun updateMarkAllFeedAsRead(): Int {
-        return localDataSource.updateMarkAllFeedAsRead()
+        return withContext(Dispatchers.IO) {localDataSource.updateMarkAllFeedAsRead()}
     }
 
 }
@@ -278,10 +282,11 @@ interface LocalDataSource {
     suspend fun groupIsEmpty(): Boolean
     suspend fun groupSize(): Long
     suspend fun saveGroup(group: DomainGroup): Long
+    suspend fun updateGroup(group: DomainGroup): Int
     suspend fun getGroupIdByName(name: String): Long?
     suspend fun getGroupById(key: Long): DomainGroup?
     suspend fun getGroupByName(groupName: String): DomainGroup?
-    suspend fun getGroups(): Flow<List<DomainGroup>>
+    suspend fun getGroups(): Flow<List<DomainGroup>?>
     suspend fun deleteGroup(group: Group): Int
     suspend fun deleteAllGroups(): Int
     fun getGroupsWithFeeds(): Flow<HashMap<String, List<String>>>

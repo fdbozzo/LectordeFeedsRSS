@@ -167,9 +167,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     fun updateItemReadStatus(read: Boolean, id: Long? = selectedFeedChannelItemId.value) {
         if (id != null) {
             viewModelScope.launch {
-                withContext(Dispatchers.IO) {
-                    feedRepository.updateReadStatus(id, read)
-                }
+                feedRepository.updateReadStatus(id, read)
             }
         }
     }
@@ -179,32 +177,29 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
      */
     fun updateItemReadLaterStatus(id: Long? = selectedFeedChannelItemId.value) {
         if (id != null) {
-            //val readLater = lastSelectedFeedChannelItemWithFeed.readLater != 1
             viewModelScope.launch {
-                withContext(Dispatchers.IO) {
-                    try {
-                        feedRepository.updateInverseReadLaterStatus(id)
-                        _lastSelectedFeedChannelItemWithFeed =
-                            feedRepository.getFeedChannelItemWithFeed(id)
-                        val readLater = _lastSelectedFeedChannelItemWithFeed?.readLater?.toBoolean()
-                        //_readLaterStatus.postValue(readLater)
+                try {
+                    feedRepository.updateInverseReadLaterStatus(id)
+                    _lastSelectedFeedChannelItemWithFeed =
+                        feedRepository.getFeedChannelItemWithFeed(id)
+                    val readLater = _lastSelectedFeedChannelItemWithFeed?.readLater?.toBoolean()
+                    //_readLaterStatus.postValue(readLater)
 
-                        when (readLater) {
-                            true -> _snackBarMessage.postValue(R.string.msg_marked_for_read_later)
-                            false -> _snackBarMessage.postValue(R.string.msg_unmarked_for_read_later)
-                        }
-
-                        Timber.d(
-                            "[Timber] (GET) feedRepository.updateItemReadStatus(id=%d, readLaterD=%b)",
-                            id,
-                            readLater
-                        )
-                    } catch (e: Exception) {
-                        Timber.d(
-                            "[Timber] updateItemReadLaterStatus.Exception: %s.",
-                            e.localizedMessage
-                        )
+                    when (readLater) {
+                        true -> _snackBarMessage.postValue(R.string.msg_marked_for_read_later)
+                        false -> _snackBarMessage.postValue(R.string.msg_unmarked_for_read_later)
                     }
+
+                    Timber.d(
+                        "[Timber] (GET) feedRepository.updateItemReadStatus(id=%d, readLaterD=%b)",
+                        id,
+                        readLater
+                    )
+                } catch (e: Exception) {
+                    Timber.d(
+                        "[Timber] updateItemReadLaterStatus.Exception: %s.",
+                        e.localizedMessage
+                    )
                 }
             }
         }
@@ -217,39 +212,30 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
 
         Timber.d("[Timber] updateMarkFeedAsRead(%s)", linkName)
 
-        //if (id != null) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                val feed = feedRepository.getFeedByLinkName(linkName)
+            val feed = feedRepository.getFeedByLinkName(linkName)
 
-                if (feed != null) {
-                    feedRepository.updateFeedReadStatus(feed.id)
-                    _snackBarMessage.postValue(R.string.msg_marked_as_read)
-                }
+            if (feed != null) {
+                feedRepository.updateFeedReadStatus(feed.id)
+                _snackBarMessage.postValue(R.string.msg_marked_as_read)
             }
         }
-        //}
     }
 
     /**
      * Actualiza el estado del flag "read" del grupo elegido
      */
     fun updateMarkGroupAsRead(groupName: String) {
-
         Timber.d("[Timber] updateMarkGroupAsRead(%s)", groupName)
 
-        //if (id != null) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                val groupId = feedRepository.getGroupIdByName(groupName)
+            val groupId = feedRepository.getGroupIdByName(groupName)
 
-                if (groupId != null) {
-                    feedRepository.updateGroupFeedReadStatus(groupId)
-                    _snackBarMessage.postValue(R.string.msg_marked_as_read)
-                }
+            if (groupId != null) {
+                feedRepository.updateGroupFeedReadStatus(groupId)
+                _snackBarMessage.postValue(R.string.msg_marked_as_read)
             }
         }
-        //}
     }
 
 
@@ -257,42 +243,32 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
      * Actualiza el estado del flag "read" de todos los items
      */
     fun updateMarkAllFeedAsRead() {
-
         Timber.d("[Timber] updateMarkAllFeedAsRead()")
 
-        //if (id != null) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                feedRepository.updateMarkAllFeedAsRead()
-                _snackBarMessage.postValue(R.string.msg_marked_as_read)
-            }
+            feedRepository.updateMarkAllFeedAsRead()
+            _snackBarMessage.postValue(R.string.msg_marked_as_read)
         }
-        //}
     }
 
     /**
      * Actualiza el estado del flag "read" del item elegido
      */
     fun updateFeedFavoriteState(linkName: String, favorite: Boolean) {
-
         Timber.d("[Timber] updateFeedFavoriteState(%s)", linkName)
 
-        //if (id != null) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                val feed = feedRepository.getFeedByLinkName(linkName)
+            val feed = feedRepository.getFeedByLinkName(linkName)
 
-                if (feed != null) {
-                    feedRepository.updateFeedFavoriteState(feed.id, favorite)
-                    if (favorite) {
-                        _snackBarMessage.postValue(R.string.msg_added_to_favorites)
-                    } else {
-                        _snackBarMessage.postValue(R.string.msg_removed_from_favorites)
-                    }
+            if (feed != null) {
+                feedRepository.updateFeedFavoriteState(feed.id, favorite)
+                if (favorite) {
+                    _snackBarMessage.postValue(R.string.msg_added_to_favorites)
+                } else {
+                    _snackBarMessage.postValue(R.string.msg_removed_from_favorites)
                 }
             }
         }
-        //}
     }
 
 
@@ -301,41 +277,68 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
      */
     fun deleteFeed(linkName: String) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                val feed = feedRepository.getFeedByLinkName(linkName)
-                val deleted = feedRepository.deleteFeed(feed)
+            val feed = feedRepository.getFeedByLinkName(linkName)
+            val deleted = feedRepository.deleteFeed(feed)
 
-                if (deleted > 0) {
-                    _snackBarMessage.postValue(R.string.msg_source_removed)
-                } else {
-                    _snackBarMessage.postValue(R.string.msg_operation_not_executed)
-                }
-
-                Timber.d("[Timber] deleteFeed(%s): id=%d, deleted=%d", linkName, feed.id, deleted)
+            if (deleted > 0) {
+                _snackBarMessage.postValue(R.string.msg_source_removed)
+            } else {
+                _snackBarMessage.postValue(R.string.msg_operation_not_executed)
             }
+
+            Timber.d("[Timber] deleteFeed(%s): id=%d, deleted=%d", linkName, feed.id, deleted)
         }
     }
 
     /**
      * Actualiza el estado del flag "read" del item elegido
      */
+    fun addGroup(group: DomainGroup) {
+        viewModelScope.launch {
+            val saved = feedRepository.saveLocalGroup(group)
+            if (saved > 0) {
+                _snackBarMessage.postValue(R.string.msg_group_added)
+            } else {
+                _snackBarMessage.postValue(R.string.msg_value_already_exists)
+            }
+
+            Timber.d("[Timber] addGroup(%s)", group)
+        }
+    }
+
+
+    fun updateGroup(group: DomainGroup) {
+        viewModelScope.launch {
+            val saved = feedRepository.updateGroup(group)
+            if (saved > 0) {
+                _snackBarMessage.postValue(R.string.msg_group_updated)
+            } else {
+                _snackBarMessage.postValue(R.string.msg_operation_not_executed)
+            }
+
+            Timber.d("[Timber] updateGroup(%s)", group)
+        }
+    }
+
+
+    /**
+     * Actualiza el estado del flag "read" del item elegido
+     */
     fun deleteGroup(linkName: String) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                var deleted = 0
-                deleted = when (linkName) {
-                    Group.DEFAULT_NAME -> 0
-                    else -> feedRepository.deleteGroupByName(linkName)
-                }
-
-                if (deleted > 0) {
-                    _snackBarMessage.postValue(R.string.msg_group_removed)
-                } else {
-                    _snackBarMessage.postValue(R.string.msg_operation_not_executed)
-                }
-
-                Timber.d("[Timber] deleteGroup(%s): deleted=%d", linkName, deleted)
+            var deleted = 0
+            deleted = when (linkName) {
+                Group.DEFAULT_NAME -> 0
+                else -> feedRepository.deleteGroupByName(linkName)
             }
+
+            if (deleted > 0) {
+                _snackBarMessage.postValue(R.string.msg_group_removed)
+            } else {
+                _snackBarMessage.postValue(R.string.msg_operation_not_executed)
+            }
+
+            Timber.d("[Timber] deleteGroup(%s): deleted=%d", linkName, deleted)
         }
     }
 
@@ -345,10 +348,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
      */
     suspend fun getGroupByName(groupName: String): DomainGroup? {
         Timber.d("[Timber] getGroupByName(%s)", groupName)
-
-        val group: DomainGroup? = withContext(Dispatchers.IO) {
-            feedRepository.getGroupByName(groupName)
-        }
+        val group: DomainGroup? = feedRepository.getGroupByName(groupName)
         return group
     }
 
@@ -357,10 +357,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
      */
     suspend fun getFeedWithLinkName(linkName: String): DomainFeed {
         Timber.d("[Timber] getFeedWithLinkName(%s)", linkName)
-
-        val feed: DomainFeed = withContext(Dispatchers.IO) {
-            feedRepository.getFeedByLinkName(linkName)
-        }
+        val feed: DomainFeed = feedRepository.getFeedByLinkName(linkName)
         return feed
     }
 
@@ -399,9 +396,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
      */
     fun getFeedWithLinkNameAndSetApiBaseUrl(linkName: String) {
         viewModelScope.launch {
-            val feed = withContext(Dispatchers.IO) {
-                feedRepository.getFeedByLinkName(linkName)
-            }
+            val feed = feedRepository.getFeedByLinkName(linkName)
             Timber.d(
                 "[Timber] feedRepository.getFeedWithLinkName(%s) = %s",
                 linkName,
@@ -437,8 +432,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
             Timber.d("[Timber] setSelectedFeedChannelItemId(id=%d)", id)
             _selectedFeedChannelItemId.value = id
             updateItemReadStatus(true)
-            _lastSelectedFeedChannelItemWithFeed =
-                withContext(Dispatchers.IO) { feedRepository.getFeedChannelItemWithFeed(id) }
+            _lastSelectedFeedChannelItemWithFeed = feedRepository.getFeedChannelItemWithFeed(id)
             _navigateToContents.value = true
         }
     }

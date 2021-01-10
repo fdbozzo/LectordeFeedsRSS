@@ -12,30 +12,55 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/img_today"
+            android:id="@+id/img_add_group"
             android:layout_width="@dimen/menu_icon_width"
             android:layout_height="@dimen/menu_icon_width"
             android:layout_margin="8dp"
-            android:layout_marginEnd="@dimen/default_margin"
             android:adjustViewBounds="false"
             android:contentDescription="@string/content_picture"
             android:cropToPadding="false"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_today_holo_light_24dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_add_group_holo_light_24dp" />
 
         <TextView
-            android:id="@+id/nav_today"
+            android:id="@+id/nav_add_group"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="@string/title_today"
+            android:text="@string/title_add_group"
             android:textSize="12sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/img_today"
-            app:layout_constraintTop_toTopOf="@id/img_today"
-            app:layout_constraintBottom_toBottomOf="@id/img_today"
+            app:layout_constraintStart_toEndOf="@id/img_add_group"
+            app:layout_constraintTop_toTopOf="@id/img_add_group"
+            app:layout_constraintBottom_toBottomOf="@id/img_add_group"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <ImageView
+            android:id="@+id/img_add_feed"
+            android:layout_width="@dimen/menu_icon_width"
+            android:layout_height="@dimen/menu_icon_width"
+            android:layout_margin="8dp"
+            android:adjustViewBounds="false"
+            android:contentDescription="@string/content_picture"
+            android:cropToPadding="false"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/img_add_group"
+            app:srcCompat="@drawable/ic_add_feed_holo_light_24dp" />
+
+        <TextView
+            android:id="@+id/nav_add_feed"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/title_add_feed"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/img_add_feed"
+            app:layout_constraintTop_toTopOf="@id/img_add_feed"
+            app:layout_constraintBottom_toBottomOf="@id/img_add_feed"
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <ImageView
@@ -48,9 +73,9 @@
             android:contentDescription="@string/content_picture"
             android:cropToPadding="false"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_favorites_holo_light_24dp"
+            app:srcCompat="@drawable/ic_favorites_holo_light_24dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/img_today" />
+            app:layout_constraintTop_toBottomOf="@id/img_add_feed" />
 
         <TextView
             android:id="@+id/nav_favorites"
@@ -75,7 +100,7 @@
             android:contentDescription="@string/content_picture"
             android:cropToPadding="false"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_all_holo_light_24dp"
+            app:srcCompat="@drawable/ic_all_holo_light_24dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/img_nav_favorites" />
 
@@ -102,7 +127,7 @@
             android:contentDescription="@string/content_picture"
             android:cropToPadding="false"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_read_later_holo_light_24dp"
+            app:srcCompat="@drawable/ic_read_later_holo_light_24dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/img_all" />
 
@@ -123,6 +148,7 @@
             android:id="@+id/expandableListView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
             android:dividerHeight="0.5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/img_read_later">
@@ -139,7 +165,7 @@
             android:contentDescription="@string/content_picture"
             android:cropToPadding="false"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_settings_holo_light_24dp"
+            app:srcCompat="@drawable/ic_settings_holo_light_24dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/expandableListView" />
 
@@ -165,7 +191,7 @@
             android:contentDescription="@string/content_picture"
             android:cropToPadding="false"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_logout_holo_light_24dp"
+            app:srcCompat="@drawable/ic_logout_holo_light_24dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/img_nav_settings" />
 

@@ -20,6 +20,15 @@
         <action
             android:id="@+id/action_nav_feed_contents_to_settingsFragment"
             app:destination="@id/nav_settings" />
+        <action
+            android:id="@+id/action_nav_feed_contents_to_nav_add_group"
+            app:destination="@id/nav_add_group" />
+        <action
+            android:id="@+id/action_nav_feed_contents_to_nav_add_feed"
+            app:destination="@id/nav_add_feed" />
+        <action
+            android:id="@+id/action_nav_feed_contents_to_nav_edit_group"
+            app:destination="@id/nav_edit_group" />
     </fragment>
     <fragment
         android:id="@+id/nav_contents"
@@ -33,7 +42,7 @@
             app:argType="long" />
     </fragment>
     <fragment
-        android:id="@+id/nav_add_group_fragment"
+        android:id="@+id/nav_add_group"
         android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.group.AddGroupFragment"
         android:label="@string/title_add_group"
         tools:layout="@layout/add_group_fragment" />
@@ -46,4 +55,24 @@
         android:id="@+id/nav_settings"
         android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.settings.SettingsFragment"
         android:label="@string/title_settings" />
+    <fragment
+        android:id="@+id/nav_edit_group"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.group.EditGroupFragment"
+        android:label="@string/title_edit_group" >
+        <argument
+            android:name="originalGroupName"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/bottom_sheet_feed_options_menu"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetFeedOptionsMenuFragment"
+        android:label="BottomSheetFeedOptionsMenuFragment" />
+    <fragment
+        android:id="@+id/bottom_sheet_mark_as_read_options_menu"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetMarkAsReadOptionsMenuFragment"
+        android:label="BottomSheetMarkAsReadOptionsMenuFragment" />
+    <fragment
+        android:id="@+id/bottom_sheet_group_options_menu"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetGroupOptionsMenuFragment"
+        android:label="BottomSheetGroupOptionsMenuFragment" />
 </navigation>

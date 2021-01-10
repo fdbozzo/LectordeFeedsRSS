@@ -5,4 +5,7 @@ sealed class SealedClassAppScreens {
     object FeedChannelFragment : SealedClassAppScreens()
     object ContentsFragment : SealedClassAppScreens()
     object SettingsFragment : SealedClassAppScreens()
+    object AddGroupFragment : SealedClassAppScreens()
+    object AddFeedFragment : SealedClassAppScreens()
+    object EditGroupFragment : SealedClassAppScreens()
 }

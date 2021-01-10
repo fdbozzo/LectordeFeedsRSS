@@ -6,6 +6,7 @@ import android.view.*
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
@@ -25,13 +26,11 @@ import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetFeedOptionsMenuFra
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetGroupOptionsMenuFragment
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.main.BottomSheetMarkAsReadOptionsMenuFragment
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
-import com.blogspot.fdbozzo.lectorfeedsrss.util.toBoolean
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
@@ -130,6 +129,44 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+        /** Observer para el Snackbar **/
+        mainSharedViewModel.snackBarMessage.observe(this, Observer { messageRId ->
+            if (messageRId != null) { // Observed state is true.
+                val view = findViewById<CoordinatorLayout>(R.id.mainCoordinatorLayout)
+                Timber.d("[Timber] (FeedChannelFragment) sharedViewModel.snackBarMessage.observe: %s", getString(messageRId))
+                if (view != null) {
+                    Snackbar.make(
+                        view,
+                        getString(messageRId),
+                        Snackbar.LENGTH_LONG // How long to display the message.
+                    ).show()
+                }
+                mainSharedViewModel.snackBarMessageDone()
+            }
+        })
+
+
+        /**
+         * Opción Add Group
+         */
+        binding.drawerMenu.navAddGroup.setOnClickListener {
+            addGroup()
+        }
+        binding.drawerMenu.imgAddGroup.setOnClickListener {
+            addGroup()
+        }
+
+
+        /**
+         * Opción Add Feed
+         */
+        binding.drawerMenu.navAddFeed.setOnClickListener {
+            addFeed()
+        }
+        binding.drawerMenu.imgAddFeed.setOnClickListener {
+            addFeed()
+        }
+
 
         /**
          * Opción All feeds
@@ -197,7 +234,7 @@ class MainActivity : AppCompatActivity() {
 
 
         /**
-         * Cargar menú superior según el fragmento cargado
+         * Cargar menú superior/derecho según el fragmento cargado
          */
         mainSharedViewModel.selectedScreen.observe(this, Observer {
             binding.topAppBar.menu.clear()
@@ -248,12 +285,20 @@ class MainActivity : AppCompatActivity() {
                     Timber.d("[Timber] Menu SettingsFragment")
                     binding.topAppBar.setTitle(R.string.screen_title_settings)
                 }
+                is SealedClassAppScreens.AddGroupFragment -> {
+                    Timber.d("[Timber] Menu AddGroupFragment")
+                    binding.topAppBar.setTitle(R.string.screen_title_add_group)
+                }
+                is SealedClassAppScreens.AddFeedFragment -> {
+                    Timber.d("[Timber] Menu AddFeedFragment")
+                    binding.topAppBar.setTitle(R.string.screen_title_add_feed)
+                }
                 else -> Unit
             }
         })
 
         /**
-         * Controlar las opciones elegidas del menú superior
+         * Controlar las opciones elegidas del menú superior/derecho
          */
         binding.topAppBar.setOnMenuItemClickListener {
 
@@ -309,6 +354,24 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun addGroup() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
+            drawerLayout.closeDrawer(GravityCompat.START)
+
+        //navController.popBackStack(R.id.nav_feed_contents, true)
+        navController.navigate(R.id.nav_add_group)
+        Toast.makeText(this, "Add Group", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun addFeed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
+            drawerLayout.closeDrawer(GravityCompat.START)
+
+        //navController.popBackStack(R.id.nav_feed_contents, true)
+        navController.navigate(R.id.nav_add_feed)
+        Toast.makeText(this, "Add Feed", Toast.LENGTH_SHORT).show()
+    }
+
     private fun setSelectToFavorites() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START))
             drawerLayout.closeDrawer(GravityCompat.START)
@@ -347,6 +410,9 @@ class MainActivity : AppCompatActivity() {
         binding.topAppBar.setTitle(R.string.screen_title_all_feeds)
     }
 
+    /**
+     * MENU EXPANDIBLE
+     */
     private fun setupDrawerExpandableListView(listData: HashMap<String, List<String>>) {
         //expandableListView = findViewById(R.id.expandableListView)
 
@@ -373,7 +439,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             /**
-             * Controlador de selección (click) de Feed para mostrar sus noticias
+             * FEED (ITEM): Controlador de selección (click) de Feed para mostrar sus noticias
              */
             expandableListView!!.setOnChildClickListener { parent, v, groupPosition, childPosition, id ->
                 if (expandableItemLongClick) {
@@ -420,7 +486,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             /**
-             * Controlador de selección (click) de Grupo para mostrar sus feeds
+             * GROUP: Controlador de selección (click) de Grupo para mostrar sus feeds
              */
             expandableListView!!.setOnGroupClickListener { parent, v, groupPosition, id ->
                 if (expandableItemLongClick) {
@@ -442,6 +508,7 @@ class MainActivity : AppCompatActivity() {
                                 supportFragmentManager,
                                 "submenu"
                             )
+
                         }
                     } catch (e: Exception) {
                         Timber.d(e, "[Timber] expandableListView!!.setOnGroupClickListener() ERROR: %s", e.message)

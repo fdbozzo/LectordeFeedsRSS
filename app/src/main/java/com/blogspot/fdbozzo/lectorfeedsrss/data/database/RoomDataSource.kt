@@ -46,6 +46,11 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         return groupId
     }
 
+    override suspend fun updateGroup(group: DomainGroup): Int =
+        withContext(Dispatchers.IO) {
+            groupDao.update(group.toRoomGroup())
+        }
+
     override suspend fun getGroupIdByName(name: String): Long? {
         val id = withContext(Dispatchers.IO) {
             println("[Timber] getGroupIdByName(name = $name)")
@@ -69,10 +74,10 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
             groupDao.getGroupByName(groupName)?.toDomainGroup()
         }
 
-    override suspend fun getGroups(): Flow<List<DomainGroup>> =
+    override suspend fun getGroups(): Flow<List<DomainGroup>?> =
         withContext(Dispatchers.IO) {
             groupDao.getAllGroups().map { roomGroup ->
-                roomGroup.map {
+                roomGroup?.map {
                     it.toDomainGroup()
                 }
             }
@@ -232,7 +237,7 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
     override suspend fun saveFeedChannelItemsFromServer(feedChannelItems: List<ServerFeedChannelItem>) {
         withContext(Dispatchers.IO) {
             feedChannelItemDao.insert(feedChannelItems.map { serverFeedChannelItem ->
-                Timber.d("[Timber] serverFeedChannelItem = %s", serverFeedChannelItem.toString())
+                //Timber.d("[Timber] serverFeedChannelItem = %s", serverFeedChannelItem.toString())
                 serverFeedChannelItem.toRoomFeedChannelItem()
             })
         }

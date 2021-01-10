@@ -56,7 +56,7 @@ interface GroupDao {
      * ordenados por groupName.
      */
     @Query("SELECT * FROM group_table ORDER BY group_name ASC")
-    fun getAllGroups(): Flow<List<Group>>
+    fun getAllGroups(): Flow<List<Group>?>
 
     /**
      * Selecciona y retorna el último Group.
