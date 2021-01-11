@@ -69,4 +69,6 @@
     <string name="btn_save">Save</string>
     <string name="msg_group_updated">Group updated</string>
     <string name="title_edit_group">Edit Group</string>
+    <string name="hint_feed_link_url">Feed link URL (ie: codezone.es)</string>
+    <string name="msg_feed_added">Feed added</string>
 </resources>

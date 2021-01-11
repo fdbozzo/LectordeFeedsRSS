@@ -10,6 +10,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
 import com.blogspot.fdbozzo.lectorfeedsrss.util.toBoolean
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -19,7 +20,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as Domai
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed as DomainFeedChannelItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Group as DomainGroup
 
-class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewModel() {
+class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
 
     var testigo: String? = ""
 
@@ -157,6 +158,10 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
         _navigateToContents.value = null
     }
 
+    fun setSnackBarMessage(stringRId: Int) {
+        _snackBarMessage.value = stringRId
+    }
+
     fun snackBarMessageDone() {
         _snackBarMessage.value = null
     }
@@ -278,15 +283,18 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
     fun deleteFeed(linkName: String) {
         viewModelScope.launch {
             val feed = feedRepository.getFeedByLinkName(linkName)
-            val deleted = feedRepository.deleteFeed(feed)
 
-            if (deleted > 0) {
-                _snackBarMessage.postValue(R.string.msg_source_removed)
-            } else {
-                _snackBarMessage.postValue(R.string.msg_operation_not_executed)
+            if (feed != null) {
+                val deleted = feedRepository.deleteFeed(feed)
+
+                if (deleted > 0) {
+                    _snackBarMessage.postValue(R.string.msg_source_removed)
+                } else {
+                    _snackBarMessage.postValue(R.string.msg_operation_not_executed)
+                }
+
+                Timber.d("[Timber] deleteFeed(%s): id=%d, deleted=%d", linkName, feed.id, deleted)
             }
-
-            Timber.d("[Timber] deleteFeed(%s): id=%d, deleted=%d", linkName, feed.id, deleted)
         }
     }
 
@@ -352,12 +360,14 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
         return group
     }
 
+    suspend fun getGroups(): List<DomainGroup>? = feedRepository.getGroups()
+
     /**
      * Obtiene el Feed con el nombre (linkName) indicado
      */
-    suspend fun getFeedWithLinkName(linkName: String): DomainFeed {
+    suspend fun getFeedWithLinkName(linkName: String): DomainFeed? {
         Timber.d("[Timber] getFeedWithLinkName(%s)", linkName)
-        val feed: DomainFeed = feedRepository.getFeedByLinkName(linkName)
+        val feed: DomainFeed? = feedRepository.getFeedByLinkName(linkName)
         return feed
     }
 
@@ -406,7 +416,9 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
             // Cuando se clickea un feed, configura su linkName LiveData para que notifique a su observer
             setSelectedFeedOptions(SelectedFeedOptions().also { it.setLinkNameValue(linkName) })
 
-            _apiBaseUrl.value = feed.link
+            if (feed != null) {
+                _apiBaseUrl.value = feed.link
+            }
         }
     }
 
@@ -478,6 +490,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
 
     private suspend fun setupInitialDrawerMenuData() {
 
+        try {
         // Compruebo si existe el último grupo, y si no existe borro toto y relleno
         val groupId = feedRepository.getGroupIdByName("Hardware")
 
@@ -505,7 +518,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
             link = "https://stgraber.org"
         )
         feedRepository.saveLocalFeed(feed)
-        var fId = feedRepository.getFeedIdByLink(feed.link)
+        var fId = feedRepository.getFeedIdByLink(feed.link) ?: throw Exception("feedId es null")
         feedRepository.saveLocalFeedChannel(
             DomainFeedChannel(
                 feedId = fId,
@@ -525,7 +538,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
             link = "https://hardzone.es"
         )
         feedRepository.saveLocalFeed(feed)
-        fId = feedRepository.getFeedIdByLink(feed.link)
+        fId = feedRepository.getFeedIdByLink(feed.link) ?: throw Exception("feedId es null")
         feedRepository.saveLocalFeedChannel(
             DomainFeedChannel(
                 feedId = fId,
@@ -545,7 +558,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
             link = "https://ecoinventos.com"
         )
         feedRepository.saveLocalFeed(feed)
-        fId = feedRepository.getFeedIdByLink(feed.link)
+        fId = feedRepository.getFeedIdByLink(feed.link) ?: throw Exception("feedId es null")
         feedRepository.saveLocalFeedChannel(
             DomainFeedChannel(
                 feedId = fId,
@@ -565,7 +578,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
             link = "https://www.androidpolice.com"
         )
         feedRepository.saveLocalFeed(feed)
-        fId = feedRepository.getFeedIdByLink(feed.link)
+        fId = feedRepository.getFeedIdByLink(feed.link) ?: throw Exception("feedId es null")
         feedRepository.saveLocalFeedChannel(
             DomainFeedChannel(
                 feedId = fId,
@@ -585,7 +598,7 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
             link = "https://elchapuzasinformatico.com"
         )
         feedRepository.saveLocalFeed(feed)
-        fId = feedRepository.getFeedIdByLink(feed.link)
+        fId = feedRepository.getFeedIdByLink(feed.link) ?: throw Exception("feedId es null")
         feedRepository.saveLocalFeedChannel(
             DomainFeedChannel(
                 feedId = fId,
@@ -594,6 +607,10 @@ class MainSharedViewModel(private val feedRepository: FeedRepository) : ViewMode
                 link = "https://elchapuzasinformatico.com"
             )
         )
+
+        } catch (e: Exception) {
+            Timber.d(e, "[Timber] MainSharedViewModel.setupInitialDrawerMenuData() - ERROR")
+        }
     }
 
     /**

@@ -104,7 +104,7 @@ class GroupDaoTableTests {
         val insId2 = groupDao.insert(group)
 
         // Test
-        val valores = getValue(groupDao.getAllGroups().asLiveData())
+        val valores = getValue(groupDao.getAllGroupsFlow().asLiveData()) ?: throw Exception("valores es null")
 
         // Verify
         Assert.assertEquals(2, valores.size)
@@ -120,7 +120,7 @@ class GroupDaoTableTests {
         groupDao.delete(lastGroup)
 
         // Test
-        val valores = getValue(groupDao.getAllGroups().asLiveData())
+        val valores = getValue(groupDao.getAllGroupsFlow().asLiveData()) ?: throw Exception("valores es null")
 
         // Verify
         Assert.assertEquals(0, valores.size)

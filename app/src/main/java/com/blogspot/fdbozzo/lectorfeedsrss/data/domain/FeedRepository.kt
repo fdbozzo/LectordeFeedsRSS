@@ -3,12 +3,10 @@ package com.blogspot.fdbozzo.lectorfeedsrss.data.domain
 import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
 import com.blogspot.fdbozzo.lectorfeedsrss.data.toRoomGroup
-import kotlinx.coroutines.Dispatchers
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannel as ServerFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannelItem as ServerFeedChannelItem
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 import java.util.HashMap
@@ -36,9 +34,7 @@ class FeedRepository(
      */
     suspend fun checkNetworkFeeds(apiBaseUrl: String): RssResponse<ServerFeed> {
 
-        val rssApiResponse = withTimeout(15_000) {
-            remoteDataSource.getFeeds(apiBaseUrl)
-        }
+        val rssApiResponse = getNetworkFeeds(apiBaseUrl)
 
         when (rssApiResponse) {
             is RssResponse.Success -> {
@@ -65,10 +61,20 @@ class FeedRepository(
         return rssApiResponse
     }
 
+    /**
+     * Buscar los feeds en la red y devuelve la respuesta
+     */
+    suspend fun getNetworkFeeds(apiBaseUrl: String): RssResponse<ServerFeed> {
+
+        return withTimeout(15_000) {
+            remoteDataSource.getFeeds(apiBaseUrl)
+        }
+    }
+
     private suspend fun saveNetworkFeeds(serverFeed: ServerFeed): Unit {
         var groupId: Long? = null
         var feeds = 0L
-        var feedId = 0L
+        var feedId: Long? = null
         var feedChannels = 0L
         var feedChannelId = 0L
 
@@ -102,7 +108,7 @@ class FeedRepository(
                 it.groupId = groupId?: 0
             })
             println("[Timber] 5")
-            feedId = localDataSource.getFeedIdByLink(serverFeed.link)
+            feedId = localDataSource.getFeedIdByLink(serverFeed.link) ?: throw Exception("feedId es null")
             println("[Timber] 6 FeedRepository.saveNetworkFeeds(${serverFeed.linkName}): FEED - FeedId=$feedId (count=$feeds)")
 
             Timber.d(
@@ -119,50 +125,52 @@ class FeedRepository(
             Timber.d(e, "[Timber] FeedRepository.saveNetworkFeeds() - ERROR - Feed")
         }
 
-        try {
-            /**
-             * Se intenta insertar el FeedChannel, pero si ya existe devolverá -1 y se recuperará su id actual
-             */
-            feedChannels = localDataSource.saveFeedChannelFromServer(serverFeed.channel)
-            println("[Timber] 8 feedChannels=$feedChannels")
-            feedChannelId = localDataSource.getFeedChannelIdByFeedId(feedId)
-            println("[Timber] 9 feedChannelId=$feedChannelId")
+        if (feedId != null) {
+            try {
+                /**
+                 * Se intenta insertar el FeedChannel, pero si ya existe devolverá -1 y se recuperará su id actual
+                 */
+                feedChannels = localDataSource.saveFeedChannelFromServer(serverFeed.channel)
+                println("[Timber] 8 feedChannels=$feedChannels")
+                feedChannelId = localDataSource.getFeedChannelIdByFeedId(feedId)
+                println("[Timber] 9 feedChannelId=$feedChannelId")
 
-            Timber.d(
-                "FeedRepository.saveNetworkFeeds(%s): CHANNEL - Id=%d, feedChannels=%d",
-                serverFeed.linkName,
-                feedChannelId,
-                feedChannels
-            )
-
-        } catch (e: Exception) {
-            Timber.d(e, "[Timber] FeedRepository.saveNetworkFeeds() - ERROR - FeedChannel")
-        }
-
-        try {
-            /**
-             * Se intenta insertar el FeedChannelItem, pero si ya existe se ignorará
-             */
-            val listFeedChannelItem = serverFeed.channel.channelItems
-            println("[Timber] 10")
-
-            if (listFeedChannelItem != null && listFeedChannelItem.isNotEmpty()) {
-                // Reemplazar el feedChannelId del item por el id del Channel, antes de guardarlo
-                for (domainFeedChannelItem in listFeedChannelItem) {
-                    domainFeedChannelItem.feedId = feedId
-                    println("[Timber] 10 domainFeedChannelItem.feedId=${domainFeedChannelItem.feedId}")
-                }
-
-                //println("[Timber] 11 listFeedChannelItem=${}")
-                localDataSource.saveFeedChannelItemsFromServer(listFeedChannelItem)
                 Timber.d(
-                    "FeedRepository.saveNetworkFeeds(%s): ITEMS - Guardados",
-                    serverFeed.linkName
+                    "FeedRepository.saveNetworkFeeds(%s): CHANNEL - Id=%d, feedChannels=%d",
+                    serverFeed.linkName,
+                    feedChannelId,
+                    feedChannels
                 )
 
+            } catch (e: Exception) {
+                Timber.d(e, "[Timber] FeedRepository.saveNetworkFeeds() - ERROR - FeedChannel")
             }
-        } catch (e: Exception) {
-            Timber.d(e, "[Timber] FeedRepository.saveNetworkFeeds() - ERROR - FeedChannelItem")
+
+            try {
+                /**
+                 * Se intenta insertar el FeedChannelItem, pero si ya existe se ignorará
+                 */
+                val listFeedChannelItem = serverFeed.channel.channelItems
+                println("[Timber] 10")
+
+                if (listFeedChannelItem != null && listFeedChannelItem.isNotEmpty()) {
+                    // Reemplazar el feedChannelId del item por el id del Channel, antes de guardarlo
+                    for (domainFeedChannelItem in listFeedChannelItem) {
+                        domainFeedChannelItem.feedId = feedId
+                        println("[Timber] 10 domainFeedChannelItem.feedId=${domainFeedChannelItem.feedId}")
+                    }
+
+                    //println("[Timber] 11 listFeedChannelItem=${}")
+                    localDataSource.saveFeedChannelItemsFromServer(listFeedChannelItem)
+                    Timber.d(
+                        "FeedRepository.saveNetworkFeeds(%s): ITEMS - Guardados",
+                        serverFeed.linkName
+                    )
+
+                }
+            } catch (e: Exception) {
+                Timber.d(e, "[Timber] FeedRepository.saveNetworkFeeds() - ERROR - FeedChannelItem")
+            }
         }
     }
 
@@ -203,6 +211,8 @@ class FeedRepository(
         }
     }
 
+    suspend fun getGroups(): List<DomainGroup>? = localDataSource.getGroups()
+
     /**
      * FEED
      */
@@ -222,11 +232,11 @@ class FeedRepository(
         return localDataSource.getGroupsWithFeeds()
     }
 
-    suspend fun getFeedByLinkName(linkName: String): DomainFeed {
+    suspend fun getFeedByLinkName(linkName: String): DomainFeed? {
         return localDataSource.getFeedWithLinkName(linkName)
     }
 
-    suspend fun getFeedIdByLink(link: String): Long {
+    suspend fun getFeedIdByLink(link: String): Long? {
         return localDataSource.getFeedIdByLink(link)
     }
 
@@ -286,7 +296,8 @@ interface LocalDataSource {
     suspend fun getGroupIdByName(name: String): Long?
     suspend fun getGroupById(key: Long): DomainGroup?
     suspend fun getGroupByName(groupName: String): DomainGroup?
-    suspend fun getGroups(): Flow<List<DomainGroup>?>
+    fun getGroupsFlow(): Flow<List<DomainGroup>?>
+    suspend fun getGroups(): List<DomainGroup>?
     suspend fun deleteGroup(group: Group): Int
     suspend fun deleteAllGroups(): Int
     fun getGroupsWithFeeds(): Flow<HashMap<String, List<String>>>
@@ -299,8 +310,8 @@ interface LocalDataSource {
     suspend fun saveFeed(feed: DomainFeed): Long
     suspend fun saveFeedFromServer(feed: ServerFeed): Long
     suspend fun getFeeds(): Flow<List<DomainFeed>>
-    suspend fun getFeedIdByLink(link: String): Long
-    suspend fun getFeedWithLinkName(linkName: String): DomainFeed
+    suspend fun getFeedIdByLink(link: String): Long?
+    suspend fun getFeedWithLinkName(linkName: String): DomainFeed?
     suspend fun updateFeedFavoriteState(id: Long, favorite: Boolean): Int
     suspend fun deleteFeed(feed: DomainFeed): Int
 

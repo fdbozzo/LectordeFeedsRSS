@@ -453,14 +453,16 @@ class MainActivity : AppCompatActivity() {
 
                         lifecycleScope.launch {
                             val feed = mainSharedViewModel.getFeedWithLinkName(tituloMenu)
-                            Timber.d("[Timber] expandableListView!!.setOnChildClickListener(LONG CLICK!) -> Feed encontrado: %s, favorite=%d",
-                                feed, feed.favorite)
+                            if (feed != null) {
+                                Timber.d("[Timber] expandableListView!!.setOnChildClickListener(LONG CLICK!) -> Feed encontrado: %s, favorite=%d",
+                                    feed, feed.favorite)
 
-                            // Cargar el menú
-                            BottomSheetFeedOptionsMenuFragment(tituloMenu, feed).show(
-                                supportFragmentManager,
-                                "submenu"
-                            )
+                                // Cargar el menú
+                                BottomSheetFeedOptionsMenuFragment(tituloMenu, feed).show(
+                                    supportFragmentManager,
+                                    "submenu"
+                                )
+                            }
                         }
                     } catch (e: Exception) {
                         Timber.d(e, "[Timber] expandableListView!!.setOnChildClickListener() ERROR: %s", e.message)

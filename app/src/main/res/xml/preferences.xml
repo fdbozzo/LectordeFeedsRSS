@@ -5,7 +5,7 @@
         android:title="@string/pref_feed_options">
 
         <SwitchPreferenceCompat
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="@string/pref_show_unread_only"
             android:title="@string/show_unread_only" />
 

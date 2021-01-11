@@ -28,6 +28,43 @@ fun Boolean.toInt() = if (this) 1 else 0
 // Convierte 1 -> true y 0 -> false
 fun Int.toBoolean() = this == 1
 
+/**
+ * Forzar la finalización con el string indicado
+ */
+fun String.forceEndingWithChar(char: String): String {
+    // Comprobar si el string tiene el carácter indicado al final
+    return if (!this.endsWith(char)) {
+        "${this}${char}"
+    } else {
+        this
+    }
+}
+
+/**
+ * Forzar el inicio con el string indicado
+ */
+fun String.forceStartingWithString(string: String): String {
+    // Comprobar si el string tiene el string indicado al inicio
+    return if (!this.startsWith(string)) {
+        "${string}${this}"
+    } else {
+        this
+    }
+}
+
+/**
+ * Forzar que la cadena no termine con el string indicado, quitándolo si es necesario
+ */
+fun String.forceNotEndingWithString(string: String): String {
+    // Comprobar si el string tiene el string indicado al final
+    return if (this.endsWith(string)) {
+        this.substring(0, this.length - string.length)
+    } else {
+        this
+    }
+}
+
+
 // Permite devolver LiveData de un dato único sólo cuando cambia (1 registro sólo)
 fun <T> LiveData<T>.getDistinct(): LiveData<T> {
     val distinctLiveData = MediatorLiveData<T>()

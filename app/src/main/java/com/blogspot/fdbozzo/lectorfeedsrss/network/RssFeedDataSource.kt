@@ -2,6 +2,7 @@ package com.blogspot.fdbozzo.lectorfeedsrss.network
 
 import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.RemoteDataSource
+import com.blogspot.fdbozzo.lectorfeedsrss.util.forceEndingWithChar
 import com.blogspot.fdbozzo.lectorfeedsrss.util.getSrcImage
 import retrofit2.HttpException
 import timber.log.Timber
@@ -13,18 +14,21 @@ class RssFeedDataSource(): RemoteDataSource {
     //override suspend fun getFeedChannelItems(): List<DomainFeedChannelItem> {
     override suspend fun getFeeds(apiBaseUrl: String): RssResponse<ServerFeed> {
 
-        var valApiBaseUrl = apiBaseUrl
-
-        // Comprobar si la URL tiene la barra final
-        if (!apiBaseUrl.endsWith("/")) {
-            valApiBaseUrl = "$apiBaseUrl/"
-        }
-
-        Timber.d("[Timber] valApiBaseUrl = ${valApiBaseUrl}")
-        //val response = RssApi.retrofitService.getRss()
-        val response = rssApi(valApiBaseUrl).getRss()
-
         try {
+            /*
+            var valApiBaseUrl = apiBaseUrl
+
+            // Comprobar si la URL tiene la barra final
+            if (!apiBaseUrl.endsWith("/")) {
+                valApiBaseUrl = "$apiBaseUrl/"
+            }
+             */
+            val valApiBaseUrl = apiBaseUrl.forceEndingWithChar("/")
+
+            Timber.d("[Timber] valApiBaseUrl = ${valApiBaseUrl}")
+            //val response = RssApi.retrofitService.getRss()
+            val response = rssApi(valApiBaseUrl).getRss()
+
             //withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
                     response.body()?.let {
@@ -86,7 +90,9 @@ class RssFeedDataSource(): RemoteDataSource {
                 } else {
                     Timber.d("[Timber] Error network operation failed with ${response.code()}")
                     //_status.value = RssApiStatus.ERROR
-                    return RssResponse.Error(Exception(RssApiStatus.ERROR.toString()))
+                    //return RssResponse.Error(Exception(RssApiStatus.ERROR.toString()))
+                    //return RssResponse.Error(Exception("Error code: ${response.code()}, message: ${response.message()}"))
+                    return RssResponse.Error(Exception("Error: $response"))
                 }
             //}
 

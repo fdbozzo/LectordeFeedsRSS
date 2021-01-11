@@ -74,12 +74,17 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
             groupDao.getGroupByName(groupName)?.toDomainGroup()
         }
 
-    override suspend fun getGroups(): Flow<List<DomainGroup>?> =
+    override fun getGroupsFlow(): Flow<List<DomainGroup>?> =
+        groupDao.getAllGroupsFlow().map { roomGroup ->
+            roomGroup?.map {
+                it.toDomainGroup()
+            }
+        }
+
+    override suspend fun getGroups(): List<DomainGroup>? =
         withContext(Dispatchers.IO) {
-            groupDao.getAllGroups().map { roomGroup ->
-                roomGroup?.map {
-                    it.toDomainGroup()
-                }
+            groupDao.getAllGroups()?.map { roomGroup ->
+                roomGroup.toDomainGroup()
             }
         }
 
@@ -203,7 +208,7 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
             }
         }
 
-    override suspend fun getFeedIdByLink(link: String): Long {
+    override suspend fun getFeedIdByLink(link: String): Long? {
         return withContext(Dispatchers.IO) {
             feedDao.get(link)
         }
@@ -215,8 +220,8 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         }
     }
 
-    override suspend fun getFeedWithLinkName(linkName: String): DomainFeed =
-        withContext(Dispatchers.IO) {feedDao.getFeedWithLinkName(linkName).toDomainFeed()}
+    override suspend fun getFeedWithLinkName(linkName: String): DomainFeed? =
+        withContext(Dispatchers.IO) { feedDao.getFeedWithLinkName(linkName)?.toDomainFeed() }
 
     /**
      * FEED-CHANNEL-ITEM

@@ -41,7 +41,7 @@ interface FeedDao {
      * @param link feed a buscar
      */
     @Query("SELECT id from feed_table WHERE link = :link")
-    suspend fun get(link: String): Long
+    suspend fun get(link: String): Long?
 
     @Delete
     suspend fun delete(feed: Feed): Int
@@ -84,7 +84,7 @@ interface FeedDao {
      * Selecciona y retorna el feed con el linkName indicado.
      */
     @Query("SELECT * from feed_table WHERE link_name = :linkName")
-    suspend fun getFeedWithLinkName(linkName: String): Feed
+    suspend fun getFeedWithLinkName(linkName: String): Feed?
 
     //@SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Transaction
