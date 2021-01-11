@@ -58,6 +58,7 @@ class AddGroupFragment : Fragment() {
         binding.fragment = this
 
         navController = findNavController()
+        binding.editGroupName.requestFocus()
 
         return binding.root
         //return inflater.inflate(R.layout.add_group_fragment, container, false)
@@ -85,6 +86,5 @@ class AddGroupFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        binding.editGroupName.requestFocus()
     }
 }

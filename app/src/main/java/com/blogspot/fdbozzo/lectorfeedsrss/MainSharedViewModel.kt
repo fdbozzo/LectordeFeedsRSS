@@ -491,122 +491,133 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
     private suspend fun setupInitialDrawerMenuData() {
 
         try {
-        // Compruebo si existe el último grupo, y si no existe borro toto y relleno
-        val groupId = feedRepository.getGroupIdByName("Hardware")
+            // Compruebo si existe el último grupo, y si no existe borro toto y relleno
+            val groupId = feedRepository.getGroupIdByName("Hardware")
 
-        if (groupId != null && groupId != 0L) {
-            /**
-             * Si groupId != 0 significa que se encontró el grupo buscado,
-             * y que entonces no hay que borrar los datos nuevamente.
-             */
-            Timber.d("[Timber] setupInitialDrawerMenuData() - group.id = %d  --> Ya hay datos", groupId)
-            return
-        }
+            if (groupId != null && groupId != 0L) {
+                /**
+                 * Si groupId != 0 significa que se encontró el grupo buscado,
+                 * y que entonces no hay que borrar los datos nuevamente.
+                 */
+                Timber.d(
+                    "[Timber] setupInitialDrawerMenuData() - group.id = %d  --> Ya hay datos",
+                    groupId
+                )
+                return
+            }
 
-        Timber.d("[Timber] setupInitialDrawerMenuData() - group.id = %d --> Se recrean las opciones", groupId)
-
-        // Borro la bbdd
-        feedRepository.deleteAllLocalGroups()
-
-        // G1-F1
-        var gname = Group.DEFAULT_NAME
-        feedRepository.saveLocalGroup(DomainGroup()) // "Uncategorized"
-        var gId = feedRepository.getGroupIdByName(gname) ?: throw Exception("setupInitialDrawerMenuData [G1-F1]: gId = null")
-        var feed = DomainFeed(
-            groupId = gId,
-            linkName = "Stéphane Graber's website",
-            link = "https://stgraber.org"
-        )
-        feedRepository.saveLocalFeed(feed)
-        var fId = feedRepository.getFeedIdByLink(feed.link) ?: throw Exception("feedId es null")
-        feedRepository.saveLocalFeedChannel(
-            DomainFeedChannel(
-                feedId = fId,
-                title = "Stéphane Graber's website",
-                description = "Stéphane Graber's Feed",
-                link = "https://stgraber.org/feed"
+            Timber.d(
+                "[Timber] setupInitialDrawerMenuData() - group.id = %d --> Se recrean las opciones",
+                groupId
             )
-        )
 
-        // G2-F2
-        gname = "Tecnología y Ciencia"
-        feedRepository.saveLocalGroup(DomainGroup(groupName = gname))
-        gId = feedRepository.getGroupIdByName(gname) ?: throw Exception("setupInitialDrawerMenuData [G1-F1]: gId = null")
-        feed = DomainFeed(
-            groupId = gId,
-            linkName = "HardZone",
-            link = "https://hardzone.es"
-        )
-        feedRepository.saveLocalFeed(feed)
-        fId = feedRepository.getFeedIdByLink(feed.link) ?: throw Exception("feedId es null")
-        feedRepository.saveLocalFeedChannel(
-            DomainFeedChannel(
-                feedId = fId,
-                title = "HardZone",
-                description = "HardZone Feed",
+            // Borro la bbdd
+            feedRepository.deleteAllLocalGroups()
+
+            // G1-F1
+            var gname = Group.DEFAULT_NAME
+            feedRepository.saveLocalGroup(DomainGroup()) // "Uncategorized"
+            var gId = feedRepository.getGroupIdByName(gname)
+                ?: throw Exception("setupInitialDrawerMenuData [G1-F1]: gId = null")
+            var feed = DomainFeed(
+                groupId = gId,
+                linkName = "Stéphane Graber's website",
+                link = "https://stgraber.org"
+            )
+            feedRepository.saveLocalFeed(feed)
+            var fId = feedRepository.getFeedIdByLink(feed.link) ?: throw Exception("feedId es null")
+            feedRepository.saveLocalFeedChannel(
+                DomainFeedChannel(
+                    feedId = fId,
+                    title = "Stéphane Graber's website",
+                    description = "Stéphane Graber's Feed",
+                    link = "https://stgraber.org/feed"
+                )
+            )
+
+            // G2-F2
+            gname = "Tecnología y Ciencia"
+            feedRepository.saveLocalGroup(DomainGroup(groupName = gname))
+            gId = feedRepository.getGroupIdByName(gname)
+                ?: throw Exception("setupInitialDrawerMenuData [G1-F1]: gId = null")
+            feed = DomainFeed(
+                groupId = gId,
+                linkName = "HardZone",
                 link = "https://hardzone.es"
             )
-        )
+            feedRepository.saveLocalFeed(feed)
+            fId = feedRepository.getFeedIdByLink(feed.link) ?: throw Exception("feedId es null")
+            feedRepository.saveLocalFeedChannel(
+                DomainFeedChannel(
+                    feedId = fId,
+                    title = "HardZone",
+                    description = "HardZone Feed",
+                    link = "https://hardzone.es"
+                )
+            )
 
-        // G3-F3
-        gname = "Hogar"
-        feedRepository.saveLocalGroup(DomainGroup(groupName = gname))
-        gId = feedRepository.getGroupIdByName(gname) ?: throw Exception("setupInitialDrawerMenuData [G1-F1]: gId = null")
-        feed = DomainFeed(
-            groupId = gId,
-            linkName = "EcoInventos",
-            link = "https://ecoinventos.com"
-        )
-        feedRepository.saveLocalFeed(feed)
-        fId = feedRepository.getFeedIdByLink(feed.link) ?: throw Exception("feedId es null")
-        feedRepository.saveLocalFeedChannel(
-            DomainFeedChannel(
-                feedId = fId,
-                title = "EcoInventos",
-                description = "EcoInventos Feed",
+            // G3-F3
+            gname = "Hogar"
+            feedRepository.saveLocalGroup(DomainGroup(groupName = gname))
+            gId = feedRepository.getGroupIdByName(gname)
+                ?: throw Exception("setupInitialDrawerMenuData [G1-F1]: gId = null")
+            feed = DomainFeed(
+                groupId = gId,
+                linkName = "EcoInventos",
                 link = "https://ecoinventos.com"
             )
-        )
+            feedRepository.saveLocalFeed(feed)
+            fId = feedRepository.getFeedIdByLink(feed.link) ?: throw Exception("feedId es null")
+            feedRepository.saveLocalFeedChannel(
+                DomainFeedChannel(
+                    feedId = fId,
+                    title = "EcoInventos",
+                    description = "EcoInventos Feed",
+                    link = "https://ecoinventos.com"
+                )
+            )
 
-        // G4-F4
-        gname = "Android"
-        feedRepository.saveLocalGroup(DomainGroup(groupName = gname))
-        gId = feedRepository.getGroupIdByName(gname) ?: throw Exception("setupInitialDrawerMenuData [G1-F1]: gId = null")
-        feed = DomainFeed(
-            groupId = gId,
-            linkName = "Android Police",
-            link = "https://www.androidpolice.com"
-        )
-        feedRepository.saveLocalFeed(feed)
-        fId = feedRepository.getFeedIdByLink(feed.link) ?: throw Exception("feedId es null")
-        feedRepository.saveLocalFeedChannel(
-            DomainFeedChannel(
-                feedId = fId,
-                title = "Android Police",
-                description = "Android Police Feed",
+            // G4-F4
+            gname = "Android"
+            feedRepository.saveLocalGroup(DomainGroup(groupName = gname))
+            gId = feedRepository.getGroupIdByName(gname)
+                ?: throw Exception("setupInitialDrawerMenuData [G1-F1]: gId = null")
+            feed = DomainFeed(
+                groupId = gId,
+                linkName = "Android Police",
                 link = "https://www.androidpolice.com"
             )
-        )
+            feedRepository.saveLocalFeed(feed)
+            fId = feedRepository.getFeedIdByLink(feed.link) ?: throw Exception("feedId es null")
+            feedRepository.saveLocalFeedChannel(
+                DomainFeedChannel(
+                    feedId = fId,
+                    title = "Android Police",
+                    description = "Android Police Feed",
+                    link = "https://www.androidpolice.com"
+                )
+            )
 
-        // G4-F4
-        gname = "Hardware"
-        feedRepository.saveLocalGroup(DomainGroup(groupName = gname))
-        gId = feedRepository.getGroupIdByName(gname) ?: throw Exception("setupInitialDrawerMenuData [G1-F1]: gId = null")
-        feed = DomainFeed(
-            groupId = gId,
-            linkName = "El Chapuzas Informático",
-            link = "https://elchapuzasinformatico.com"
-        )
-        feedRepository.saveLocalFeed(feed)
-        fId = feedRepository.getFeedIdByLink(feed.link) ?: throw Exception("feedId es null")
-        feedRepository.saveLocalFeedChannel(
-            DomainFeedChannel(
-                feedId = fId,
-                title = "El Chapuzas Informático",
-                description = "El Chapuzas Informático Feed",
+            // G4-F4
+            gname = "Hardware"
+            feedRepository.saveLocalGroup(DomainGroup(groupName = gname))
+            gId = feedRepository.getGroupIdByName(gname)
+                ?: throw Exception("setupInitialDrawerMenuData [G1-F1]: gId = null")
+            feed = DomainFeed(
+                groupId = gId,
+                linkName = "El Chapuzas Informático",
                 link = "https://elchapuzasinformatico.com"
             )
-        )
+            feedRepository.saveLocalFeed(feed)
+            fId = feedRepository.getFeedIdByLink(feed.link) ?: throw Exception("feedId es null")
+            feedRepository.saveLocalFeedChannel(
+                DomainFeedChannel(
+                    feedId = fId,
+                    title = "El Chapuzas Informático",
+                    description = "El Chapuzas Informático Feed",
+                    link = "https://elchapuzasinformatico.com"
+                )
+            )
 
         } catch (e: Exception) {
             Timber.d(e, "[Timber] MainSharedViewModel.setupInitialDrawerMenuData() - ERROR")
