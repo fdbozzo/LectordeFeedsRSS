@@ -571,7 +571,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     //----- ESTE MENU SUPERIOR/DERECHO FUNCIONA, PERO NO LE VEO SENTIDO TENIENDO EL MENU DEL DRAWER -----
-    //*
+    /*
     // MENU PRINCIPAL
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         //menuInflater.inflate(R.menu.navdrawer_menu, menu)
@@ -579,6 +579,7 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.bottom_nav_menu, menu)
         return true // super.onCreateOptionsMenu(menu)
     }
+    */
 
     // Opción de menu
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
