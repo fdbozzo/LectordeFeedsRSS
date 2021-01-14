@@ -1,40 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navigation_login"
-        android:icon="@drawable/ic_home_black_24dp"
-        android:title="@string/title_login"
-        android:visible="false" />
+        android:id="@+id/nav_read_later"
+        android:icon="@drawable/ic_read_later_holo_light_24dp"
+        android:title="@string/title_read_later"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/nav_feed_contents"
-        android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/title_contents" />
+        android:icon="@drawable/ic_all_holo_light_24dp"
+        android:title="@string/title_contents"
+        app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/navigation_notifications"
-        android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/title_notifications" />
-
-    <item
-        android:id="@+id/navigation_favorites"
-        android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/title_favorites" />
-
-    <item
-        android:id="@+id/navigation_read_later"
-        android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/title_read_later" />
-
-    <item
-        android:id="@+id/nav_settings"
-        android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/title_settings" />
-
-    <item
-        android:id="@+id/nav_logout"
-        android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/title_logout" />
+        android:id="@+id/nav_favorites"
+        android:icon="@drawable/ic_favorites_holo_light_24dp"
+        android:title="@string/title_favorites"
+        app:showAsAction="ifRoom" />
 
 </menu>

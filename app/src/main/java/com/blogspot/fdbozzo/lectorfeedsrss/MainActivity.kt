@@ -570,8 +570,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //----- ESTE MENU SUPERIOR/DERECHO FUNCIONA, PERO NO LE VEO SENTIDO TENIENDO EL MENU DEL DRAWER -----
-    /*
     // MENU PRINCIPAL
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         //menuInflater.inflate(R.menu.navdrawer_menu, menu)
@@ -579,18 +577,19 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.bottom_nav_menu, menu)
         return true // super.onCreateOptionsMenu(menu)
     }
-    */
 
     // Opción de menu
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         Timber.d("[Timber] onOptionsItemSelected()")
         when (item.itemId) {
-            R.id.nav_logout -> {
-                logout()
-                Toast.makeText(this, "Logged out.", Toast.LENGTH_SHORT).show()
+            R.id.nav_read_later -> {
+                setSelectToReadLater()
             }
-            R.id.nav_settings -> {
-                navigateToSettings()
+            R.id.nav_feed_contents -> {
+                setSelectToAllFeeds()
+            }
+            R.id.nav_favorites -> {
+                setSelectToFavorites()
             }
         }
         return super.onOptionsItemSelected(item)
