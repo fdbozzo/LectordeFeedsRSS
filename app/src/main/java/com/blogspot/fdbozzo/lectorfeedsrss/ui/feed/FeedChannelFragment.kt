@@ -60,44 +60,51 @@ class FeedChannelFragment : Fragment() {
 
         navController = findNavController()
 
-        /** Adapter para el RecyclerView **/
-        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        if (mAuth.currentUser != null) {
+            /** Adapter para el RecyclerView **/
+            binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
 
-        /** Observer para los items actualizados y su reflejo en el recycler **/
-        mainSharedViewModel.items.observe(viewLifecycleOwner, Observer {
-            it?.let {
-                try {
-                    //adapter.data = it   // Esto solo lo usa el RecyclerView.Adapter
-                    //adapter.submitList(it)
-                    //initRecyclerView(it)
-                    Timber.i("[Timber] onViewCreated() - mainSharedViewModel.items.observe (CAMBIO)")
-                    binding.recyclerView.adapter = FeedChannelAdapter(it, sharedViewModel, requireContext())
+            /** Observer para los items actualizados y su reflejo en el recycler **/
+            mainSharedViewModel.items.observe(viewLifecycleOwner, Observer {
+                it?.let {
+                    try {
+                        //adapter.data = it   // Esto solo lo usa el RecyclerView.Adapter
+                        //adapter.submitList(it)
+                        //initRecyclerView(it)
+                        Timber.i("[Timber] onViewCreated() - mainSharedViewModel.items.observe (CAMBIO)")
+                        binding.recyclerView.adapter =
+                            FeedChannelAdapter(it, sharedViewModel, requireContext())
 
-                } catch (e: Exception) {
-                    Timber.d(e, "[Timber] onViewCreated() - mainSharedViewModel.items.observe ERROR: %s", e.message)
-                }
-            }
-        })
-
-        mainSharedViewModel.navigateToContents.observe(viewLifecycleOwner, Observer {
-            if (it == true && sharedViewModel.lastSelectedFeedChannelItemWithFeed != null) {
-                val action =
-                    sharedViewModel.lastSelectedFeedChannelItemWithFeed?.let { it1 ->
-                        FeedChannelFragmentDirections.actionFeedContentsFragmentToContentsFragment(
-                            sharedViewModel.lastSelectedFeedChannelItemWithFeed!!.link,
-                            it1.id
+                    } catch (e: Exception) {
+                        Timber.d(
+                            e,
+                            "[Timber] onViewCreated() - mainSharedViewModel.items.observe ERROR: %s",
+                            e.message
                         )
                     }
-                //NavHostFragment.findNavController(this).navigate(action)
-                if (action != null) {
-                    navController.navigate(action)
                 }
-                sharedViewModel.navigateToContentsWithUrlIsDone()
-            }
-        })
+            })
 
+            mainSharedViewModel.navigateToContents.observe(viewLifecycleOwner, Observer {
+                if (it == true && sharedViewModel.lastSelectedFeedChannelItemWithFeed != null) {
+                    val action =
+                        sharedViewModel.lastSelectedFeedChannelItemWithFeed?.let { it1 ->
+                            FeedChannelFragmentDirections.actionFeedContentsFragmentToContentsFragment(
+                                sharedViewModel.lastSelectedFeedChannelItemWithFeed!!.link,
+                                it1.id
+                            )
+                        }
+                    //NavHostFragment.findNavController(this).navigate(action)
+                    if (action != null) {
+                        navController.navigate(action)
+                    }
+                    sharedViewModel.navigateToContentsWithUrlIsDone()
+                }
+            })
 
+        }
 
         return binding.root
     }

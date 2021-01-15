@@ -83,6 +83,7 @@ class MainActivity : AppCompatActivity() {
         drawerLayout = binding.drawerLayout
         mAuth = Firebase.auth
 
+
         /**
          * Actualizar las opciones del menú Drawer cuando se actualiza la lista de las mismas
          */
@@ -133,7 +134,10 @@ class MainActivity : AppCompatActivity() {
         mainSharedViewModel.snackBarMessage.observe(this, Observer { messageRId ->
             if (messageRId != null) { // Observed state is true.
                 val view = findViewById<CoordinatorLayout>(R.id.mainCoordinatorLayout)
-                Timber.d("[Timber] (FeedChannelFragment) sharedViewModel.snackBarMessage.observe: %s", getString(messageRId))
+                Timber.d(
+                    "[Timber] (FeedChannelFragment) sharedViewModel.snackBarMessage.observe: %s",
+                    getString(messageRId)
+                )
                 if (view != null) {
                     Snackbar.make(
                         view,
@@ -225,12 +229,12 @@ class MainActivity : AppCompatActivity() {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         /*
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.nav_login, R.id.nav_feed_contents, R.id.nav_read_later, R.id.nav_settings
-            ), drawerLayout
-        )
-         */
+    appBarConfiguration = AppBarConfiguration(
+        setOf(
+            R.id.nav_login, R.id.nav_feed_contents, R.id.nav_read_later, R.id.nav_settings
+        ), drawerLayout
+    )
+     */
 
 
         /**
@@ -242,15 +246,23 @@ class MainActivity : AppCompatActivity() {
             // Carga preferencia para "show_unread_only"
             showUnreadOnlyPref =
                 sharedPreferences.getBoolean(getString(R.string.pref_show_unread_only), false)
-            Timber.d("[Timber] selectedScreen.observe: showUnreadOnlyPref = %s", showUnreadOnlyPref)
+            Timber.d(
+                "[Timber] selectedScreen.observe: showUnreadOnlyPref = %s",
+                showUnreadOnlyPref
+            )
 
             when (it) {
                 is SealedClassAppScreens.MainActivity -> {
                     Timber.d("[Timber] Menu MainActivity")
                 }
+                is SealedClassAppScreens.LoginFragment -> {
+                    Timber.d("[Timber] Menu Login")
+                    binding.topAppBar.visibility = View.GONE
+                }
                 is SealedClassAppScreens.FeedChannelFragment -> {
                     Timber.d("[Timber] Menu FeedChannelFragment")
                     binding.topAppBar.inflateMenu(R.menu.upper_navdrawer_feedchannel_menu)
+                    binding.topAppBar.visibility = View.VISIBLE
 
                     val feedOptionsValue = mainSharedViewModel.selectedFeedOptions.value
 

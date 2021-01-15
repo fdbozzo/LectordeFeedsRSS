@@ -8,4 +8,5 @@ sealed class SealedClassAppScreens {
     object AddGroupFragment : SealedClassAppScreens()
     object AddFeedFragment : SealedClassAppScreens()
     object EditGroupFragment : SealedClassAppScreens()
+    object LoginFragment : SealedClassAppScreens()
 }

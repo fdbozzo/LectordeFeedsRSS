@@ -21,6 +21,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.LoginFragmentBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
+import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
 import com.blogspot.fdbozzo.lectorfeedsrss.util.hideKeyboard
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -62,6 +63,8 @@ class LoginFragment : Fragment(), View.OnClickListener {
         val sharedViewModel: MainSharedViewModel by activityViewModels { MainSharedViewModel.Factory(feedRepository) }
         //sharedViewModel = ViewModelProvider(this, MainSharedViewModel.Factory(requireContext(), feedRepository)).get(MainSharedViewModel::class.java)
         mainSharedViewModel = sharedViewModel
+        mainSharedViewModel.setActiveScreen(SealedClassAppScreens.LoginFragment)
+        viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
 
         Timber.i("onCreateView() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.testigo)
         mainSharedViewModel.testigo = LoginFragment::class.java.canonicalName
@@ -108,11 +111,13 @@ class LoginFragment : Fragment(), View.OnClickListener {
          * se debe quitar del back stack para poder salir sin problemas.
          */
         navController.popBackStack(R.id.nav_feed_contents, true)
+
+
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
+        //viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
         // TODO: Use the ViewModel
 
 
