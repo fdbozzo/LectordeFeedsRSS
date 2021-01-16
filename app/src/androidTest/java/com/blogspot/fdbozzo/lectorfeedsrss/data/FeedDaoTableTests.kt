@@ -7,7 +7,6 @@ import androidx.lifecycle.asLiveData
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
-import androidx.test.platform.app.InstrumentationRegistry
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItemDao
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Feed
@@ -17,9 +16,6 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.GroupDao
 import com.blogspot.fdbozzo.lectorfeedsrss.utilities.CoroutinesTestRule
 import com.blogspot.fdbozzo.lectorfeedsrss.util.getValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import org.junit.*
 import org.junit.Test
@@ -121,7 +117,7 @@ class FeedDaoTableTests {
         feedDao.getLastFeed() ?: throw Exception("lastFeed(2) es null")
 
         // Test
-        val valores = getValue(feedDao.getAllFeeds().asLiveData()).toList()
+        val valores = getValue(feedDao.getAllFeedsFlow().asLiveData()).toList()
 
         // Verify
         Assert.assertNotEquals(idF1, idF2) // Los valroes comparados son cantidad de registros A y B
@@ -152,7 +148,7 @@ class FeedDaoTableTests {
         Timber.d("groupDao.delete(group) = $ret", ret)
 
         // Test
-        val valores = getValue(feedDao.getAllFeeds().asLiveData()).toList()
+        val valores = getValue(feedDao.getAllFeedsFlow().asLiveData()).toList()
 
         // Verify
         Assert.assertEquals(0, valores.size)

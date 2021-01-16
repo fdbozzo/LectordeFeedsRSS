@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity() {
                 if (drawerLayout.isDrawerOpen(GravityCompat.START))
                     drawerLayout.closeDrawer(GravityCompat.START)
 
-                mainSharedViewModel.getFeeds()
+                mainSharedViewModel.getFeedsFromUrl(showErrMsg = true)
             }
         })
 

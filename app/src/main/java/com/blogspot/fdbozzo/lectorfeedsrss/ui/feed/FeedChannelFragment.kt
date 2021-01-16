@@ -8,6 +8,8 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +25,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class FeedChannelFragment : Fragment() {
@@ -60,8 +63,10 @@ class FeedChannelFragment : Fragment() {
 
         navController = findNavController()
 
+        Timber.d("[Timber] mAuth.currentUser = %s", mAuth.currentUser)
 
         if (mAuth.currentUser != null) {
+
             /** Adapter para el RecyclerView **/
             binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
@@ -104,9 +109,32 @@ class FeedChannelFragment : Fragment() {
                 }
             })
 
+            /**
+             * Si apiBaseUrl.value == null es porque todavía no se eligió ningún feed.
+             * TODO: Habría que usar un valor de inicialización distinto, independiente de esa selección.
+             */
+            if (mainSharedViewModel.apiBaseUrl.value == null) {
+                Timber.d("[Timber] apiBaseUrl.value == null --> Implica carga inicial de la app desde último cierre.")
+                loadDrawerMenuAndUpdateFeeds(feedRepository)
+            }
+
         }
 
         return binding.root
+    }
+
+    private fun loadDrawerMenuAndUpdateFeeds(feedRepository: FeedRepository) {
+        lifecycleScope.launch {
+            // Cargamos datos iniciales en el drawer
+            mainSharedViewModel.setupInitialDrawerMenuData()
+
+            // Cargar todos los feeds actualizados
+            feedRepository.getAllFeeds()?.forEach {
+                Timber.d("[Timber] Lanzar carga del feed %s", it.link)
+                lifecycleScope.launch { mainSharedViewModel.getFeedsFromUrl(it.link) }
+
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

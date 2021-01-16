@@ -9,6 +9,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.network.RssApiStatus
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
 import com.blogspot.fdbozzo.lectorfeedsrss.util.toBoolean
+import com.google.android.gms.common.util.ArrayUtils.contains
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -137,11 +138,22 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
      * Configurar el LiveData apiBaseUrl en el init para obtener los datos inmediatamente.
      */
     init {
-        Timber.d("[Timber] MainSharedViewModel.init() - apiBaseUrl se cambia a 'https://hardzone.es'")
-        _apiBaseUrl.value = "https://hardzone.es"
+        // NO CARGAR UN FEED FIJO POR DEFECTO, DEBE SER DE LOS GUARDADOS
+        //Timber.d("[Timber] MainSharedViewModel.init() - apiBaseUrl se cambia a 'https://hardzone.es'")
+        //_apiBaseUrl.value = "https://hardzone.es"
 
-        // Cargamos datos iniciales en el drawer
-        viewModelScope.launch { setupInitialDrawerMenuData() }
+        /*
+        viewModelScope.launch {
+            // Cargamos datos iniciales en el drawer
+            setupInitialDrawerMenuData()
+
+            // Cargar todos los feeds actualizados
+            feedRepository.getAllFeeds()?.forEach {
+                Timber.d("[Timber] Lanzar carga del feed %s", it.link)
+                viewModelScope.launch { it.link }
+            }
+        }
+         */
 
     }
 
@@ -374,13 +386,20 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
     /**
      * Obtiene los feeds de la red y actualiza la BBDD
      */
-    fun getFeeds() {
+    fun getFeedsFromUrl(urlParam: String = "", showErrMsg: Boolean = false) {
         Timber.d("[Timber] MainSharedViewModel.getFeeds() - Obtener noticias de  ${_apiBaseUrl.value}")
-        if (_apiBaseUrl.value.isNullOrBlank())
-            return
+        var url = urlParam
+
+        if (url.isBlank()) {
+            if (apiBaseUrl.value.isNullOrBlank()) {
+                return
+            } else {
+                url = apiBaseUrl.value!!
+            }
+        }
 
         viewModelScope.launch {
-            rssApiResponse = feedRepository.checkNetworkFeeds(_apiBaseUrl.value!!)
+            rssApiResponse = feedRepository.checkNetworkFeeds(url)
 
             when (rssApiResponse) {
                 is RssResponse.Success -> {
@@ -390,6 +409,25 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
                 is RssResponse.Error -> {
                     // TODO: Falta controlar errores
                     Timber.d("[Timber] RssResponse.Error = ${(rssApiResponse as RssResponse.Error).exception.message}")
+                    val msgError = (rssApiResponse as RssResponse.Error).exception.message
+
+                    when {
+                        !showErrMsg -> {
+                            Timber.d("[Timber] msgError se ignora")
+                        }
+                        msgError == null -> {
+                            Timber.d("[Timber] msgError es null!")
+                            setSnackBarMessage(R.string.msg_error_with_null_message)
+                        }
+                        msgError.contains("code=403") -> {
+                            Timber.d("[Timber] msgError es 403!")
+                            setSnackBarMessage(R.string.msg_error_network_operation_failed_with_403)
+                        }
+                        else -> {
+                            Timber.d("[Timber] msgError es otro")
+                            setSnackBarMessage(R.string.msg_error_with_some_unprogrammed_message)
+                        }
+                    }
                 }
             }
         }
@@ -488,7 +526,7 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
         }
     }
 
-    private suspend fun setupInitialDrawerMenuData() {
+    suspend fun setupInitialDrawerMenuData() {
 
         try {
             // Compruebo si existe el último grupo, y si no existe borro toto y relleno

@@ -60,7 +60,10 @@ interface FeedDao {
      * ordenados por linkName.
      */
     @Query("SELECT * FROM feed_table ORDER BY link_name ASC")
-    fun getAllFeeds(): Flow<List<Feed>>
+    fun getAllFeedsFlow(): Flow<List<Feed>>
+
+    @Query("SELECT * FROM feed_table ORDER BY link_name ASC")
+    fun getAllFeeds(): List<Feed>?
 
     /**
      * Selecciona y retorna el último feed.

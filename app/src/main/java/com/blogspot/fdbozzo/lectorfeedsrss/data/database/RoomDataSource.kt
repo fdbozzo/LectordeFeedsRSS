@@ -133,12 +133,19 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         return feedCnt
     }
 
-    override suspend fun getFeeds(): Flow<List<DomainFeed>> =
+    override suspend fun getAllFeedsFlow(): Flow<List<DomainFeed>> =
         withContext(Dispatchers.IO) {
-            feedDao.getAllFeeds().map { roomFeed ->
+            feedDao.getAllFeedsFlow().map { roomFeed ->
                 roomFeed.map {
                     it.toDomainFeed()
                 }
+            }
+        }
+
+    override suspend fun getAllFeeds(): List<DomainFeed>? =
+        withContext(Dispatchers.IO) {
+            feedDao.getAllFeeds()?.map { roomFeed ->
+                roomFeed.toDomainFeed()
             }
         }
 

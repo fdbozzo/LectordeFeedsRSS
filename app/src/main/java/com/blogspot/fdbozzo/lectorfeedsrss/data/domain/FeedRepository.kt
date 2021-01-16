@@ -67,7 +67,7 @@ class FeedRepository(
     suspend fun getNetworkFeeds(apiBaseUrl: String): RssResponse<ServerFeed> {
 
         return withTimeout(15_000) {
-            remoteDataSource.getFeeds(apiBaseUrl)
+            remoteDataSource.getFeedsFromUrl(apiBaseUrl)
         }
     }
 
@@ -81,8 +81,10 @@ class FeedRepository(
         println("[Timber] 1")
 
         /**
-         * Guardar los feeds en BBDD
+         * Si no hay grupos guardados (es nueva instalación), se carga el primero
+         * por defecto ("Uncategorized")
          */
+        /*
         try {
             if (localDataSource.groupIsEmpty()) {
                 println("[Timber] 2")
@@ -99,14 +101,19 @@ class FeedRepository(
         } catch (e: Exception) {
             Timber.d(e, "[Timber] FeedRepository.saveNetworkFeeds() - ERROR - Group")
         }
+         */
 
         /**
          * Se intenta insertar el Feed y recuperar su id, pero si ya existe devolverá -1
+         * Antes de llegar a este punto, ya hay grupos y feeds existentes, aquí sólo se recuperan
+         * sus noticias.
          */
         try {
+            /*
             feeds = localDataSource.saveFeedFromServer(serverFeed.also {
                 it.groupId = groupId?: 0
             })
+             */
             println("[Timber] 5")
             feedId = localDataSource.getFeedIdByLink(serverFeed.link) ?: throw Exception("feedId es null")
             println("[Timber] 6 FeedRepository.saveNetworkFeeds(${serverFeed.linkName}): FEED - FeedId=$feedId (count=$feeds)")
@@ -125,6 +132,9 @@ class FeedRepository(
             Timber.d(e, "[Timber] FeedRepository.saveNetworkFeeds() - ERROR - Feed")
         }
 
+        /**
+         * Guardar los feeds en BBDD
+         */
         if (feedId != null) {
             try {
                 /**
@@ -240,6 +250,10 @@ class FeedRepository(
         return localDataSource.getFeedIdByLink(link)
     }
 
+    suspend fun getAllFeeds(): List<DomainFeed>? {
+        return localDataSource.getAllFeeds()
+    }
+
     suspend fun deleteFeed(feed: DomainFeed): Int {
         return localDataSource.deleteFeed(feed)
     }
@@ -309,7 +323,8 @@ interface LocalDataSource {
     suspend fun feedSize(): Int
     suspend fun saveFeed(feed: DomainFeed): Long
     suspend fun saveFeedFromServer(feed: ServerFeed): Long
-    suspend fun getFeeds(): Flow<List<DomainFeed>>
+    suspend fun getAllFeedsFlow(): Flow<List<DomainFeed>>
+    suspend fun getAllFeeds(): List<DomainFeed>?
     suspend fun getFeedIdByLink(link: String): Long?
     suspend fun getFeedWithLinkName(linkName: String): DomainFeed?
     suspend fun updateFeedFavoriteState(id: Long, favorite: Boolean): Int
@@ -347,6 +362,6 @@ interface LocalDataSource {
 interface RemoteDataSource {
 
     //suspend fun getFeedInfo(): List<DomainFeedChannelItem>
-    suspend fun getFeeds(apiBaseUrl: String): RssResponse<ServerFeed>
+    suspend fun getFeedsFromUrl(apiBaseUrl: String): RssResponse<ServerFeed>
 
 }
