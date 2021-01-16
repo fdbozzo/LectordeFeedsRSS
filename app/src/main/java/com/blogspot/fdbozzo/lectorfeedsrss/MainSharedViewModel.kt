@@ -233,7 +233,7 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
             val feed = feedRepository.getFeedByLinkName(linkName)
 
             if (feed != null) {
-                feedRepository.updateFeedReadStatus(feed.id)
+                feedRepository.updateReadStatus(feed.id, true)
                 _snackBarMessage.postValue(R.string.msg_marked_as_read)
             }
         }

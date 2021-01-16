@@ -33,7 +33,7 @@ interface FeedDao {
      * @param key feed a buscar
      */
     @Query("SELECT * from feed_table WHERE id = :key")
-    suspend fun get(key: Long): Feed
+    suspend fun get(key: Long): Feed?
 
     /**
      * Selecciona y retorna la fila que coincide con la clave indicada

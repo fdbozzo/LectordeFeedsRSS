@@ -300,10 +300,6 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         return withContext(Dispatchers.IO) {feedChannelItemDao.updateInverseReadLaterStatus(id)}
     }
 
-    override suspend fun updateFeedReadStatus(feedId: Long): Int {
-        return withContext(Dispatchers.IO) {feedChannelItemDao.updateFeedReadStatus(feedId)}
-    }
-
     override suspend fun updateGroupFeedReadStatus(gropId: Long): Int {
         return withContext(Dispatchers.IO) {feedChannelItemDao.updateGroupFeedReadStatus(gropId)}
     }

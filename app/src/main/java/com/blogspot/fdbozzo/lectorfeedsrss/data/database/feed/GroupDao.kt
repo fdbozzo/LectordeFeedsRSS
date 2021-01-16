@@ -42,12 +42,6 @@ interface GroupDao {
     @Query("SELECT id from group_table WHERE group_name = :name")
     suspend fun getGroupIdByName(name: String): Long?
 
-    /**
-     * Borra todos los datos de la tabla
-     */
-    @Query("DELETE FROM group_table")
-    suspend fun clear()
-
     @Query("SELECT COUNT(id) FROM group_table")
     suspend fun groupCount(): Long
 
@@ -66,14 +60,6 @@ interface GroupDao {
      */
     @Query("SELECT * FROM group_table ORDER BY id DESC LIMIT 1")
     suspend fun getLastGroup(): Group?
-
-    /**
-     * Selecciona y retorna el Group con el Id indicado.
-     */
-    /*
-    @Query("SELECT * from group_table WHERE id = :key")
-    fun getGroupWithId(key: Long): Group
-     */
 
     /**
      * Selecciona y retorna el Group con el link indicado.

@@ -50,9 +50,6 @@ interface FeedChannelDao {
     @Query("DELETE FROM feed_channel_table")
     suspend fun clear()
 
-    @Query("SELECT COUNT(id) FROM feed_channel_table")
-    suspend fun groupCount(): Int
-
     /**
      * Selecciona y retorna todos los datos de la tabla,
      * ordenados por fecha de publicación descendente.

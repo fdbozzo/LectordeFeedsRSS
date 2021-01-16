@@ -26,20 +26,20 @@ interface FeedChannelItemDao {
     @Update
     suspend fun update(feedChannelItem: FeedChannelItem): Int
 
+    /**
+     * Actualiza la marca de read del Item indicado
+     */
     @Query("UPDATE feed_channel_item_table SET read = :read WHERE id = :id")
     suspend fun updateReadStatus(id: Long, read: Int): Int
 
+    /**
+     * Actualiza la marca de read_later del Item indicado
+     */
     @Query("UPDATE feed_channel_item_table SET read_later = :readLater WHERE id = :id")
     suspend fun updateReadLaterStatus(id: Long, readLater: Int): Int
 
     @Query("UPDATE feed_channel_item_table SET read_later = (1 - read_later) WHERE id = :id")
     suspend fun updateInverseReadLaterStatus(id: Long): Int
-
-    /**
-     * Actualiza la marca de leido del Feed indicado
-     */
-    @Query("UPDATE feed_channel_item_table SET read = 1 WHERE feed_id = :feedId")
-    suspend fun updateFeedReadStatus(feedId: Long): Int
 
     /**
      * Actualiza la marca de leido de todos los Feeds
@@ -131,21 +131,4 @@ interface FeedChannelItemDao {
     @Query("SELECT * FROM feed_channel_item_table ORDER BY id DESC LIMIT 1")
     suspend fun getLastFeedItem(): FeedChannelItem?
 
-    /**
-     * Selecciona y retorna el contentEncoded con el Id indicado.
-     */
-    /*
-    @Query("SELECT * from feed_channel_item_table WHERE id = :key")
-    fun getFeedItemWithId(key: Long): Flow<FeedChannelItem>
-
-     */
-
-    /**
-     * Selecciona y retorna el contentEncoded con el link indicado.
-     */
-    /*
-    @Query("SELECT * from feed_channel_item_table WHERE link = :link")
-    fun getFeedItemWithLink(link: String): Flow<FeedChannelItem>
-
-     */
 }
