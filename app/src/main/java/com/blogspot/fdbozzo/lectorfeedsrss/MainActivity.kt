@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.GravityCompat
+import androidx.core.view.forEach
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -251,6 +252,10 @@ class MainActivity : AppCompatActivity() {
                 showUnreadOnlyPref
             )
 
+            binding.bottomAppBar.menu.forEach { menuItem ->
+                menuItem.isVisible = false
+            }
+
             when (it) {
                 is SealedClassAppScreens.MainActivity -> {
                     Timber.d("[Timber] Menu MainActivity")
@@ -263,6 +268,9 @@ class MainActivity : AppCompatActivity() {
                     Timber.d("[Timber] Menu FeedChannelFragment")
                     binding.topAppBar.inflateMenu(R.menu.upper_navdrawer_feedchannel_menu)
                     binding.topAppBar.visibility = View.VISIBLE
+                    binding.bottomAppBar.menu.forEach { menuItem ->
+                        menuItem.isVisible = true
+                    }
 
                     val feedOptionsValue = mainSharedViewModel.selectedFeedOptions.value
 
