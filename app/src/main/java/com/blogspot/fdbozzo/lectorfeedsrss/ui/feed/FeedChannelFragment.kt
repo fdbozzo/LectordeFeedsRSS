@@ -110,10 +110,11 @@ class FeedChannelFragment : Fragment() {
             })
 
             /**
-             * Si apiBaseUrl.value == null es porque todavía no se eligió ningún feed.
-             * TODO: Habría que usar un valor de inicialización distinto, independiente de esa selección.
+             * Si mainSharedViewModel.vmInicializado = false es porque todavía no se inicializó el ViewModel.
              */
-            if (mainSharedViewModel.apiBaseUrl.value == null) {
+            //if (mainSharedViewModel.apiBaseUrl.value == null) {
+            if (!mainSharedViewModel.vmInicializado) {
+                mainSharedViewModel.vmInicializado = true
                 Timber.d("[Timber] apiBaseUrl.value == null --> Implica carga inicial de la app desde último cierre.")
                 loadDrawerMenuAndUpdateFeeds(feedRepository)
             }

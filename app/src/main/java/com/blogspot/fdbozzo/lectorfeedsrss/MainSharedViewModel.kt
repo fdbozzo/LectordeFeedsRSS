@@ -25,6 +25,8 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
 
     var testigo: String? = ""
 
+    var vmInicializado = false
+
     private lateinit var rssApiResponse: RssResponse<Feed>
 
     private var _apiBaseUrl = MutableLiveData<String>()
