@@ -144,19 +144,54 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
         //Timber.d("[Timber] MainSharedViewModel.init() - apiBaseUrl se cambia a 'https://hardzone.es'")
         //_apiBaseUrl.value = "https://hardzone.es"
 
-        /*
+        //*
         viewModelScope.launch {
             // Cargamos datos iniciales en el drawer
             setupInitialDrawerMenuData()
 
             // Cargar todos los feeds actualizados
-            feedRepository.getAllFeeds()?.forEach {
-                Timber.d("[Timber] Lanzar carga del feed %s", it.link)
-                viewModelScope.launch { it.link }
+            refreshActiveFeeds()
+        }
+         //*/
+
+    }
+
+    suspend fun refreshActiveFeeds() {
+        val valSelectedFeedOptions = selectedFeedOptions.value
+        val linkName = selectedFeedOptions.value?.linkName ?: "%"
+
+        if (valSelectedFeedOptions != null) {
+            when {
+                valSelectedFeedOptions.readLater -> {
+                    // Read Later - No actualizar porque son noticias estáticas preseleccionadas
+                    Timber.d("[Timber] No se recarga por ser Read Later")
+                }
+                valSelectedFeedOptions.favorite -> {
+                    // Favorites - Actualizar
+                    feedRepository.getAllFeeds()?.forEach {
+                        if (it.favorite == 1) {
+                            Timber.d("[Timber] Lanzar carga del feed %s", it.link)
+                            viewModelScope.launch { getFeedsFromUrl(it.link) }
+                        } else {
+                            Timber.d("[Timber] Feed %s no se carga por no ser Favorito", it.link)
+                        }
+                    }
+                }
+                linkName == "%" -> {
+                    // All feeds
+                    feedRepository.getAllFeeds()?.forEach {
+                        Timber.d("[Timber] Lanzar carga del feed %s", it.link)
+                        viewModelScope.launch { getFeedsFromUrl(it.link) }
+                    }
+
+                }
+                else -> {
+                    // Un feed en particular (linkName contiene su nombre)
+                    Timber.d("[Timber] Lanzar carga del feed %s", linkName)
+                    feedRepository.getFeedByLinkName(linkName)
+                }
             }
         }
-         */
-
     }
 
     fun setActiveScreen(sealedClassAppScreens: SealedClassAppScreens) {

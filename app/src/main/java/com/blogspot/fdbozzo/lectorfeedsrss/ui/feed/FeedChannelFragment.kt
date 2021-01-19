@@ -1,18 +1,19 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.ui.feed
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.blogspot.fdbozzo.lectorfeedsrss.MainSharedViewModel
 import com.blogspot.fdbozzo.lectorfeedsrss.R
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
@@ -21,7 +22,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.FeedChannelFragmentBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
-import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -42,6 +43,7 @@ class FeedChannelFragment : Fragment() {
     private lateinit var navController: NavController
     private lateinit var mAuth: FirebaseAuth
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -92,6 +94,8 @@ class FeedChannelFragment : Fragment() {
                 }
             })
 
+            binding.swipeRefresh.setOnRefreshListener { swipeRefreshListener() }
+
             mainSharedViewModel.navigateToContents.observe(viewLifecycleOwner, Observer {
                 if (it == true && sharedViewModel.lastSelectedFeedChannelItemWithFeed != null) {
                     val action =
@@ -109,34 +113,22 @@ class FeedChannelFragment : Fragment() {
                 }
             })
 
-            /**
-             * Si mainSharedViewModel.vmInicializado = false es porque todavía no se inicializó el ViewModel.
-             */
-            //if (mainSharedViewModel.apiBaseUrl.value == null) {
-            if (!mainSharedViewModel.vmInicializado) {
-                mainSharedViewModel.vmInicializado = true
-                Timber.d("[Timber] apiBaseUrl.value == null --> Implica carga inicial de la app desde último cierre.")
-                loadDrawerMenuAndUpdateFeeds(feedRepository)
-            }
-
         }
 
         return binding.root
     }
 
-    private fun loadDrawerMenuAndUpdateFeeds(feedRepository: FeedRepository) {
+    private fun swipeRefreshListener() {
+
         lifecycleScope.launch {
-            // Cargamos datos iniciales en el drawer
-            mainSharedViewModel.setupInitialDrawerMenuData()
+            mainSharedViewModel.refreshActiveFeeds()
 
-            // Cargar todos los feeds actualizados
-            feedRepository.getAllFeeds()?.forEach {
-                Timber.d("[Timber] Lanzar carga del feed %s", it.link)
-                lifecycleScope.launch { mainSharedViewModel.getFeedsFromUrl(it.link) }
-
+            if(binding.swipeRefresh.isRefreshing){
+                binding.swipeRefresh.isRefreshing = false
             }
         }
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
