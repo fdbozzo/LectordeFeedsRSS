@@ -43,18 +43,6 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
     val selectedFeedOptions: LiveData<SelectedFeedOptions>
         get() = _selectedFeedOptions
 
-    // "https://hardzone.es" // "http://blog.mozilla.com/" // "https://hardzone.es/"
-
-    /*
-    private var _channels = MutableLiveData<List<DomainFeedChannel>>()
-    val channels: LiveData<List<DomainFeedChannel>>
-        get() = _channels
-
-    private var _feeds = MutableLiveData<Response<DomainFeed>>()
-    val feeds: LiveData<Response<DomainFeed>>
-        get() = _feeds
-     */
-
     private var _status = MutableLiveData<RssApiStatus>()
     val status: LiveData<RssApiStatus>
         get() = _status
@@ -83,15 +71,6 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
         get() = _selectedFeedChannelItemId
 
     /**
-     * Conecta el LiveData lastSelectedFeedChannelItemWithFeed al registro seleccionado
-     * con el ID = selectedFeedChannelItemId
-     */
-    val autoUpdatedSelectedFeedChannelItemWithFeed: LiveData<DomainFeedChannelItemWithFeed> =
-        Transformations.switchMap(selectedFeedChannelItemId) { id ->
-            feedRepository.getFeedChannelItemWithFeedFlow(id).asLiveData()
-        }
-
-    /**
      * Conecta el LiveData "items" a la consulta de BBDD para actualización automática cuando cambien
      * los valores del filtro LiveData "selectedFeedOptions"
      */
@@ -108,14 +87,6 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
     val navigateToContents: LiveData<Boolean?>
         get() = _navigateToContents
 
-    /**
-     * ReadLaterStatus contiene el estado de ReadLater: true/false/null
-     */
-    /*
-    private var _readLaterStatus = MutableLiveData<Boolean?>()
-    val readLaterStatus: LiveData<Boolean?>
-        get() = _readLaterStatus
-     */
 
     /**
      * Guarda el título (nombre de feed) del menú abierto
@@ -144,7 +115,6 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
         //Timber.d("[Timber] MainSharedViewModel.init() - apiBaseUrl se cambia a 'https://hardzone.es'")
         //_apiBaseUrl.value = "https://hardzone.es"
 
-        //*
         viewModelScope.launch {
             // Cargamos datos iniciales en el drawer
             setupInitialDrawerMenuData()
@@ -152,7 +122,6 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
             // Cargar todos los feeds actualizados
             refreshActiveFeeds()
         }
-         //*/
 
     }
 
@@ -524,14 +493,6 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
         }
     }
 
-    /**
-     * Actualiza la variable _lastSelectedFeedChannelItemWithFeed con todos los datos
-     * actualizados del último registro seleccionado
-     */
-    fun setLastSelectedFeedChannelItemWithFeed(feedChannelItemWithFeed: DomainFeedChannelItemWithFeed) {
-        _lastSelectedFeedChannelItemWithFeed = feedChannelItemWithFeed
-        Timber.d("[Timber] setLastSelectedFeedChannelItemWithFeed()")
-    }
 
     /**
      * Actualiza el flag "read" de acuerdo al valor indicado para filtrar los datos mostrados
@@ -540,26 +501,6 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
         // Sólo se hace la actualización si el dato realmente cambió
         if (selectedFeedOptions.value != null && selectedFeedOptions.value!!.read != read) {
             setSelectedFeedOptions(SelectedFeedOptions().also { it.read = read })
-        }
-    }
-
-    /**
-     * Actualiza el flag "favorite" de acuerdo al valor indicado para filtrar los datos mostrados
-     */
-    fun setSelectedFeedOptionsFavoriteTrue() {
-        // Sólo se hace la actualización si el dato realmente cambió
-        if (selectedFeedOptions.value != null && !selectedFeedOptions.value!!.favorite) {
-            setSelectedFeedOptions(SelectedFeedOptions().also { it.setFavoriteTrue() })
-        }
-    }
-
-    /**
-     * Actualiza el flag "readLater" de acuerdo al valor indicado para filtrar los datos mostrados
-     */
-    fun setSelectedFeedOptionsReadLaterTrue() {
-        // Sólo se hace la actualización si el dato realmente cambió
-        if (selectedFeedOptions.value != null && !selectedFeedOptions.value!!.readLater) {
-            setSelectedFeedOptions(SelectedFeedOptions().also { it.setReadLaterTrue() })
         }
     }
 

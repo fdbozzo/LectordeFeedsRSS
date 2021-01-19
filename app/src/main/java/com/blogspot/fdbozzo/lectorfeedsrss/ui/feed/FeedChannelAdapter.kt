@@ -15,12 +15,6 @@ class FeedChannelAdapter(
     private val list: List<DomainFeedChannelItemWithFeed>,
     private val sharedViewViewModel: MainSharedViewModel,
     val context: Context) : RecyclerView.Adapter<FeedChannelAdapter.ViewHolder>() {
-//class FeedChannelAdapter: ListAdapter<FeedChannelItem, FeedChannelAdapter.ViewHolder>(FeedContentsDiff()) {
-
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        //Timber.d("onAttachedToRecyclerView() - list=%s, list.size=%d", list, list.size)
-        super.onAttachedToRecyclerView(recyclerView)
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder.from(parent)
@@ -43,7 +37,6 @@ class FeedChannelAdapter(
 
     override fun getItemCount(): Int = list.size
 
-    //class ViewHolder(val fechaFeed: TextView) : RecyclerView.ViewHolder(fechaFeed)
     /**
      * ViewHolder para los datos
      */
@@ -55,7 +48,6 @@ class FeedChannelAdapter(
             try {
                 binding.feedChannelItemWithFeed = feedChannelItemWithFeed
                 binding.viewModel = viewModel
-                //binding.clickListener = clickListener
                 //Timber.d("[Timber] ViewHolder.bind(%s)", feedChannelItemWithFeed.link)
                 binding.executePendingBindings()
 

@@ -81,39 +81,11 @@ class FeedRepository(
         println("[Timber] 1")
 
         /**
-         * Si no hay grupos guardados (es nueva instalación), se carga el primero
-         * por defecto ("Uncategorized")
-         */
-        /*
-        try {
-            if (localDataSource.groupIsEmpty()) {
-                println("[Timber] 2")
-                localDataSource.saveGroup(DomainGroup())
-                println("[Timber] 3")
-            }
-            groupId = localDataSource.getGroupIdByName(Group.DEFAULT_NAME)
-            println("[Timber] 4 FeedRepository.saveNetworkFeeds() - GroupId=$groupId")
-            Timber.d("[Timber] FeedRepository.saveNetworkFeeds() - GroupId=%d", groupId)
-
-            if (groupId == null)
-                throw Exception("localDataSource.getGroupIdByName(${Group.DEFAULT_NAME}) -> Nuevo groupId = null")
-
-        } catch (e: Exception) {
-            Timber.d(e, "[Timber] FeedRepository.saveNetworkFeeds() - ERROR - Group")
-        }
-         */
-
-        /**
          * Se intenta insertar el Feed y recuperar su id, pero si ya existe devolverá -1
          * Antes de llegar a este punto, ya hay grupos y feeds existentes, aquí sólo se recuperan
          * sus noticias.
          */
         try {
-            /*
-            feeds = localDataSource.saveFeedFromServer(serverFeed.also {
-                it.groupId = groupId?: 0
-            })
-             */
             println("[Timber] 5")
             feedId = localDataSource.getFeedIdByLink(serverFeed.link) ?: throw Exception("feedId es null")
             println("[Timber] 6 FeedRepository.saveNetworkFeeds(${serverFeed.linkName}): FEED - FeedId=$feedId (count=$feeds)")

@@ -110,14 +110,6 @@ class MainActivity : AppCompatActivity() {
             Timber.d("[Timber] (Observer) selectedFeedChannelItemId= %d", it)
         })
 
-        mainSharedViewModel.autoUpdatedSelectedFeedChannelItemWithFeed.observe(this, Observer {
-            Timber.d(
-                "[Timber] (Observer) autoUpdatedSelectedFeedChannelItemWithFeed(%d) = %s",
-                it.id,
-                it.link
-            )
-        })
-
 
         /**
          * Ocultar el hamburger del NavDrawer dependiendo de si es login o no.
@@ -230,12 +222,12 @@ class MainActivity : AppCompatActivity() {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         /*
-    appBarConfiguration = AppBarConfiguration(
-        setOf(
-            R.id.nav_login, R.id.nav_feed_contents, R.id.nav_read_later, R.id.nav_settings
-        ), drawerLayout
-    )
-     */
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.nav_login, R.id.nav_feed_contents, R.id.nav_read_later, R.id.nav_settings
+            ), drawerLayout
+        )
+         */
 
 
         /**
