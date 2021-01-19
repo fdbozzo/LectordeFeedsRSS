@@ -203,10 +203,8 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
             viewModelScope.launch {
                 try {
                     feedRepository.updateInverseReadLaterStatus(id)
-                    _lastSelectedFeedChannelItemWithFeed =
-                        feedRepository.getFeedChannelItemWithFeed(id)
-                    val readLater = _lastSelectedFeedChannelItemWithFeed?.readLater?.toBoolean()
-                    //_readLaterStatus.postValue(readLater)
+                    val feed = feedRepository.getFeedChannelItemWithFeed(id)
+                    val readLater = feed?.readLater?.toBoolean()
 
                     when (readLater) {
                         true -> _snackBarMessage.postValue(R.string.msg_marked_for_read_later)
@@ -504,7 +502,7 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
         }
     }
 
-    suspend fun setupInitialDrawerMenuData() {
+    private suspend fun setupInitialDrawerMenuData() {
 
         try {
             // Compruebo si existe el último grupo, y si no existe borro toto y relleno
