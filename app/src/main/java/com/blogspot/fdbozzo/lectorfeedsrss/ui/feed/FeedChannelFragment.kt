@@ -93,6 +93,10 @@ class FeedChannelFragment : Fragment() {
                 }
             })
 
+            /**
+             * Listener para el swipeRefresh, que permite detectar el arrastre hacia abajo
+             * cuando se está al inicio de la lista de items, mostrando una animación de carga.
+             */
             binding.swipeRefresh.setOnRefreshListener { swipeRefreshListener() }
 
             mainSharedViewModel.navigateToContents.observe(viewLifecycleOwner, Observer {

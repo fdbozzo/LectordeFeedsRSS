@@ -1,5 +1,6 @@
 package com.blogspot.fdbozzo.lectorfeedsrss
 
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.*
 import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group

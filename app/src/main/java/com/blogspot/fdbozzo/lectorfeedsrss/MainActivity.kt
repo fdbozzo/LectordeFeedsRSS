@@ -85,6 +85,17 @@ class MainActivity : AppCompatActivity() {
         mAuth = Firebase.auth
 
 
+        // Passing each menu ID as a set of Ids because each
+        // menu should be considered as top level destinations.
+        /*
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.nav_login, R.id.nav_feed_contents, R.id.nav_read_later, R.id.nav_settings
+            ), drawerLayout
+        )
+         */
+
+
         /**
          * Actualizar las opciones del menú Drawer cuando se actualiza la lista de las mismas
          */
@@ -219,22 +230,11 @@ class MainActivity : AppCompatActivity() {
             navigateToSettings()
         }
 
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        /*
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.nav_login, R.id.nav_feed_contents, R.id.nav_read_later, R.id.nav_settings
-            ), drawerLayout
-        )
-         */
-
 
         /**
          * Cargar menú superior/derecho según el fragmento cargado
          */
         mainSharedViewModel.selectedScreen.observe(this, Observer {
-            binding.topAppBar.menu.clear()
 
             // Carga preferencia para "show_unread_only"
             showUnreadOnlyPref =
@@ -244,69 +244,7 @@ class MainActivity : AppCompatActivity() {
                 showUnreadOnlyPref
             )
 
-            binding.bottomAppBar.menu.forEach { menuItem ->
-                menuItem.isVisible = false
-            }
-
-            when (it) {
-                is SealedClassAppScreens.MainActivity -> {
-                    Timber.d("[Timber] Menu MainActivity")
-                }
-                is SealedClassAppScreens.LoginFragment -> {
-                    Timber.d("[Timber] Menu Login")
-                    binding.topAppBar.visibility = View.GONE
-                }
-                is SealedClassAppScreens.FeedChannelFragment -> {
-                    Timber.d("[Timber] Menu FeedChannelFragment")
-                    binding.topAppBar.inflateMenu(R.menu.upper_navdrawer_feedchannel_menu)
-                    binding.topAppBar.visibility = View.VISIBLE
-                    binding.bottomAppBar.menu.forEach { menuItem ->
-                        menuItem.isVisible = true
-                    }
-
-                    val feedOptionsValue = mainSharedViewModel.selectedFeedOptions.value
-
-                    if (feedOptionsValue != null) {
-                        // Actualizo el título de la ventana de acuerdo a la selección de opciones activas
-                        when {
-                            feedOptionsValue.readLater -> {
-                                binding.topAppBar.setTitle(R.string.screen_title_read_later)
-                            }
-                            feedOptionsValue.favorite -> {
-                                binding.topAppBar.setTitle(R.string.screen_title_favorites)
-                            }
-                            feedOptionsValue.linkName != "%" -> {
-                                binding.topAppBar.title = feedOptionsValue.linkName
-                            }
-                            else -> {
-                                binding.topAppBar.setTitle(R.string.screen_title_all_feeds)
-                            }
-                        }
-                    }
-
-
-                    // Actualiza el filtro con el valor del setting global de "showUnreadOnly"
-                    mainSharedViewModel.setSelectedFeedOptionsReadFlag(!showUnreadOnlyPref)
-                }
-                is SealedClassAppScreens.ContentsFragment -> {
-                    Timber.d("[Timber] Menu ContentsFragment")
-                    binding.topAppBar.inflateMenu(R.menu.upper_navdrawer_feedchannelitem_menu)
-                    binding.topAppBar.title = ""
-                }
-                is SealedClassAppScreens.SettingsFragment -> {
-                    Timber.d("[Timber] Menu SettingsFragment")
-                    binding.topAppBar.setTitle(R.string.screen_title_settings)
-                }
-                is SealedClassAppScreens.AddGroupFragment -> {
-                    Timber.d("[Timber] Menu AddGroupFragment")
-                    binding.topAppBar.setTitle(R.string.screen_title_add_group)
-                }
-                is SealedClassAppScreens.AddFeedFragment -> {
-                    Timber.d("[Timber] Menu AddFeedFragment")
-                    binding.topAppBar.setTitle(R.string.screen_title_add_feed)
-                }
-                else -> Unit
-            }
+            screenDependentConfiguration(it)
         })
 
         /**
@@ -366,11 +304,79 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun screenDependentConfiguration(screen: SealedClassAppScreens? = mainSharedViewModel.selectedScreen.value) {
+        Timber.d("[Timber] screenDependentConfiguration")
+        binding.topAppBar.menu.clear()
+
+        binding.bottomAppBar.menu.forEach { menuItem ->
+            menuItem.isVisible = false
+        }
+
+        when (screen) {
+            is SealedClassAppScreens.MainActivity -> {
+                Timber.d("[Timber] Menu MainActivity")
+            }
+            is SealedClassAppScreens.LoginFragment -> {
+                Timber.d("[Timber] Menu Login")
+                binding.topAppBar.visibility = View.GONE
+            }
+            is SealedClassAppScreens.FeedChannelFragment -> {
+                Timber.d("[Timber] Menu FeedChannelFragment")
+                binding.topAppBar.inflateMenu(R.menu.upper_navdrawer_feedchannel_menu)
+                binding.topAppBar.visibility = View.VISIBLE
+                binding.bottomAppBar.menu.forEach { menuItem ->
+                    menuItem.isVisible = true
+                }
+
+                val feedOptionsValue = mainSharedViewModel.selectedFeedOptions.value
+
+                if (feedOptionsValue != null) {
+                    // Actualizo el título de la ventana de acuerdo a la selección de opciones activas
+                    when {
+                        feedOptionsValue.readLater -> {
+                            binding.topAppBar.setTitle(R.string.screen_title_read_later)
+                        }
+                        feedOptionsValue.favorite -> {
+                            binding.topAppBar.setTitle(R.string.screen_title_favorites)
+                        }
+                        feedOptionsValue.linkName != "%" -> {
+                            binding.topAppBar.title = feedOptionsValue.linkName
+                        }
+                        else -> {
+                            binding.topAppBar.setTitle(R.string.screen_title_all_feeds)
+                        }
+                    }
+                }
+
+
+                // Actualiza el filtro con el valor del setting global de "showUnreadOnly"
+                mainSharedViewModel.setSelectedFeedOptionsReadFlag(!showUnreadOnlyPref)
+            }
+            is SealedClassAppScreens.ContentsFragment -> {
+                Timber.d("[Timber] Menu ContentsFragment")
+                binding.topAppBar.inflateMenu(R.menu.upper_navdrawer_feedchannelitem_menu)
+                binding.topAppBar.title = ""
+            }
+            is SealedClassAppScreens.SettingsFragment -> {
+                Timber.d("[Timber] Menu SettingsFragment")
+                binding.topAppBar.setTitle(R.string.screen_title_settings)
+            }
+            is SealedClassAppScreens.AddGroupFragment -> {
+                Timber.d("[Timber] Menu AddGroupFragment")
+                binding.topAppBar.setTitle(R.string.screen_title_add_group)
+            }
+            is SealedClassAppScreens.AddFeedFragment -> {
+                Timber.d("[Timber] Menu AddFeedFragment")
+                binding.topAppBar.setTitle(R.string.screen_title_add_feed)
+            }
+            else -> Unit
+        }
+    }
+
     private fun addGroup() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START))
             drawerLayout.closeDrawer(GravityCompat.START)
 
-        //navController.popBackStack(R.id.nav_feed_contents, true)
         navController.navigate(R.id.nav_add_group)
         Toast.makeText(this, "Add Group", Toast.LENGTH_SHORT).show()
     }
@@ -379,7 +385,6 @@ class MainActivity : AppCompatActivity() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START))
             drawerLayout.closeDrawer(GravityCompat.START)
 
-        //navController.popBackStack(R.id.nav_feed_contents, true)
         navController.navigate(R.id.nav_add_feed)
         Toast.makeText(this, "Add Feed", Toast.LENGTH_SHORT).show()
     }
@@ -426,7 +431,6 @@ class MainActivity : AppCompatActivity() {
      * MENU EXPANDIBLE
      */
     private fun setupDrawerExpandableListView(listData: HashMap<String, List<String>>) {
-        //expandableListView = findViewById(R.id.expandableListView)
 
         if (expandableListView != null) {
             //val listData = data
@@ -587,6 +591,7 @@ class MainActivity : AppCompatActivity() {
         //menuInflater.inflate(R.menu.navdrawer_menu, menu)
         Timber.d("[Timber] onCreateOptionsMenu()")
         menuInflater.inflate(R.menu.bottom_nav_menu, menu)
+        screenDependentConfiguration()
         return true // super.onCreateOptionsMenu(menu)
     }
 
