@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.ListAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -151,8 +150,8 @@ class AddFeedFragment : Fragment() {
         if (link.isNotBlank() && selectedGroup != null) {
             binding.editLink.text?.clear()
 
-            // TODO: IMPLEMENTAR LA BÚSQUEDA DEL LINK PARA OBTENER EL NOMBRE DEL FEED
-            lifecycleScope.launch { buscarFeedObtenerInfoYGuardar(link) }
+            // Se busca el Feed para comprobar si es válido y lo intenta guardar, si no existe
+            lifecycleScope.launch { buscarFeedComprobarSiEsValidoYGuardar(link, selectedGroup!!) }
 
         } else {
             binding.textInputLink.error = getString(R.string.err_name_cant_be_empty)
@@ -160,76 +159,15 @@ class AddFeedFragment : Fragment() {
         }
     }
 
-
-    private suspend fun buscarFeedObtenerInfoYGuardar(link: String) {
-        var valApiBaseUrl = ""
-
-        /**
-         * Normalizar el link como URL válida
-         */
-        if (link.startsWith("http://") || link.startsWith("https://")) {
-            // Si se indica http o https, se respeta
-            valApiBaseUrl = link.forceEndingWithChar("/")
-        } else {
-            // Si no se indica http o https, se fuerza https
-            valApiBaseUrl = link.forceStartingWithString("https://").forceEndingWithChar("/")
-        }
-
-        val valApiBaseUrl2 = valApiBaseUrl.forceNotEndingWithString("/")
-
+    /**
+     * Se busca el Feed para comprobar si es válido y lo intenta guardar, si no existe
+     */
+    private suspend fun buscarFeedComprobarSiEsValidoYGuardar(link: String, group: Group) {
         try {
             binding.textInputLink.error = ""
-
-            /**
-             * Confirmar si no está ya cargada
-             */
-            if (mainSharedViewModel.feedRepository.getFeedIdByLink(valApiBaseUrl) != null ||
-                mainSharedViewModel.feedRepository.getFeedIdByLink(valApiBaseUrl2) != null)
-                throw Exception("Feed already exists")
-
-            Timber.d("[Timber] valApiBaseUrl = '%s' , normalizada = %s", valApiBaseUrl, valApiBaseUrl.forceNotEndingWithString("/"))
+            mainSharedViewModel.buscarFeedComprobarSiEsValidoYGuardar(link, group)
 
 
-            /**
-             * Hacer la consulta de la URL a la red
-             */
-            val rssApiResponse = mainSharedViewModel.feedRepository.getNetworkFeeds(valApiBaseUrl)
-
-            when (rssApiResponse) {
-                is RssResponse.Success -> {
-
-                    val serverFeed = rssApiResponse.data
-
-                    /**
-                     * Guardar feeds en Room
-                     */
-                    //Timber.d("[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar() - ${serverFeed.channel.channelItems?.size ?: 0} noticias de ${link}")
-
-                    try {
-                        /**
-                         * Con el feed obtenido, se obtiene su nombre
-                         */
-                        Timber.d("[Timber] serverFeed.linkName = %s", serverFeed.linkName)
-
-                        // Guardar!
-                        // TODO: IMPLEMENTAR "AddFeed()" EN EL VIEWMODEL?
-                        val feed = Feed(link = valApiBaseUrl2, groupId = selectedGroup!!.id, linkName = serverFeed.linkName)
-                        mainSharedViewModel.feedRepository.saveLocalFeed(feed) // group_id, link_ame, link
-                        mainSharedViewModel.setSnackBarMessage(R.string.msg_feed_added)
-
-                    } catch (e: Exception) {
-                        Timber.d(e, "[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar() - ERROR")
-                        binding.textInputLink.error = e.message
-                    }
-
-                }
-                is RssResponse.Error -> {
-                    // Mostrar mensaje error
-                    Timber.d((rssApiResponse as RssResponse.Error).exception, "[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar --> RssResponse.Error")
-                    Timber.d("[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar --> RssResponse.Error = ${(rssApiResponse as RssResponse.Error).exception.message}")
-                    binding.textInputLink.error = (rssApiResponse as RssResponse.Error).exception.message
-                }
-            }
         } catch (e: Exception) {
             Timber.d(e, "[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar --> Error")
             binding.textInputLink.error = e.message

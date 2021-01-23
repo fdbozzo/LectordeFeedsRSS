@@ -9,6 +9,9 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.SelectedFeedOptions
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssApiStatus
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
+import com.blogspot.fdbozzo.lectorfeedsrss.util.forceEndingWithChar
+import com.blogspot.fdbozzo.lectorfeedsrss.util.forceNotEndingWithString
+import com.blogspot.fdbozzo.lectorfeedsrss.util.forceStartingWithString
 import com.blogspot.fdbozzo.lectorfeedsrss.util.toBoolean
 import com.google.android.gms.common.util.ArrayUtils.contains
 import kotlinx.coroutines.Dispatchers
@@ -387,6 +390,88 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
         val feed: DomainFeed? = feedRepository.getFeedByLinkName(linkName)
         return feed
     }
+
+
+    /**
+     * Se busca el Feed para comprobar si es válido y lo intenta guardar, si no existe
+     */
+    suspend fun buscarFeedComprobarSiEsValidoYGuardar(link: String, group: DomainGroup) {
+        var valApiBaseUrl = ""
+
+        /**
+         * Normalizar el link como URL válida
+         */
+        if (link.startsWith("http://") || link.startsWith("https://")) {
+            // Si se indica http o https, se respeta
+            valApiBaseUrl = link.forceEndingWithChar("/")
+        } else {
+            // Si no se indica http o https, se fuerza https
+            valApiBaseUrl = link.forceStartingWithString("https://").forceEndingWithChar("/")
+        }
+
+        val valApiBaseUrl2 = valApiBaseUrl.forceNotEndingWithString("/")
+
+        try {
+
+            /**
+             * Confirmar si no está ya cargada
+             */
+            if (feedRepository.getFeedIdByLink(valApiBaseUrl) != null ||
+                feedRepository.getFeedIdByLink(valApiBaseUrl2) != null)
+                throw Exception("Feed already exists")
+
+            Timber.d("[Timber] valApiBaseUrl = '%s' , normalizada = %s", valApiBaseUrl, valApiBaseUrl.forceNotEndingWithString("/"))
+
+
+            /**
+             * Hacer la consulta de la URL a la red
+             */
+            val rssApiResponse = feedRepository.getNetworkFeeds(valApiBaseUrl)
+
+            when (rssApiResponse) {
+                is RssResponse.Success -> {
+
+                    val serverFeed = rssApiResponse.data
+
+                    /**
+                     * Guardar feeds en Room
+                     */
+                    //Timber.d("[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar() - ${serverFeed.channel.channelItems?.size ?: 0} noticias de ${link}")
+
+                    try {
+                        /**
+                         * Con el feed obtenido, se obtiene su nombre
+                         */
+                        Timber.d("[Timber] serverFeed.linkName = %s", serverFeed.linkName)
+
+                        // Guardar!
+                        val feed = com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed(
+                            link = valApiBaseUrl2,
+                            groupId = group.id,
+                            linkName = serverFeed.linkName
+                        )
+                        feedRepository.saveLocalFeed(feed) // group_id, link_ame, link
+                        setSnackBarMessage(R.string.msg_feed_added)
+
+                    } catch (e: Exception) {
+                        Timber.d(e, "[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar() - ERROR")
+                        throw e
+                    }
+
+                }
+                is RssResponse.Error -> {
+                    // Mostrar mensaje error
+                    Timber.d((rssApiResponse as RssResponse.Error).exception, "[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar --> RssResponse.Error")
+                    Timber.d("[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar --> RssResponse.Error = ${(rssApiResponse as RssResponse.Error).exception.message}")
+                    throw Exception((rssApiResponse as RssResponse.Error).exception.message)
+                }
+            }
+        } catch (e: Exception) {
+            Timber.d(e, "[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar --> Error")
+            throw e
+        }
+    }
+
 
     /**
      * Obtiene los feeds de la red y actualiza la BBDD
