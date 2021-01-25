@@ -11,6 +11,9 @@ import com.blogspot.fdbozzo.lectorfeedsrss.R
 
 import java.util.HashMap
 
+/**
+ * Opciones del menú del Drawer (grupos y feeds)
+ */
 class CustomExpandableListAdapter internal constructor(
     private val context: Context,
     private val titleList: List<String>,
@@ -26,12 +29,17 @@ class CustomExpandableListAdapter internal constructor(
 
     override fun getChildView(listPosition: Int, expandedListPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup): View {
         var oldViewToReuse = convertView
-        val expandedListText = getChild(listPosition, expandedListPosition) as String
+        var expandedListText = getChild(listPosition, expandedListPosition) as String
         if (oldViewToReuse == null) {
             val layoutInflater = this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             oldViewToReuse = layoutInflater.inflate(R.layout.list_item, null)
         }
         val expandedListTextView = oldViewToReuse!!.findViewById<TextView>(R.id.expandedListItem)
+
+        // Limitar el nombre del feed a los primeros 30 caracteres
+        if (expandedListText.length > 30) {
+            expandedListText = expandedListText.substring(0, 26) + "..."
+        }
         expandedListTextView.text = expandedListText
         return oldViewToReuse
     }
