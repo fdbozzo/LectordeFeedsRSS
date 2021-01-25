@@ -1,29 +1,24 @@
 package com.blogspot.fdbozzo.lectorfeedsrss
 
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.*
 import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.SelectedFeedOptions
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssApiStatus
-import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
 import com.blogspot.fdbozzo.lectorfeedsrss.util.forceEndingWithChar
 import com.blogspot.fdbozzo.lectorfeedsrss.util.forceNotEndingWithString
 import com.blogspot.fdbozzo.lectorfeedsrss.util.forceStartingWithString
 import com.blogspot.fdbozzo.lectorfeedsrss.util.toBoolean
-import com.google.android.gms.common.util.ArrayUtils.contains
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.util.*
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as DomainFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed as DomainFeedChannelItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Group as DomainGroup
+import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as NetworkFeed
 
 class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
 
@@ -31,7 +26,7 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
 
     var vmInicializado = false
 
-    private lateinit var rssApiResponse: RssResponse<Feed>
+    private lateinit var rssApiResponse: RssResponse<NetworkFeed>
 
     private var _apiBaseUrl = MutableLiveData<String>()
     val apiBaseUrl: LiveData<String>
@@ -115,10 +110,6 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
      * Configurar el LiveData apiBaseUrl en el init para obtener los datos inmediatamente.
      */
     init {
-        // NO CARGAR UN FEED FIJO POR DEFECTO, DEBE SER DE LOS GUARDADOS
-        //Timber.d("[Timber] MainSharedViewModel.init() - apiBaseUrl se cambia a 'https://hardzone.es'")
-        //_apiBaseUrl.value = "https://hardzone.es"
-
         viewModelScope.launch {
             // Cargamos datos iniciales en el drawer
             setupInitialDrawerMenuData()
@@ -395,7 +386,7 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
     /**
      * Se busca el Feed para comprobar si es válido y lo intenta guardar, si no existe
      */
-    suspend fun buscarFeedComprobarSiEsValidoYGuardar(link: String, group: DomainGroup) {
+    suspend fun buscarFeedComprobarSiEsValidoYGuardar(link: String, group: DomainGroup): RssResponse<NetworkFeed> {
         var valApiBaseUrl = ""
 
         /**
@@ -426,46 +417,22 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
             /**
              * Hacer la consulta de la URL a la red
              */
-            val rssApiResponse = feedRepository.getNetworkFeeds(valApiBaseUrl)
+            rssApiResponse = feedRepository.checkNetworkFeeds(valApiBaseUrl, group.id)
 
             when (rssApiResponse) {
                 is RssResponse.Success -> {
-
-                    val serverFeed = rssApiResponse.data
-
-                    /**
-                     * Guardar feeds en Room
-                     */
-                    //Timber.d("[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar() - ${serverFeed.channel.channelItems?.size ?: 0} noticias de ${link}")
-
-                    try {
-                        /**
-                         * Con el feed obtenido, se obtiene su nombre
-                         */
-                        Timber.d("[Timber] serverFeed.linkName = %s", serverFeed.linkName)
-
-                        // Guardar!
-                        val feed = com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed(
-                            link = valApiBaseUrl2,
-                            groupId = group.id,
-                            linkName = serverFeed.linkName
-                        )
-                        feedRepository.saveLocalFeed(feed) // group_id, link_ame, link
-                        setSnackBarMessage(R.string.msg_feed_added)
-
-                    } catch (e: Exception) {
-                        Timber.d(e, "[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar() - ERROR")
-                        throw e
-                    }
-
+                    setSnackBarMessage(R.string.msg_feed_added)
                 }
                 is RssResponse.Error -> {
                     // Mostrar mensaje error
                     Timber.d((rssApiResponse as RssResponse.Error).exception, "[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar --> RssResponse.Error")
                     Timber.d("[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar --> RssResponse.Error = ${(rssApiResponse as RssResponse.Error).exception.message}")
-                    throw Exception((rssApiResponse as RssResponse.Error).exception.message)
+                    //throw Exception((rssApiResponse as RssResponse.Error).exception.message)
                 }
             }
+
+            return rssApiResponse
+
         } catch (e: Exception) {
             Timber.d(e, "[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar --> Error")
             throw e
@@ -502,12 +469,12 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
                     val msgError = (rssApiResponse as RssResponse.Error).exception.message
 
                     when {
-                        !showErrMsg -> {
-                            Timber.d("[Timber] msgError se ignora")
-                        }
                         msgError == null -> {
                             Timber.d("[Timber] msgError es null!")
                             setSnackBarMessage(R.string.msg_error_with_null_message)
+                        }
+                        !showErrMsg -> {
+                            Timber.d("[Timber] msgError se ignora")
                         }
                         msgError.contains("code=403") -> {
                             Timber.d("[Timber] msgError es 403!")

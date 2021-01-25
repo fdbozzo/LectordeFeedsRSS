@@ -32,33 +32,32 @@ class FeedRepository(
     /**
      * Buscar los feeds en la red
      */
-    suspend fun checkNetworkFeeds(apiBaseUrl: String): RssResponse<ServerFeed> {
+    suspend fun checkNetworkFeeds(apiBaseUrl: String, groupId: Long? = null): RssResponse<ServerFeed> {
+        try {
+            val rssApiResponse = getNetworkFeeds(apiBaseUrl)
 
-        val rssApiResponse = getNetworkFeeds(apiBaseUrl)
+            when (rssApiResponse) {
+                is RssResponse.Success -> {
 
-        when (rssApiResponse) {
-            is RssResponse.Success -> {
+                    val serverFeed = rssApiResponse.data
 
-                val serverFeed = rssApiResponse.data
+                    /**
+                     * Guardar feeds en Room
+                     */
+                    Timber.d("[Timber] FeedRepository.checkNetworkFeeds() - Guardar las ${serverFeed.channel.channelItems?.size ?: 0} noticias de ${apiBaseUrl}")
 
-                /**
-                 * Guardar feeds en Room
-                 */
-                Timber.d("[Timber] FeedRepository.checkNetworkFeeds() - Guardar las ${serverFeed.channel.channelItems?.size ?: 0} noticias de ${apiBaseUrl}")
-
-                try {
-                    saveNetworkFeeds(serverFeed)
-                } catch (e: Exception) {
-                    Timber.d(e, "[Timber] FeedRepository.checkNetworkFeeds() - ERROR")
+                    saveNetworkFeeds(serverFeed, groupId)
                 }
+                is RssResponse.Error -> {
+                    // No se trata aquí, sino en el ViewModel
+                }
+            }
+            return rssApiResponse
 
-            }
-            is RssResponse.Error -> {
-                // No se trata aquí, sino en el ViewModel
-            }
+        } catch (e: Exception) {
+            Timber.d(e, "[Timber] FeedRepository.checkNetworkFeeds --> Error")
+            throw e
         }
-
-        return rssApiResponse
     }
 
     /**
@@ -71,8 +70,8 @@ class FeedRepository(
         }
     }
 
-    private suspend fun saveNetworkFeeds(serverFeed: ServerFeed): Unit {
-        var groupId: Long? = null
+    private suspend fun saveNetworkFeeds(serverFeed: ServerFeed, parGroupId: Long? = null): Unit {
+        var groupId: Long? = parGroupId
         var feeds = 0L
         var feedId: Long? = null
         var feedChannels = 0L
@@ -81,12 +80,46 @@ class FeedRepository(
         println("[Timber] 1")
 
         /**
+         * Si no hay grupos guardados (es nueva instalación), se carga el primero
+         * por defecto ("Uncategorized")
+         */
+        try {
+            // Chequea grupos por las dudas. Siempre debe existir uno por defecto.
+            if (localDataSource.groupIsEmpty()) {
+                println("[Timber] 2")
+                localDataSource.saveGroup(DomainGroup())
+                println("[Timber] 3")
+            }
+
+            // Si groupId == null, entonces recupera el groupId del grupo por defecto (Uncategorized)
+            if (groupId == null) {
+                groupId = localDataSource.getGroupIdByName(Group.DEFAULT_NAME)
+            }
+            println("[Timber] 4 FeedRepository.saveNetworkFeeds() - GroupId=$groupId")
+            Timber.d("[Timber] FeedRepository.saveNetworkFeeds() - GroupId=%d", groupId)
+            /*
+            if (groupId == null)
+                throw Exception("localDataSource.getGroupIdByName(${Group.DEFAULT_NAME}) -> Nuevo groupId = null")
+             */
+
+        } catch (e: Exception) {
+            Timber.d(e, "[Timber] FeedRepository.saveNetworkFeeds() - ERROR - Group")
+        }
+
+
+        /**
          * Se intenta insertar el Feed y recuperar su id, pero si ya existe devolverá -1
          * Antes de llegar a este punto, ya hay grupos y feeds existentes, aquí sólo se recuperan
          * sus noticias.
          */
         try {
-            println("[Timber] 5")
+            feeds = localDataSource.saveFeedFromServer(serverFeed.also {
+                if (groupId != null) {
+                    it.groupId = groupId
+                }
+            })
+
+            println("[Timber] 5 serverFeed.linkName = '${serverFeed.linkName}', serverFeed.channel.title = '${serverFeed.channel.title}'")
             feedId = localDataSource.getFeedIdByLink(serverFeed.link) ?: throw Exception("feedId es null")
             println("[Timber] 6 FeedRepository.saveNetworkFeeds(${serverFeed.linkName}): FEED - FeedId=$feedId (count=$feeds)")
 
@@ -102,57 +135,58 @@ class FeedRepository(
 
         } catch (e: Exception) {
             Timber.d(e, "[Timber] FeedRepository.saveNetworkFeeds() - ERROR - Feed")
+            throw e
         }
 
         /**
          * Guardar los feeds en BBDD
          */
-        if (feedId != null) {
-            try {
-                /**
-                 * Se intenta insertar el FeedChannel, pero si ya existe devolverá -1 y se recuperará su id actual
-                 */
-                feedChannels = localDataSource.saveFeedChannelFromServer(serverFeed.channel)
-                println("[Timber] 8 feedChannels=$feedChannels")
-                feedChannelId = localDataSource.getFeedChannelIdByFeedId(feedId)
-                println("[Timber] 9 feedChannelId=$feedChannelId")
+        try {
+            /**
+             * Se intenta insertar el FeedChannel, pero si ya existe devolverá -1 y se recuperará su id actual
+             */
+            feedChannels = localDataSource.saveFeedChannelFromServer(serverFeed.channel)
+            println("[Timber] 8 feedChannels=$feedChannels")
+            feedChannelId = localDataSource.getFeedChannelIdByFeedId(feedId)
+            println("[Timber] 9 feedChannelId=$feedChannelId")
 
+            Timber.d(
+                "FeedRepository.saveNetworkFeeds(%s): CHANNEL - Id=%d, feedChannels=%d",
+                serverFeed.linkName,
+                feedChannelId,
+                feedChannels
+            )
+
+        } catch (e: Exception) {
+            Timber.d(e, "[Timber] FeedRepository.saveNetworkFeeds() - ERROR - FeedChannel")
+            throw e
+        }
+
+        try {
+            /**
+             * Se intenta insertar el FeedChannelItem, pero si ya existe se ignorará
+             */
+            val listFeedChannelItem = serverFeed.channel.channelItems
+            println("[Timber] 10")
+
+            if (listFeedChannelItem != null && listFeedChannelItem.isNotEmpty()) {
+                // Reemplazar el feedChannelId del item por el id del Channel, antes de guardarlo
+                for (domainFeedChannelItem in listFeedChannelItem) {
+                    domainFeedChannelItem.feedId = feedId
+                    println("[Timber] 10 domainFeedChannelItem.feedId=${domainFeedChannelItem.feedId}")
+                }
+
+                //println("[Timber] 11 listFeedChannelItem=${}")
+                localDataSource.saveFeedChannelItemsFromServer(listFeedChannelItem)
                 Timber.d(
-                    "FeedRepository.saveNetworkFeeds(%s): CHANNEL - Id=%d, feedChannels=%d",
-                    serverFeed.linkName,
-                    feedChannelId,
-                    feedChannels
+                    "FeedRepository.saveNetworkFeeds(%s): ITEMS - Guardados",
+                    serverFeed.linkName
                 )
 
-            } catch (e: Exception) {
-                Timber.d(e, "[Timber] FeedRepository.saveNetworkFeeds() - ERROR - FeedChannel")
             }
-
-            try {
-                /**
-                 * Se intenta insertar el FeedChannelItem, pero si ya existe se ignorará
-                 */
-                val listFeedChannelItem = serverFeed.channel.channelItems
-                println("[Timber] 10")
-
-                if (listFeedChannelItem != null && listFeedChannelItem.isNotEmpty()) {
-                    // Reemplazar el feedChannelId del item por el id del Channel, antes de guardarlo
-                    for (domainFeedChannelItem in listFeedChannelItem) {
-                        domainFeedChannelItem.feedId = feedId
-                        println("[Timber] 10 domainFeedChannelItem.feedId=${domainFeedChannelItem.feedId}")
-                    }
-
-                    //println("[Timber] 11 listFeedChannelItem=${}")
-                    localDataSource.saveFeedChannelItemsFromServer(listFeedChannelItem)
-                    Timber.d(
-                        "FeedRepository.saveNetworkFeeds(%s): ITEMS - Guardados",
-                        serverFeed.linkName
-                    )
-
-                }
-            } catch (e: Exception) {
-                Timber.d(e, "[Timber] FeedRepository.saveNetworkFeeds() - ERROR - FeedChannelItem")
-            }
+        } catch (e: Exception) {
+            Timber.d(e, "[Timber] FeedRepository.saveNetworkFeeds() - ERROR - FeedChannelItem")
+            throw e
         }
     }
 

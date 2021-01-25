@@ -112,11 +112,11 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
     override suspend fun saveFeed(feed: DomainFeed): Long {
         var feedCnt = 0L
         withContext(Dispatchers.IO) {
-            try {
+//            try {
                 feedCnt = feedDao.insert(feed.toRoomFeed())
-            } catch (e: Exception) {
-                Timber.d("[Timber] ERROR: saveFeedFromServer(%s)", feed)
-            }
+//            } catch (e: Exception) {
+//                Timber.d("[Timber] ERROR: saveFeedFromServer(%s)", feed)
+//            }
         }
         return feedCnt
     }
@@ -124,11 +124,11 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
     override suspend fun saveFeedFromServer(feed: ServerFeed): Long {
         var feedCnt = 0L
         withContext(Dispatchers.IO) {
-            try {
+//            try {
                 feedCnt = feedDao.insert(feed.toRoomFeed())
-            } catch (e: Exception) {
-                Timber.d("[Timber] ERROR: saveFeedFromServer(%s)", feed)
-            }
+//            } catch (e: Exception) {
+//                Timber.d("[Timber] ERROR: saveFeedFromServer(%s)", feed)
+//            }
         }
         return feedCnt
     }

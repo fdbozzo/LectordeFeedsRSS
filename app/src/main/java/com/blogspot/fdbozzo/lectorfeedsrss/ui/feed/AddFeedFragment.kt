@@ -165,10 +165,23 @@ class AddFeedFragment : Fragment() {
     private suspend fun buscarFeedComprobarSiEsValidoYGuardar(link: String, group: Group) {
         try {
             binding.textInputLink.error = ""
-            mainSharedViewModel.buscarFeedComprobarSiEsValidoYGuardar(link, group)
+            val rssApiResponse = mainSharedViewModel.buscarFeedComprobarSiEsValidoYGuardar(link, group)
 
+            when (rssApiResponse) {
+                is RssResponse.Success -> {
+                    // OK (ya se trató en el ViewModel)
+                }
+                is RssResponse.Error -> {
+                    // Mostrar mensaje error
+                    Timber.d((rssApiResponse as RssResponse.Error).exception, "[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar --> RssResponse.Error")
+                    Timber.d("[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar --> RssResponse.Error = ${(rssApiResponse as RssResponse.Error).exception.message}")
+                    //throw Exception((rssApiResponse as RssResponse.Error).exception.message)
+                    binding.textInputLink.error = (rssApiResponse as RssResponse.Error).exception.message
+                }
+            }
 
         } catch (e: Exception) {
+            // Mostrar mensaje error
             Timber.d(e, "[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar --> Error")
             binding.textInputLink.error = e.message
         }
