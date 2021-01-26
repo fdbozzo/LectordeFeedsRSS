@@ -154,7 +154,7 @@ class AddFeedFragment : Fragment() {
             lifecycleScope.launch { buscarFeedComprobarSiEsValidoYGuardar(link, selectedGroup!!) }
 
         } else {
-            binding.textInputLink.error = getString(R.string.err_name_cant_be_empty)
+            binding.textInputLink.error = getString(R.string.err_url_cant_be_empty)
             binding.editLink.requestFocus()
         }
     }
@@ -167,10 +167,12 @@ class AddFeedFragment : Fragment() {
             binding.textInputLink.error = ""
             val rssApiResponse = mainSharedViewModel.buscarFeedComprobarSiEsValidoYGuardar(link, group)
 
+            /*
             when (rssApiResponse) {
                 is RssResponse.Success -> {
                     // OK (ya se trató en el ViewModel)
                 }
+                /* Los errores de comunicaciones los debe tratar el ViewModel. No se muestran en el textInput.
                 is RssResponse.Error -> {
                     // Mostrar mensaje error
                     Timber.d((rssApiResponse as RssResponse.Error).exception, "[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar --> RssResponse.Error")
@@ -178,7 +180,9 @@ class AddFeedFragment : Fragment() {
                     //throw Exception((rssApiResponse as RssResponse.Error).exception.message)
                     binding.textInputLink.error = (rssApiResponse as RssResponse.Error).exception.message
                 }
+                 */
             }
+             */
 
         } catch (e: Exception) {
             // Mostrar mensaje error

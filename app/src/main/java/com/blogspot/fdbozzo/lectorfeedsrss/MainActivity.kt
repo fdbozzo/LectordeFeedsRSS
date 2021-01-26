@@ -135,22 +135,41 @@ class MainActivity : AppCompatActivity() {
         }
 
         /** Observer para el Snackbar **/
-        mainSharedViewModel.snackBarMessage.observe(this, Observer { messageRId ->
-            if (messageRId != null) { // Observed state is true.
-                val view = findViewById<CoordinatorLayout>(R.id.mainCoordinatorLayout)
+        mainSharedViewModel.snackBarMessage.observe(this, Observer { messageAny ->
+            val view = findViewById<CoordinatorLayout>(R.id.mainCoordinatorLayout)
+            var message = ""
+
+            if (view != null) {
+                when (messageAny) {
+                    null -> {
+                        message = getString(R.string.msg_message_is_null)
+                    }
+                    is String -> {
+                        message = messageAny
+                    }
+                    is Int -> {
+                        message = getString(messageAny)
+                    }
+                    else -> {
+                        message = getString(R.string.msg_message_type_not_recognized)
+                    }
+                }
+
                 Timber.d(
                     "[Timber] (FeedChannelFragment) sharedViewModel.snackBarMessage.observe: %s",
-                    getString(messageRId)
+                    message
                 )
-                if (view != null) {
+
+                if (message.isNotBlank()) {
                     Snackbar.make(
                         view,
-                        getString(messageRId),
+                        message,
                         Snackbar.LENGTH_LONG // How long to display the message.
                     ).show()
                 }
-                mainSharedViewModel.snackBarMessageDone()
             }
+            mainSharedViewModel.snackBarMessageDone()
+
         })
 
 

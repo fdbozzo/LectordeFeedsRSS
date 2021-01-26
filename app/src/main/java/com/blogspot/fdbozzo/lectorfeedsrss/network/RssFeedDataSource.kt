@@ -78,9 +78,9 @@ class RssFeedDataSource() : RemoteDataSource {
             } else {
                 Timber.d("[Timber] Error network operation failed with ${response.code()}")
                 //_status.value = RssApiStatus.ERROR
-                //return RssResponse.Error(Exception(RssApiStatus.ERROR.toString()))
                 //return RssResponse.Error(Exception("Error code: ${response.code()}, message: ${response.message()}"))
-                return RssResponse.Error(Exception("Error: $response"))
+                //return RssResponse.Error(Exception("Error: $response"))
+                return RssResponse.Error(Exception(response.toString()))
             }
 
         } catch (e: HttpException) {

@@ -101,8 +101,8 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
     /**
      * LiveData para mensajes SnackBar, donde se indica el R.string.id del mensaje
      */
-    private var _snackBarMessage = MutableLiveData<Int?>()
-    val snackBarMessage: LiveData<Int?>
+    private var _snackBarMessage = MutableLiveData<Any?>()
+    val snackBarMessage: LiveData<Any?>
         get() = _snackBarMessage
 
 
@@ -169,10 +169,6 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
         _selectedFeedChannelItemWithFeed.value = null
         //updateItemReadStatus(true)
         _navigateToContents.value = null
-    }
-
-    fun setSnackBarMessage(stringRId: Int) {
-        _snackBarMessage.value = stringRId
     }
 
     fun snackBarMessageDone() {
@@ -421,13 +417,19 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
 
             when (rssApiResponse) {
                 is RssResponse.Success -> {
-                    setSnackBarMessage(R.string.msg_feed_added)
+                    _snackBarMessage.postValue(R.string.msg_feed_added)
                 }
                 is RssResponse.Error -> {
                     // Mostrar mensaje error
+                    val msgError = (rssApiResponse as RssResponse.Error).exception.message
                     Timber.d((rssApiResponse as RssResponse.Error).exception, "[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar --> RssResponse.Error")
-                    Timber.d("[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar --> RssResponse.Error = ${(rssApiResponse as RssResponse.Error).exception.message}")
+                    Timber.d("[Timber] AddFeedFragment.buscarFeedObtenerInfoYGuardar --> RssResponse.Error = $msgError")
                     //throw Exception((rssApiResponse as RssResponse.Error).exception.message)
+                    //setSnackBarMessage(R.string.msg_error_network_operation_failed_with_403)
+
+                    if (!msgError.isNullOrBlank()) {
+                        _snackBarMessage.postValue(msgError)
+                    }
                 }
             }
 
@@ -468,22 +470,8 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
                     Timber.d("[Timber] RssResponse.Error = ${(rssApiResponse as RssResponse.Error).exception.message}")
                     val msgError = (rssApiResponse as RssResponse.Error).exception.message
 
-                    when {
-                        msgError == null -> {
-                            Timber.d("[Timber] msgError es null!")
-                            setSnackBarMessage(R.string.msg_error_with_null_message)
-                        }
-                        !showErrMsg -> {
-                            Timber.d("[Timber] msgError se ignora")
-                        }
-                        msgError.contains("code=403") -> {
-                            Timber.d("[Timber] msgError es 403!")
-                            setSnackBarMessage(R.string.msg_error_network_operation_failed_with_403)
-                        }
-                        else -> {
-                            Timber.d("[Timber] msgError es otro")
-                            setSnackBarMessage(R.string.msg_error_with_some_unprogrammed_message)
-                        }
+                    if (!msgError.isNullOrBlank()) {
+                        _snackBarMessage.postValue(msgError.toString())
                     }
                 }
             }

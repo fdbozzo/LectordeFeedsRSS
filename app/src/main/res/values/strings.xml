@@ -73,5 +73,8 @@
     <string name="msg_feed_added">Feed added</string>
     <string name="msg_error_network_operation_failed_with_403">Error network operation failed with 403</string>
     <string name="msg_error_with_null_message">Error with null message</string>
-    <string name="msg_error_with_some_unprogrammed_message">Error con algún mensaje no programado</string>
+    <string name="msg_error_with_some_unprogrammed_message">Error with some unprogrammed message error case</string>
+    <string name="err_url_cant_be_empty">URL can\'t be empty</string>
+    <string name="msg_message_type_not_recognized">Message type not recognized</string>
+    <string name="msg_message_is_null">Message is null!</string>
 </resources>
