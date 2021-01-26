@@ -98,42 +98,5 @@ abstract class RetrofitFactory {
                 }
             }
         }
-
-        /*
-        fun <S> createService(serviceClass: Class<S>?): S {
-            return createService(serviceClass)
-        }
-         */
-
-
     }
-
-    /*
-    var builder = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .client(makeOkHttpClient())
-        .addConverterFactory(SimpleXmlConverterFactory.create())
-        .build().create(RssApiService::class.java)
-     */
-
-    /*
-    fun makeRetrofitService(): RssApiService {
-        Timber.d("[Timber] makeRetrofitService(${BASE_URL})")
-        if (BASE_URL.isEmpty())
-            throw Exception("apiBaseUrl está vacía!")
-
-        return Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(makeOkHttpClient())
-            .addConverterFactory(SimpleXmlConverterFactory.create())
-            .build().create(RssApiService::class.java)
-    }
-     */
-
-    /*
-    fun <S> createService(serviceClass: Class<S>?, token: AccessToken): S {
-        val authToken: String = token.getTokenType().concat(token.getAccessToken())
-        return createService(serviceClass, authToken)
-    }
-     */
 }
