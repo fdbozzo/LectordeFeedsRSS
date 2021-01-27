@@ -8,14 +8,14 @@ import retrofit2.HttpException
 import timber.log.Timber
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 
-class RssFeedDataSource() : RemoteDataSource {
+class RssFeedDataSource : RemoteDataSource {
 
     override suspend fun getFeedsFromUrl(apiBaseUrl: String): RssResponse<ServerFeed> {
 
         try {
             val valApiBaseUrl = apiBaseUrl.forceEndingWithChar("/")
 
-            Timber.d("[Timber] valApiBaseUrl = ${valApiBaseUrl}")
+            Timber.d("[Timber] valApiBaseUrl = $valApiBaseUrl")
             val response = rssApi(valApiBaseUrl).getRss()
 
             if (response.isSuccessful) {
@@ -77,23 +77,17 @@ class RssFeedDataSource() : RemoteDataSource {
                 }
             } else {
                 Timber.d("[Timber] Error network operation failed with ${response.code()}")
-                //_status.value = RssApiStatus.ERROR
-                //return RssResponse.Error(Exception("Error code: ${response.code()}, message: ${response.message()}"))
                 return RssResponse.Error(Exception("Error [NWO]: $response"))
-                //return RssResponse.Error(Exception(response.toString()))
             }
 
         } catch (e: HttpException) {
             println("[Timber] Exception ${e.message}")
-            //_status.value = RssApiStatus.ERROR
             return RssResponse.Error(Exception("HttpException: ${e.message()}"))
 
         } catch (e: Throwable) {
             println("[Timber] Ooops: Something else went wrong")
-            //_status.value = RssApiStatus.ERROR
             return RssResponse.Error(Exception("Oops: ${e.message}"))
         }
-        //return ServerFeed()
         println("[Timber] Error desconocido")
         return RssResponse.Error(Exception("Error desconocido"))
     }

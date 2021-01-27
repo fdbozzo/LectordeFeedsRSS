@@ -103,7 +103,7 @@ class AddFeedFragment : Fragment() {
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
-                    TODO("Not yet implemented")
+                    // TODO("Not yet implemented")
                 }
             }
 
@@ -129,7 +129,7 @@ class AddFeedFragment : Fragment() {
             )
 
             // Asignársela al autoCompleteTextView
-            binding.spinnerDropDown.setAdapter(listAdpater)
+            binding.spinnerDropDown.adapter = listAdpater
 
             // Busco la posición del item "UNCATEGORIZED"
             val index = listAdpater.getPosition(RoomGroup.DEFAULT_NAME)

@@ -44,7 +44,7 @@ class FeedRepository(
                     /**
                      * Guardar feeds en Room
                      */
-                    Timber.d("[Timber] FeedRepository.checkNetworkFeeds() - Guardar las ${serverFeed.channel.channelItems?.size ?: 0} noticias de ${apiBaseUrl}")
+                    Timber.d("[Timber] FeedRepository.checkNetworkFeeds() - Guardar las ${serverFeed.channel.channelItems?.size ?: 0} noticias de $apiBaseUrl")
 
                     saveNetworkFeeds(serverFeed, groupId)
                 }
