@@ -203,7 +203,7 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
                     }
 
                     Timber.d(
-                        "[Timber] (GET) feedRepository.updateItemReadStatus(id=%d, readLaterD=%b)",
+                        "[Timber] (GET) feedRepository.updateItemReadStatus(id=%d, readLater=%b)",
                         id,
                         readLater
                     )
