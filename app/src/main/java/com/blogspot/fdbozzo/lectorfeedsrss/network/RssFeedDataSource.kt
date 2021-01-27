@@ -79,21 +79,22 @@ class RssFeedDataSource() : RemoteDataSource {
                 Timber.d("[Timber] Error network operation failed with ${response.code()}")
                 //_status.value = RssApiStatus.ERROR
                 //return RssResponse.Error(Exception("Error code: ${response.code()}, message: ${response.message()}"))
-                //return RssResponse.Error(Exception("Error: $response"))
-                return RssResponse.Error(Exception(response.toString()))
+                return RssResponse.Error(Exception("Error [NWO]: $response"))
+                //return RssResponse.Error(Exception(response.toString()))
             }
 
         } catch (e: HttpException) {
-            Timber.d("[Timber] Exception ${e.message}")
+            println("[Timber] Exception ${e.message}")
             //_status.value = RssApiStatus.ERROR
-            return RssResponse.Error(Exception(e.message()))
+            return RssResponse.Error(Exception("HttpException: ${e.message()}"))
 
         } catch (e: Throwable) {
-            Timber.d("[Timber] Ooops: Something else went wrong")
+            println("[Timber] Ooops: Something else went wrong")
             //_status.value = RssApiStatus.ERROR
-            return RssResponse.Error(Exception(e.message))
+            return RssResponse.Error(Exception("Oops: ${e.message}"))
         }
         //return ServerFeed()
+        println("[Timber] Error desconocido")
         return RssResponse.Error(Exception("Error desconocido"))
     }
 }

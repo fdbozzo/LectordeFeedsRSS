@@ -203,13 +203,13 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
                     }
 
                     Timber.d(
-                        "[Timber] (GET) feedRepository.updateItemReadStatus(id=%d, readLater=%b)",
+                        "[Timber] (GET) sharedViewModel.updateItemReadLaterStatus(id=%d, readLater=%b)",
                         id,
                         readLater
                     )
                 } catch (e: Exception) {
                     Timber.d(
-                        "[Timber] updateItemReadLaterStatus.Exception: %s.",
+                        "[Timber] sharedViewModel.updateItemReadLaterStatus().Exception: %s.",
                         e.localizedMessage
                     )
                 }
@@ -429,6 +429,7 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
 
                     if (!msgError.isNullOrBlank()) {
                         _snackBarMessage.postValue(msgError)
+                        //_snackBarMessage.postValue(R.string.msg_error_network_operation_failed_with_403)
                     }
                 }
             }
