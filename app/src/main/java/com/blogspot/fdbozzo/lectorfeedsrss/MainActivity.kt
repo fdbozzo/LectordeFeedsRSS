@@ -139,24 +139,21 @@ class MainActivity : AppCompatActivity() {
             val view = findViewById<CoordinatorLayout>(R.id.mainCoordinatorLayout)
             var message = ""
 
-            if (view != null) {
-                when (messageAny) {
-                    null -> {
-                        message = getString(R.string.msg_message_is_null)
-                    }
+            if (messageAny != null && view != null) {
+                message = when (messageAny) {
                     is String -> {
-                        message = messageAny
+                        messageAny
                     }
                     is Int -> {
-                        message = getString(messageAny)
+                        getString(messageAny)
                     }
                     else -> {
-                        message = getString(R.string.msg_message_type_not_recognized)
+                        getString(R.string.msg_message_type_not_recognized)
                     }
                 }
 
                 Timber.d(
-                    "[Timber] (FeedChannelFragment) sharedViewModel.snackBarMessage.observe: %s",
+                    "[Timber] (MainActivity) sharedViewModel.snackBarMessage.observe: %s",
                     message
                 )
 
@@ -167,8 +164,8 @@ class MainActivity : AppCompatActivity() {
                         Snackbar.LENGTH_LONG // How long to display the message.
                     ).show()
                 }
+                mainSharedViewModel.snackBarMessageDone()
             }
-            mainSharedViewModel.snackBarMessageDone()
 
         })
 
