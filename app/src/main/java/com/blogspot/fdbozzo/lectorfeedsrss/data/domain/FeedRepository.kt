@@ -22,7 +22,7 @@ class FeedRepository(
 ) {
 
     /**
-     * Devolver los feeds guardados en BBDD
+     * Devolver los feeds con los items guardados en BBDD
      */
     fun getFilteredFeeds(selectedFeedOptions: SelectedFeedOptions): Flow<List<DomainFeedChannelItemWithFeed>> =
         localDataSource.getFeedChannelItemsWithFeed(

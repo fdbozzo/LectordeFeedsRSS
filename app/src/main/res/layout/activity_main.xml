@@ -22,12 +22,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <!--androidx.appcompat.widget.Toolbar
-                    android:id="@+id/upper_toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="56dp"
-                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/-->
                 <com.google.android.material.appbar.AppBarLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -39,10 +33,6 @@
                         app:title="@string/screen_title_all_feeds"
                         style="@style/Widget.MaterialComponents.Toolbar.Primary"
                         />
-                    <!-- opciones del MaterialToolbar
-                    app:menu="@menu/top_app_bar"
-                    app:navigationIcon="@drawable/baseline_menu_white_24"
-                    -->
 
                 </com.google.android.material.appbar.AppBarLayout>
 
@@ -73,26 +63,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
                     app:navigationIcon="@drawable/baseline_menu_white_24"/>
-                <!-- opciones del BottomAppBar
-                app:backgroundTint="@color/design_default_color_primary"
-                style="@style/Widget.MaterialComponents.BottomAppBar"
-                -->
 
             </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-            <!-- com.google.android.material.navigation.NavigationView
-                android:id="@+id/navView"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="start"
-                app:headerLayout="@layout/drawer_header"
-                app:menu="@menu/navdrawer_menu">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Ejemplo"/>
-            </com.google.android.material.navigation.NavigationView-->
 
             <com.google.android.material.navigation.NavigationView
                 android:id="@+id/navView"
@@ -103,12 +75,6 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent">
-
-                    <!-- include layout="@layout/drawer_header"
-                        android:id="@+id/navigation_header_container"/ -->
-
-                    <!-- app:layout_constraintTop_toBottomOf="@id/navigation_header_container" -->
-                    <!-- app:layout_constraintTop_toTopOf="parent" -->
 
                     <ScrollView
                         android:layout_width="wrap_content"

@@ -35,7 +35,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         savedInstanceState: Bundle?
     ): View? {
         Timber.d("[Timber] onCreateView")
-        _binding = FeedChannelFragmentBinding.inflate(inflater, container, false)
+        //_binding = FeedChannelFragmentBinding.inflate(inflater, container, false)
 
         val localDatabase = FeedDatabase.getInstance(requireContext())
         val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
@@ -44,7 +44,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         mainSharedViewModel.setActiveScreen(SealedClassAppScreens.SettingsFragment)
 
         Timber.i("[Timber] onCreateView() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.testigo)
-        mainSharedViewModel.testigo = FeedChannelFragment::class.java.canonicalName
+        mainSharedViewModel.testigo = SettingsFragment::class.java.canonicalName
 
         return super.onCreateView(inflater, container, savedInstanceState)
     }

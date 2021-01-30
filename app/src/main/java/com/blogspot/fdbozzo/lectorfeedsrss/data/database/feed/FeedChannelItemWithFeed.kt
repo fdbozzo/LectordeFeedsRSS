@@ -14,7 +14,7 @@ data class FeedChannelItemWithFeed(
     var id: Long = 0L,
 
     @ColumnInfo(name = "link_name")
-    var linkName: String = "",
+    var linkName: String = "",      // De la tabla de Feeds
 
     @ColumnInfo(name = "feed_id")
     var feedId: Long = 0L,

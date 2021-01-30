@@ -123,6 +123,38 @@ class LoginFragment : Fragment(), View.OnClickListener {
 
     }
 
+    override fun onClick(view: View?) {
+
+        when (view?.id) {
+
+            R.id.link_signup -> {
+                hideKeyboard()
+                if (viewModel.compruebaConexion(requireContext())) {
+                    signUpFirebase(emailUsuario.text.toString(), passUsuario.text.toString())
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.connectivity_error),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+
+            R.id.btn_login -> {
+                hideKeyboard()
+                if (viewModel.compruebaConexion(requireContext())) {
+                    signInFirebase(emailUsuario.text.toString(), passUsuario.text.toString())
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.connectivity_error),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
+    }
+
     fun signUpFirebase(email: String, password: String) {
 
         mAuth.createUserWithEmailAndPassword(email, password)
@@ -214,35 +246,4 @@ class LoginFragment : Fragment(), View.OnClickListener {
             }
     }
 
-    override fun onClick(p0: View?) {
-
-        when (p0?.id) {
-
-            R.id.link_signup -> {
-                hideKeyboard()
-                if (viewModel.compruebaConexion(requireContext())) {
-                    signUpFirebase(emailUsuario.text.toString(), passUsuario.text.toString())
-                } else {
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.connectivity_error),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-
-            R.id.btn_login -> {
-                hideKeyboard()
-                if (viewModel.compruebaConexion(requireContext())) {
-                    signInFirebase(emailUsuario.text.toString(), passUsuario.text.toString())
-                } else {
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.connectivity_error),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-        }
-    }
 }
