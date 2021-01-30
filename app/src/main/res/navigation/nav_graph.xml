@@ -49,8 +49,7 @@
     <fragment
         android:id="@+id/nav_add_feed"
         android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.AddFeedFragment"
-        android:label="@string/title_add_feed"
-        tools:layout="@layout/add_feed_fragment" />
+        android:label="@string/title_add_feed" />
     <fragment
         android:id="@+id/nav_settings"
         android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.settings.SettingsFragment"

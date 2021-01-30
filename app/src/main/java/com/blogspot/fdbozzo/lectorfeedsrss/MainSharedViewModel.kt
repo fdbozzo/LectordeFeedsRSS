@@ -98,6 +98,14 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
      */
     var tituloMenuGroup = ""
 
+
+    /**
+     * Lista de valores del menú Drawer
+     */
+    val menuData: LiveData<HashMap<String, List<String>>> =
+        feedRepository.getGroupsWithFeeds().asLiveData()
+
+
     /**
      * LiveData para mensajes SnackBar, donde se indica el R.string.id del mensaje
      */
@@ -131,7 +139,7 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
                     Timber.d("[Timber] No se recarga por ser Read Later")
                 }
                 valSelectedFeedOptions.favorite -> {
-                    // Favorites - Actualizar
+                    // Favorites - Actualizar las fuentes de datos favoritas
                     feedRepository.getAllFeeds()?.forEach {
                         if (it.favorite == 1) {
                             Timber.d("[Timber] Lanzar carga del feed %s", it.link)
@@ -142,7 +150,7 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
                     }
                 }
                 linkName == "%" -> {
-                    // All feeds
+                    // All feeds - Actualizar todas las fuentes de datos
                     feedRepository.getAllFeeds()?.forEach {
                         Timber.d("[Timber] Lanzar carga del feed %s", it.link)
                         viewModelScope.launch { getFeedsFromUrl(it.link) }
@@ -150,7 +158,7 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
 
                 }
                 else -> {
-                    // Un feed en particular (linkName contiene su nombre)
+                    // Un feed en particular (linkName contiene su nombre) - Actualizar fuente de datos elegida
                     Timber.d("[Timber] Lanzar carga del feed %s", linkName)
                     feedRepository.getFeedByLinkName(linkName)
                 }
@@ -679,13 +687,6 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
             Timber.d(e, "[Timber] MainSharedViewModel.setupInitialDrawerMenuData() - ERROR")
         }
     }
-
-    /**
-     * Lista de valores del menú Drawer
-     */
-    val menuData: LiveData<HashMap<String, List<String>>> =
-        feedRepository.getGroupsWithFeeds().asLiveData()
-
 
     class Factory(private val feedRepository: FeedRepository) :
         ViewModelProvider.Factory {
