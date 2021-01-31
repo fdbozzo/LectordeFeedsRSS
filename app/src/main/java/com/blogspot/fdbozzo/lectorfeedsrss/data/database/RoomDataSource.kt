@@ -3,15 +3,15 @@ package com.blogspot.fdbozzo.lectorfeedsrss.data.database
 import com.blogspot.fdbozzo.lectorfeedsrss.data.*
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as DomainFeedChannel
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed as DomainFeedChannelItemWithFeed
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Channel as DomainChannel
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Item as DomainItem
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.ItemWithFeed as DomainItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Group as DomainGroup
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.LocalDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.SelectedFeedOptions
 import com.blogspot.fdbozzo.lectorfeedsrss.util.toInt
-import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannelItem as ServerFeedChannelItem
-import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannel as ServerFeedChannel
+import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Item as ServerItem
+import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Channel as ServerChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -21,8 +21,8 @@ import kotlin.collections.HashMap
 class RoomDataSource(db: FeedDatabase) : LocalDataSource {
 
     private val feedDao = db.getFeedDao()
-    private val feedChannelDao = db.getChannelDao()
-    private val feedChannelItemDao = db.getFeedChannelItemDao()
+    private val channelDao = db.getChannelDao()
+    private val itemDao = db.getItemDao()
     private val groupDao = db.getGroupDao()
 
     /**
@@ -177,40 +177,40 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
     }
 
     /**
-     * FEED-CHANNEL
+     * CHANNEL
      */
     /*
-    override suspend fun feedChannelIsEmpty(): Boolean {
+    override suspend fun channelIsEmpty(): Boolean {
         TODO("Not yet implemented")
     }
      */
 
     /*
-    override suspend fun feedChannelSize(): Int {
+    override suspend fun channelSize(): Int {
         TODO("Not yet implemented")
     }
      */
 
-    override suspend fun saveFeedChannel(feedChannel: DomainFeedChannel): Long {
-        var feedChannelId = 0L
+    override suspend fun saveChannel(channel: DomainChannel): Long {
+        var channelId = 0L
         withContext(Dispatchers.IO) {
-            feedChannelId = feedChannelDao.insert(feedChannel.toRoomFeedChannel())
+            channelId = channelDao.insert(channel.toRoomChannel())
         }
-        return feedChannelId
+        return channelId
     }
 
-    override suspend fun saveFeedChannelFromServer(feedChannel: ServerFeedChannel): Long {
-        var feedChannelId = 0L
+    override suspend fun saveChannelFromServer(channel: ServerChannel): Long {
+        var channelId = 0L
         withContext(Dispatchers.IO) {
-            feedChannelId = feedChannelDao.insert(feedChannel.toRoomFeedChannel())
+            channelId = channelDao.insert(channel.toRoomChannel())
         }
-        return feedChannelId
+        return channelId
     }
 
-    override suspend fun getFeedChannel(feedId: Long): Flow<DomainFeedChannel> =
+    override suspend fun getChannel(feedId: Long): Flow<DomainChannel> =
         withContext(Dispatchers.IO) {
-            feedChannelDao.get(feedId).map {
-                it.toDomainFeedChannel()
+            channelDao.get(feedId).map {
+                it.toDomainChannel()
             }
         }
 
@@ -220,9 +220,9 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         }
     }
 
-    override suspend fun getFeedChannelIdByFeedId(feedId: Long): Long {
+    override suspend fun getChannelIdByFeedId(feedId: Long): Long {
         return withContext(Dispatchers.IO) {
-            feedChannelDao.getFeedChannelIdByFeedId(feedId)
+            channelDao.getChannelIdByFeedId(feedId)
         }
     }
 
@@ -232,78 +232,78 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
     /**
      * FEED-CHANNEL-ITEM
      */
-    override suspend fun feedChannelItemsIsEmpty(): Boolean =
-        withContext(Dispatchers.IO) { feedChannelItemDao.feedChannelItemCount() <= 0 }
+    override suspend fun itemsIsEmpty(): Boolean =
+        withContext(Dispatchers.IO) { itemDao.itemCount() <= 0 }
 
-    override suspend fun feedChannelItemsSize(): Int =
-        withContext(Dispatchers.IO) { feedChannelItemDao.feedChannelItemCount() }
+    override suspend fun itemsSize(): Int =
+        withContext(Dispatchers.IO) { itemDao.itemCount() }
 
-    override suspend fun saveFeedChannelItems(feedChannelItems: List<DomainFeedChannelItem>) {
+    override suspend fun saveItems(items: List<DomainItem>) {
         withContext(Dispatchers.IO) {
-            feedChannelItemDao.insert(feedChannelItems.map { domainFeedChannelItem ->
-                domainFeedChannelItem.toRoomFeedChannelItem()
+            itemDao.insert(items.map { domainItem ->
+                domainItem.toRoomItem()
             })
         }
     }
 
-    override suspend fun saveFeedChannelItemsFromServer(feedChannelItems: List<ServerFeedChannelItem>) {
+    override suspend fun saveItemsFromServer(items: List<ServerItem>) {
         withContext(Dispatchers.IO) {
-            feedChannelItemDao.insert(feedChannelItems.map { serverFeedChannelItem ->
-                //Timber.d("[Timber] serverFeedChannelItem = %s", serverFeedChannelItem.toString())
-                serverFeedChannelItem.toRoomFeedChannelItem()
+            itemDao.insert(items.map { serverItem ->
+                //Timber.d("[Timber] serverItem = %s", serverItem.toString())
+                serverItem.toRoomItem()
             })
         }
     }
 
-    override suspend fun getFeedChannelItems(): Flow<List<DomainFeedChannelItem>> =
+    override suspend fun getItems(): Flow<List<DomainItem>> =
         withContext(Dispatchers.IO) {
-            feedChannelItemDao.getAllFeedChannelItems().map { roomFeedChannelItem ->
-                roomFeedChannelItem.map {
-                    it.toDomainFeedChannelItem()
+            itemDao.getAllItems().map { roomItem ->
+                roomItem.map {
+                    it.toDomainItem()
                 }
             }
         }
 
-    override suspend fun getFeedChannelItemWithFeed(id: Long): DomainFeedChannelItemWithFeed? =
+    override suspend fun getItemWithFeed(id: Long): DomainItemWithFeed? =
         withContext(Dispatchers.IO) {
-            feedChannelItemDao.getFeedChannelItemWithFeed(id)?.toDomainFeedChannelItemWithFeed()
+            itemDao.getItemWithFeed(id)?.toDomainItemWithFeed()
         }
 
-    override fun getFeedChannelItemWithFeedFlow(id: Long): Flow<DomainFeedChannelItemWithFeed> {
-        return feedChannelItemDao.getFeedChannelItemWithFeedFlow(id).map { feedChannelItemWithFeed ->
-            feedChannelItemWithFeed.toDomainFeedChannelItemWithFeed()
+    override fun getItemWithFeedFlow(id: Long): Flow<DomainItemWithFeed> {
+        return itemDao.getItemWithFeedFlow(id).map { itemWithFeed ->
+            itemWithFeed.toDomainItemWithFeed()
         }
     }
 
-    override fun getFeedChannelItemsWithFeed(selectedFeedOptions: SelectedFeedOptions): Flow<List<DomainFeedChannelItemWithFeed>> =
-        feedChannelItemDao.getFilteredFeedChannelItemsWithFeed(
+    override fun getItemsWithFeed(selectedFeedOptions: SelectedFeedOptions): Flow<List<DomainItemWithFeed>> =
+        itemDao.getFilteredItemsWithFeed(
             linkName = selectedFeedOptions.linkName,
             favorite = selectedFeedOptions.favorite.toInt(),
             readLater = selectedFeedOptions.readLater.toInt(),
             read = selectedFeedOptions.read.toInt()
-        ).map { roomFeedChannelItemWithFeed ->
-            roomFeedChannelItemWithFeed.map {
-                it.toDomainFeedChannelItemWithFeed()
+        ).map { roomItemWithFeed ->
+            roomItemWithFeed.map {
+                it.toDomainItemWithFeed()
             }
         }
 
     override suspend fun updateReadStatus(id: Long, read: Boolean): Int {
-        return withContext(Dispatchers.IO) {feedChannelItemDao.updateReadStatus(id, read.toInt())}
+        return withContext(Dispatchers.IO) {itemDao.updateReadStatus(id, read.toInt())}
     }
 
     override suspend fun updateReadLaterStatus(id: Long, readLater: Boolean): Int {
-        return withContext(Dispatchers.IO) {feedChannelItemDao.updateReadLaterStatus(id, readLater.toInt())}
+        return withContext(Dispatchers.IO) {itemDao.updateReadLaterStatus(id, readLater.toInt())}
     }
 
     override suspend fun updateInverseReadLaterStatus(id: Long): Int {
-        return withContext(Dispatchers.IO) {feedChannelItemDao.updateInverseReadLaterStatus(id)}
+        return withContext(Dispatchers.IO) {itemDao.updateInverseReadLaterStatus(id)}
     }
 
     override suspend fun updateGroupFeedReadStatus(gropId: Long): Int {
-        return withContext(Dispatchers.IO) {feedChannelItemDao.updateGroupFeedReadStatus(gropId)}
+        return withContext(Dispatchers.IO) {itemDao.updateGroupFeedReadStatus(gropId)}
     }
 
     override suspend fun updateMarkAllFeedAsRead(): Int {
-        return withContext(Dispatchers.IO) {feedChannelItemDao.updateMarkAllFeedAsRead()}
+        return withContext(Dispatchers.IO) {itemDao.updateMarkAllFeedAsRead()}
     }
 }

@@ -17,7 +17,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.util.DateConverter
         Group::class,
         Feed::class,
         Channel::class,
-        FeedChannelItem::class],
+        Item::class],
     version = 1,
     exportSchema = false
 )
@@ -31,7 +31,7 @@ abstract class FeedDatabase : RoomDatabase() {
     abstract fun getGroupDao(): GroupDao
     abstract fun getFeedDao(): FeedDao
     abstract fun getChannelDao(): ChannelDao
-    abstract fun getFeedChannelItemDao(): FeedChannelItemDao
+    abstract fun getItemDao(): ItemDao
     //abstract fun getGroupWithFeedsDao(): GroupWithFeedsDao
 
     /**

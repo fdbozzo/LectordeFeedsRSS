@@ -7,7 +7,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 @Root(name = "channel", strict = false)
-data class FeedChannel(
+data class Channel(
 
     var id: Long = 0L,
 
@@ -27,7 +27,7 @@ data class FeedChannel(
     var pubDate: Date = Date(),
 
     @field:ElementList(name = "item", inline = true, required = false)
-    var channelItems: List<FeedChannelItem>? = null
+    var items: List<Item>? = null
 
 ) {
     /**

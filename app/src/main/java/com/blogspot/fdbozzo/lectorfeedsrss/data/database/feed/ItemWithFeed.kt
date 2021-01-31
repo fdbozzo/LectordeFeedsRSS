@@ -8,7 +8,7 @@ import java.util.*
  * Esta clase es para poder mostrar algunos datos más que no está en los items,
  * como link_name, para mostrar en los títulos de las noticias.
  */
-data class FeedChannelItemWithFeed(
+data class ItemWithFeed(
 
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,

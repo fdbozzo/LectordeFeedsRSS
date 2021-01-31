@@ -15,8 +15,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as DomainFeedChannel
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed as DomainFeedChannelItemWithFeed
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Channel as DomainChannel
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.ItemWithFeed as DomainItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Group as DomainGroup
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as NetworkFeed
 
@@ -49,31 +49,31 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
     /**
      * FLAGS Y MÉTODOS PARA NAVEGACIÓN A CONTENTS_FRAGMENT (la noticia)
      */
-    private var _selectedFeedChannelItemWithFeed = MutableLiveData<DomainFeedChannelItemWithFeed?>()
-    val selectedFeedChannelItemWithFeed: LiveData<DomainFeedChannelItemWithFeed?>
-        get() = _selectedFeedChannelItemWithFeed
+    private var _selectedItemWithFeed = MutableLiveData<DomainItemWithFeed?>()
+    val selectedItemWithFeed: LiveData<DomainItemWithFeed?>
+        get() = _selectedItemWithFeed
 
     /**
      * Mantiene los datos actualizados del último registro seleccionado.
-     * Es actualizado por el observer de autoUpdatedSelectedFeedChannelItemWithFeed.
+     * Es actualizado por el observer de autoUpdatedSelectedItemWithFeed.
      */
-    private var _lastSelectedFeedChannelItemWithFeed: DomainFeedChannelItemWithFeed? =
-        DomainFeedChannelItemWithFeed()
-    val lastSelectedFeedChannelItemWithFeed: DomainFeedChannelItemWithFeed?
-        get() = _lastSelectedFeedChannelItemWithFeed
+    private var _lastSelectedItemWithFeed: DomainItemWithFeed? =
+        DomainItemWithFeed()
+    val lastSelectedItemWithFeed: DomainItemWithFeed?
+        get() = _lastSelectedItemWithFeed
 
     /**
      * Guarda temporalmente el registro seleccionado (con id y link)
      */
-    private var _selectedFeedChannelItemId = MutableLiveData<Long>()
-    val selectedFeedChannelItemId: LiveData<Long>
-        get() = _selectedFeedChannelItemId
+    private var _selectedItemId = MutableLiveData<Long>()
+    val selectedItemId: LiveData<Long>
+        get() = _selectedItemId
 
     /**
      * Conecta el LiveData "items" a la consulta de BBDD para actualización automática cuando cambien
      * los valores del filtro LiveData "selectedFeedOptions"
      */
-    val items: LiveData<List<DomainFeedChannelItemWithFeed>?> =
+    val items: LiveData<List<DomainItemWithFeed>?> =
         Transformations.switchMap(selectedFeedOptions) { selectedFeedOptions ->
             feedRepository.getFilteredFeeds(selectedFeedOptions)
                 .asLiveData()
@@ -174,7 +174,7 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
 
     fun navigateToContentsWithUrlIsDone() {
         Timber.d("[Timber] navigateToContentsWithUrlIsDone()")
-        _selectedFeedChannelItemWithFeed.value = null
+        _selectedItemWithFeed.value = null
         //updateItemReadStatus(true)
         _navigateToContents.value = null
     }
@@ -186,7 +186,7 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
     /**
      * Actualiza el estado del flag "read" del item elegido
      */
-    fun updateItemReadStatus(read: Boolean, id: Long? = selectedFeedChannelItemId.value) {
+    fun updateItemReadStatus(read: Boolean, id: Long? = selectedItemId.value) {
         if (id != null) {
             viewModelScope.launch {
                 feedRepository.updateReadStatus(id, read)
@@ -197,12 +197,12 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
     /**
      * Actualiza el estado del flag "read_later" del item elegido
      */
-    fun updateItemReadLaterStatus(id: Long? = selectedFeedChannelItemId.value) {
+    fun updateItemReadLaterStatus(id: Long? = selectedItemId.value) {
         if (id != null) {
             viewModelScope.launch {
                 try {
                     feedRepository.updateInverseReadLaterStatus(id)
-                    val feed = feedRepository.getFeedChannelItemWithFeed(id)
+                    val feed = feedRepository.getItemWithFeed(id)
                     val readLater = feed?.readLater?.toBoolean()
 
                     when (readLater) {
@@ -531,12 +531,12 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
      * Configura el ID del regitro elegido desde el layout xml, que a su vez actualiza
      * la variable local del registro seleccionado.
      */
-    fun setSelectedFeedChannelItemId(id: Long) {
+    fun setSelectedItemId(id: Long) {
         viewModelScope.launch {
-            Timber.d("[Timber] setSelectedFeedChannelItemId(id=%d)", id)
-            _selectedFeedChannelItemId.value = id
+            Timber.d("[Timber] setSelectedItemId(id=%d)", id)
+            _selectedItemId.value = id
             updateItemReadStatus(true)
-            _lastSelectedFeedChannelItemWithFeed = feedRepository.getFeedChannelItemWithFeed(id)
+            _lastSelectedItemWithFeed = feedRepository.getItemWithFeed(id)
             _navigateToContents.value = true
         }
     }
@@ -590,8 +590,8 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
             )
             feedRepository.saveLocalFeed(feed)
             var fId = feedRepository.getFeedIdByLink(feed.link) ?: throw Exception("feedId es null")
-            feedRepository.saveLocalFeedChannel(
-                DomainFeedChannel(
+            feedRepository.saveLocalChannel(
+                DomainChannel(
                     feedId = fId,
                     title = "Stéphane Graber's website",
                     description = "Stéphane Graber's Feed",
@@ -611,8 +611,8 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
             )
             feedRepository.saveLocalFeed(feed)
             fId = feedRepository.getFeedIdByLink(feed.link) ?: throw Exception("feedId es null")
-            feedRepository.saveLocalFeedChannel(
-                DomainFeedChannel(
+            feedRepository.saveLocalChannel(
+                DomainChannel(
                     feedId = fId,
                     title = "HardZone",
                     description = "HardZone Feed",
@@ -632,8 +632,8 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
             )
             feedRepository.saveLocalFeed(feed)
             fId = feedRepository.getFeedIdByLink(feed.link) ?: throw Exception("feedId es null")
-            feedRepository.saveLocalFeedChannel(
-                DomainFeedChannel(
+            feedRepository.saveLocalChannel(
+                DomainChannel(
                     feedId = fId,
                     title = "EcoInventos",
                     description = "EcoInventos Feed",
@@ -653,8 +653,8 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
             )
             feedRepository.saveLocalFeed(feed)
             fId = feedRepository.getFeedIdByLink(feed.link) ?: throw Exception("feedId es null")
-            feedRepository.saveLocalFeedChannel(
-                DomainFeedChannel(
+            feedRepository.saveLocalChannel(
+                DomainChannel(
                     feedId = fId,
                     title = "Android Police",
                     description = "Android Police Feed",
@@ -674,8 +674,8 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
             )
             feedRepository.saveLocalFeed(feed)
             fId = feedRepository.getFeedIdByLink(feed.link) ?: throw Exception("feedId es null")
-            feedRepository.saveLocalFeedChannel(
-                DomainFeedChannel(
+            feedRepository.saveLocalChannel(
+                DomainChannel(
                     feedId = fId,
                     title = "El Chapuzas Informático",
                     description = "El Chapuzas Informático Feed",

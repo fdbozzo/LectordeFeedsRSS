@@ -11,9 +11,9 @@
         tools:layout="@layout/login_fragment" />
     <fragment
         android:id="@+id/nav_feed_contents"
-        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.FeedChannelFragment"
+        android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.ChannelFragment"
         android:label="@string/title_feed_contents"
-        tools:layout="@layout/feed_channel_fragment">
+        tools:layout="@layout/channel_fragment">
         <action
             android:id="@+id/action_feedContentsFragment_to_contentsFragment"
             app:destination="@id/nav_contents" />
@@ -35,10 +35,10 @@
         android:name="com.blogspot.fdbozzo.lectorfeedsrss.ui.contents.ContentsFragment"
         android:label="@string/title_contents">
         <argument
-            android:name="feedChannelItemUrl"
+            android:name="itemUrl"
             app:argType="string" />
         <argument
-            android:name="feedChannelItemId"
+            android:name="itemId"
             app:argType="long" />
     </fragment>
     <fragment

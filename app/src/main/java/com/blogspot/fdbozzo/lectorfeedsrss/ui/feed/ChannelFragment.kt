@@ -19,7 +19,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.R
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
-import com.blogspot.fdbozzo.lectorfeedsrss.databinding.FeedChannelFragmentBinding
+import com.blogspot.fdbozzo.lectorfeedsrss.databinding.ChannelFragmentBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
 import com.google.android.material.appbar.MaterialToolbar
@@ -29,13 +29,13 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class FeedChannelFragment : Fragment() {
+class ChannelFragment : Fragment() {
 
     companion object {
-        fun newInstance() = FeedChannelFragment()
+        fun newInstance() = ChannelFragment()
     }
 
-    private var _binding: FeedChannelFragmentBinding? = null
+    private var _binding: ChannelFragmentBinding? = null
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -47,17 +47,17 @@ class FeedChannelFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Timber.d("[Timber] FeedChannelFragment.onCreateView")
-        _binding = FeedChannelFragmentBinding.inflate(inflater, container, false)
+        Timber.d("[Timber] ChannelFragment.onCreateView")
+        _binding = ChannelFragmentBinding.inflate(inflater, container, false)
 
         val localDatabase = FeedDatabase.getInstance(requireContext())
         val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
         val sharedViewModel: MainSharedViewModel by activityViewModels { MainSharedViewModel.Factory(feedRepository) }
         mainSharedViewModel = sharedViewModel
-        mainSharedViewModel.setActiveScreen(SealedClassAppScreens.FeedChannelFragment)
+        mainSharedViewModel.setActiveScreen(SealedClassAppScreens.ChannelFragment)
 
         Timber.i("[Timber] onCreateView() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.testigo)
-        mainSharedViewModel.testigo = FeedChannelFragment::class.java.canonicalName
+        mainSharedViewModel.testigo = ChannelFragment::class.java.canonicalName
 
         binding.lifecycleOwner = this // Para que LiveData sea consciente del LifeCycle y se actualice la uI
         mAuth = Firebase.auth
@@ -81,7 +81,7 @@ class FeedChannelFragment : Fragment() {
                         //initRecyclerView(it)
                         Timber.i("[Timber] onViewCreated() - mainSharedViewModel.items.observe (CAMBIO)")
                         binding.recyclerView.adapter =
-                            FeedChannelAdapter(it, sharedViewModel, requireContext())
+                            ChannelAdapter(it, sharedViewModel, requireContext())
 
                     } catch (e: Exception) {
                         Timber.d(
@@ -100,11 +100,11 @@ class FeedChannelFragment : Fragment() {
             binding.swipeRefresh.setOnRefreshListener { swipeRefreshListener() }
 
             mainSharedViewModel.navigateToContents.observe(viewLifecycleOwner, Observer {
-                if (it == true && sharedViewModel.lastSelectedFeedChannelItemWithFeed != null) {
+                if (it == true && sharedViewModel.lastSelectedItemWithFeed != null) {
                     val action =
-                        sharedViewModel.lastSelectedFeedChannelItemWithFeed?.let { it1 ->
-                            FeedChannelFragmentDirections.actionFeedContentsFragmentToContentsFragment(
-                                sharedViewModel.lastSelectedFeedChannelItemWithFeed!!.link,
+                        sharedViewModel.lastSelectedItemWithFeed?.let { it1 ->
+                            ChannelFragmentDirections.actionFeedContentsFragmentToContentsFragment(
+                                sharedViewModel.lastSelectedItemWithFeed!!.link,
                                 it1.id
                             )
                         }
@@ -136,7 +136,7 @@ class FeedChannelFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Timber.i("[Timber] onViewCreated() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.testigo)
-        mainSharedViewModel.testigo = FeedChannelFragment::class.java.canonicalName
+        mainSharedViewModel.testigo = ChannelFragment::class.java.canonicalName
 
         /**
          * Si el usuario no está validado, enviarlo al login

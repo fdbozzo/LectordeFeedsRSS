@@ -42,7 +42,7 @@ class ContentsFragment : Fragment() {
         mainSharedViewModel.setActiveScreen(SealedClassAppScreens.ContentsFragment)
 
         val arguments = ContentsFragmentArgs.fromBundle(requireArguments())
-        binding.webView.loadUrl(arguments.feedChannelItemUrl)
+        binding.webView.loadUrl(arguments.itemUrl)
 
 
         return binding.root

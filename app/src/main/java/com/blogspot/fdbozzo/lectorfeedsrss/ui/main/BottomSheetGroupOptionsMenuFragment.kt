@@ -16,7 +16,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Group
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group as RoomGroup
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.BottomSheetGroupOptionsMenuFragmentBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
-import com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.FeedChannelFragmentDirections
+import com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.ChannelFragmentDirections
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import timber.log.Timber
 
@@ -46,7 +46,7 @@ class BottomSheetGroupOptionsMenuFragment(val tituloMenu: String, val group: Gro
         val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
         val sharedViewModel: MainSharedViewModel by activityViewModels { MainSharedViewModel.Factory(feedRepository) }
         mainSharedViewModel = sharedViewModel
-        //mainSharedViewModel.setActiveScreen(SealedClassAppScreens.FeedChannelFragment)
+        //mainSharedViewModel.setActiveScreen(SealedClassAppScreens.ChannelFragment)
         binding.lifecycleOwner = this // Para que LiveData sea consciente del LifeCycle y se actualice la uI
 
 
@@ -87,7 +87,7 @@ class BottomSheetGroupOptionsMenuFragment(val tituloMenu: String, val group: Gro
         try {
             Timber.d("[Timber] (BottomSheetGroupFragment) renameGroup(%s)", nombre)
             //navController.navigate(R.id.nav_edit_group)
-            val action = FeedChannelFragmentDirections.actionNavFeedContentsToNavEditGroup(nombre)
+            val action = ChannelFragmentDirections.actionNavFeedContentsToNavEditGroup(nombre)
             navController.navigate(action)
             dismiss()
 

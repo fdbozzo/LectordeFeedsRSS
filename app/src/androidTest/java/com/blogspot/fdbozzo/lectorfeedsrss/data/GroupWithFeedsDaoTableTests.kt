@@ -28,7 +28,7 @@ class GroupWithFeedsDaoTableTests {
 
     private lateinit var groupDao: GroupDao
     private lateinit var feedDao: FeedDao
-    //private lateinit var feedChannelItemDao: FeedChannelItemDao
+    //private lateinit var ItemDao: ItemDao
     private lateinit var db: FeedDatabase
 
     @Before
@@ -42,7 +42,7 @@ class GroupWithFeedsDaoTableTests {
             .build()
         groupDao = db.getGroupDao()
         feedDao = db.getFeedDao()
-        //feedChannelItemDao = db.getFeedChannelItemDao()
+        //ItemDao = db.getItemDao()
     }
 
     @After

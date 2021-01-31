@@ -2,7 +2,7 @@ package com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed
 
 import java.util.*
 
-data class FeedChannel(
+data class Channel(
 
     var id: Long = 0L,
     var feedId: Long = 0L,
@@ -11,6 +11,6 @@ data class FeedChannel(
     var copyright: String = "",
     var link: String = "",
     var pubDate: Date = Date(),
-    var channelItems: List<FeedChannelItem>? = null
+    var items: List<Item>? = null
 
 )

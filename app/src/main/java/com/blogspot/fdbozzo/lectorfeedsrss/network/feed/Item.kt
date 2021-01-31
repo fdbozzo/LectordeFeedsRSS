@@ -1,13 +1,12 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.network.feed
 
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItem
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Item
 import org.simpleframework.xml.Element
 import org.simpleframework.xml.Root
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
-import java.util.*
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Item as DomainItem
 
 @Root(name = "item", strict = false)
-data class FeedChannelItem(
+data class Item(
 
     var id: Long = 0L,
 
@@ -37,11 +36,11 @@ data class FeedChannelItem(
 )
 
 /**
- * Mapea los FeedChannelItem a entidades del dominio
+ * Mapea los Item a entidades del dominio
  */
-fun List<FeedChannelItem>.asDomainModel(): List<DomainFeedChannelItem> {
+fun List<Item>.asDomainModel(): List<DomainItem> {
     return map {
-        DomainFeedChannelItem(
+        DomainItem(
             id = it.id,
             title = it.title,
             description = it.description,

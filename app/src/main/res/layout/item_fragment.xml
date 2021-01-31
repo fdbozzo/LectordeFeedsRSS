@@ -9,17 +9,17 @@
             name="viewModel"
             type="com.blogspot.fdbozzo.lectorfeedsrss.MainSharedViewModel"/>
         <variable
-            name="feedChannelItemWithFeed"
-            type="com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed"/>
+            name="itemWithFeed"
+            type="com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.ItemWithFeed"/>
     </data>
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{() -> viewModel.setSelectedFeedChannelItemId(feedChannelItemWithFeed.id)}"
+        android:onClick="@{() -> viewModel.setSelectedItemId(itemWithFeed.id)}"
         tools:context=".MainActivity">
         <!--
-        android:onClick="@{() -> viewModel.navigateToContentsWithUrl(feedChannelItemWithFeed.link,feedChannelItemWithFeed.id)}"
+        android:onClick="@{() -> viewModel.navigateToContentsWithUrl(itemWithFeed.link,itemWithFeed.id)}"
         -->
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -31,7 +31,7 @@
             <Nombre-Feed y Fecha> |  gen>
             -->
 
-            <!-- Título de la noticia o artículo  @{channelItem.title} -->
+            <!-- Título de la noticia o artículo  @{item.title} -->
             <TextView
                 android:id="@+id/text_height_max"
                 android:layout_width="1dp"
@@ -57,8 +57,8 @@
                 android:layout_marginEnd="8dp"
                 android:maxLines="3"
                 android:outlineProvider="none"
-                android:text="@{feedChannelItemWithFeed.title}"
-                app:textColor="@{feedChannelItemWithFeed.read}"
+                android:text="@{itemWithFeed.title}"
+                app:textColor="@{itemWithFeed.read}"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@id/imageView"
@@ -66,14 +66,14 @@
                 app:layout_constraintTop_toTopOf="@id/imageView"
                 tools:text="Título noticia" />
 
-            <!-- Nombre del Feed @{channelItem.description} -->
+            <!-- Nombre del Feed @{item.description} -->
             <TextView
                 android:id="@+id/nombreFeed"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:maxLines="1"
-                android:text="@{feedChannelItemWithFeed.linkName}"
+                android:text="@{itemWithFeed.linkName}"
                 android:textColor="@android:color/darker_gray"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@id/imageView"
@@ -82,14 +82,14 @@
                 app:layout_constraintTop_toBottomOf="@id/textContentsTitle"
                 tools:text="Nombre Feed" />
 
-            <!-- Fecha del Feed  @{channelItem.pubDate} -->
+            <!-- Fecha del Feed  @{item.pubDate} -->
             <TextView
                 android:id="@+id/fechaFeed"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:maxLines="1"
-                android:text="@{@string/pubdate_format(feedChannelItemWithFeed.pubDate)}"
+                android:text="@{@string/pubdate_format(itemWithFeed.pubDate)}"
                 android:textColor="@android:color/darker_gray"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView"
@@ -97,7 +97,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textContentsTitle"
                 tools:text="Fecha Feed" />
 
-            <!-- Primera imagen de la noticia  app:imageUrl="@{channelItem.imageLink}" -->
+            <!-- Primera imagen de la noticia  app:imageUrl="@{item.imageLink}" -->
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="@dimen/photo_width"
@@ -108,7 +108,7 @@
                 android:cropToPadding="false"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_dashboard_black_24dp"
-                app:imageUrl="@{feedChannelItemWithFeed.imageLink}"
+                app:imageUrl="@{itemWithFeed.imageLink}"
                 app:layout_constraintBottom_toBottomOf="@id/text_height_max"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/text_height_max" />

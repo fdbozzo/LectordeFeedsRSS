@@ -1,6 +1,5 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data
 
-import android.database.sqlite.SQLiteConstraintException
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.asLiveData
 //import androidx.arch.core.executor.testing.InstantTaskExecutorRule
@@ -9,7 +8,7 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 //import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItemDao
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.ItemDao
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedDao
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.GroupDao
@@ -20,7 +19,6 @@ import org.junit.*
 import org.junit.Test
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
-import kotlin.test.*
 import java.io.IOException
 
 @RunWith(AndroidJUnit4ClassRunner::class)
@@ -36,7 +34,7 @@ class GroupDaoTableTests {
 
     private lateinit var groupDao: GroupDao
     private lateinit var feedDao: FeedDao
-    private lateinit var feedChannelItemDao: FeedChannelItemDao
+    private lateinit var itemDao: ItemDao
     private lateinit var db: FeedDatabase
 
     @Before
@@ -50,7 +48,7 @@ class GroupDaoTableTests {
             .build()
         groupDao = db.getGroupDao()
         feedDao = db.getFeedDao()
-        feedChannelItemDao = db.getFeedChannelItemDao()
+        itemDao = db.getItemDao()
     }
 
     @After

@@ -4,16 +4,16 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.RssResponse
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
 import com.blogspot.fdbozzo.lectorfeedsrss.data.toRoomGroup
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
-import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannel as ServerFeedChannel
-import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannelItem as ServerFeedChannelItem
+import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Channel as ServerChannel
+import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Item as ServerItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 import java.util.HashMap
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as DomainFeedChannel
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed as DomainFeedChannelItemWithFeed
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Channel as DomainChannel
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Item as DomainItem
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.ItemWithFeed as DomainItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Group as DomainGroup
 
 class FeedRepository(
@@ -24,8 +24,8 @@ class FeedRepository(
     /**
      * Devolver los feeds con los items guardados en BBDD
      */
-    fun getFilteredFeeds(selectedFeedOptions: SelectedFeedOptions): Flow<List<DomainFeedChannelItemWithFeed>> =
-        localDataSource.getFeedChannelItemsWithFeed(
+    fun getFilteredFeeds(selectedFeedOptions: SelectedFeedOptions): Flow<List<DomainItemWithFeed>> =
+        localDataSource.getItemsWithFeed(
             selectedFeedOptions
         )
 
@@ -44,7 +44,7 @@ class FeedRepository(
                     /**
                      * Guardar feeds en Room
                      */
-                    Timber.d("[Timber] FeedRepository.checkNetworkFeeds() - Guardar las ${serverFeed.channel.channelItems?.size ?: 0} noticias de $apiBaseUrl")
+                    Timber.d("[Timber] FeedRepository.checkNetworkFeeds() - Guardar las ${serverFeed.channel.items?.size ?: 0} noticias de $apiBaseUrl")
 
                     saveNetworkFeeds(serverFeed, groupId)
                 }
@@ -74,8 +74,8 @@ class FeedRepository(
         var groupId: Long? = parGroupId
         var feeds = 0L
         var feedId: Long? = null
-        var feedChannels = 0L
-        var feedChannelId = 0L
+        var channels = 0L
+        var channelId = 0L
 
         println("[Timber] 1")
 
@@ -145,16 +145,16 @@ class FeedRepository(
             /**
              * Se intenta insertar el Channel, pero si ya existe devolverá -1 y se recuperará su id actual
              */
-            feedChannels = localDataSource.saveFeedChannelFromServer(serverFeed.channel)
-            println("[Timber] 8 feedChannels=$feedChannels")
-            feedChannelId = localDataSource.getFeedChannelIdByFeedId(feedId)
-            println("[Timber] 9 feedChannelId=$feedChannelId")
+            channels = localDataSource.saveChannelFromServer(serverFeed.channel)
+            println("[Timber] 8 channels=$channels")
+            channelId = localDataSource.getChannelIdByFeedId(feedId)
+            println("[Timber] 9 channelId=$channelId")
 
             Timber.d(
-                "FeedRepository.saveNetworkFeeds(%s): CHANNEL - Id=%d, feedChannels=%d",
+                "FeedRepository.saveNetworkFeeds(%s): CHANNEL - Id=%d, channels=%d",
                 serverFeed.linkName,
-                feedChannelId,
-                feedChannels
+                channelId,
+                channels
             )
 
         } catch (e: Exception) {
@@ -164,20 +164,20 @@ class FeedRepository(
 
         try {
             /**
-             * Se intenta insertar el FeedChannelItem, pero si ya existe se ignorará
+             * Se intenta insertar el Item, pero si ya existe se ignorará
              */
-            val listFeedChannelItem = serverFeed.channel.channelItems
+            val listItem = serverFeed.channel.items
             println("[Timber] 10")
 
-            if (listFeedChannelItem != null && listFeedChannelItem.isNotEmpty()) {
-                // Reemplazar el feedChannelId del item por el id del Channel, antes de guardarlo
-                for (domainFeedChannelItem in listFeedChannelItem) {
-                    domainFeedChannelItem.feedId = feedId
-                    println("[Timber] 10 domainFeedChannelItem.feedId=${domainFeedChannelItem.feedId}")
+            if (listItem != null && listItem.isNotEmpty()) {
+                // Reemplazar el channelId del item por el id del Channel, antes de guardarlo
+                for (domainItem in listItem) {
+                    domainItem.feedId = feedId
+                    println("[Timber] 10 domainItem.feedId=${domainItem.feedId}")
                 }
 
-                //println("[Timber] 11 listFeedChannelItem=${}")
-                localDataSource.saveFeedChannelItemsFromServer(listFeedChannelItem)
+                //println("[Timber] 11 listItem=${}")
+                localDataSource.saveItemsFromServer(listItem)
                 Timber.d(
                     "FeedRepository.saveNetworkFeeds(%s): ITEMS - Guardados",
                     serverFeed.linkName
@@ -185,7 +185,7 @@ class FeedRepository(
 
             }
         } catch (e: Exception) {
-            Timber.d(e, "[Timber] FeedRepository.saveNetworkFeeds() - ERROR - FeedChannelItem")
+            Timber.d(e, "[Timber] FeedRepository.saveNetworkFeeds() - ERROR - Item")
             throw e
         }
     }
@@ -236,8 +236,8 @@ class FeedRepository(
         return localDataSource.saveFeed(feed)
     }
 
-    suspend fun saveLocalFeedChannel(feedChannel: DomainFeedChannel): Long {
-        return localDataSource.saveFeedChannel(feedChannel)
+    suspend fun saveLocalChannel(channel: DomainChannel): Long {
+        return localDataSource.saveChannel(channel)
     }
 
     suspend fun updateFeedFavoriteState(id: Long, favorite: Boolean): Int {
@@ -269,14 +269,14 @@ class FeedRepository(
     }
 
     /**
-     * FEEDCHANNELITEM
+     * Item
      */
-    suspend fun getFeedChannelItemWithFeed(id: Long): DomainFeedChannelItemWithFeed? {
-        return localDataSource.getFeedChannelItemWithFeed(id)
+    suspend fun getItemWithFeed(id: Long): DomainItemWithFeed? {
+        return localDataSource.getItemWithFeed(id)
     }
 
-    fun getFeedChannelItemWithFeedFlow(id: Long): Flow<DomainFeedChannelItemWithFeed> =
-        localDataSource.getFeedChannelItemWithFeedFlow(id)
+    fun getItemWithFeedFlow(id: Long): Flow<DomainItemWithFeed> =
+        localDataSource.getItemWithFeedFlow(id)
 
     suspend fun updateReadStatus(id: Long, read: Boolean): Int {
         return localDataSource.updateReadStatus(id, read)
@@ -335,24 +335,24 @@ interface LocalDataSource {
     /**
      * Channel
      */
-    //suspend fun feedChannelIsEmpty(): Boolean
-    //suspend fun feedChannelSize(): Int
-    suspend fun saveFeedChannel(feedChannel: DomainFeedChannel): Long
-    suspend fun saveFeedChannelFromServer(feedChannel: ServerFeedChannel): Long
-    suspend fun getFeedChannel(feedId: Long): Flow<DomainFeedChannel>
-    suspend fun getFeedChannelIdByFeedId(feedId: Long): Long
+    //suspend fun channelIsEmpty(): Boolean
+    //suspend fun channelSize(): Int
+    suspend fun saveChannel(channel: DomainChannel): Long
+    suspend fun saveChannelFromServer(channel: ServerChannel): Long
+    suspend fun getChannel(feedId: Long): Flow<DomainChannel>
+    suspend fun getChannelIdByFeedId(feedId: Long): Long
 
     /**
-     * FeedChannelItem
+     * Item
      */
-    suspend fun feedChannelItemsIsEmpty(): Boolean
-    suspend fun feedChannelItemsSize(): Int
-    suspend fun saveFeedChannelItems(feedChannelItems: List<DomainFeedChannelItem>)
-    suspend fun saveFeedChannelItemsFromServer(feedChannelItems: List<ServerFeedChannelItem>)
-    suspend fun getFeedChannelItems(): Flow<List<DomainFeedChannelItem>>
-    suspend fun getFeedChannelItemWithFeed(id: Long): DomainFeedChannelItemWithFeed?
-    fun getFeedChannelItemWithFeedFlow(id: Long): Flow<DomainFeedChannelItemWithFeed>
-    fun getFeedChannelItemsWithFeed(selectedFeedOptions: SelectedFeedOptions): Flow<List<DomainFeedChannelItemWithFeed>>
+    suspend fun itemsIsEmpty(): Boolean
+    suspend fun itemsSize(): Int
+    suspend fun saveItems(items: List<DomainItem>)
+    suspend fun saveItemsFromServer(items: List<ServerItem>)
+    suspend fun getItems(): Flow<List<DomainItem>>
+    suspend fun getItemWithFeed(id: Long): DomainItemWithFeed?
+    fun getItemWithFeedFlow(id: Long): Flow<DomainItemWithFeed>
+    fun getItemsWithFeed(selectedFeedOptions: SelectedFeedOptions): Flow<List<DomainItemWithFeed>>
     suspend fun updateReadStatus(id: Long, read: Boolean): Int
     suspend fun updateReadLaterStatus(id: Long, readLater: Boolean): Int
     suspend fun updateInverseReadLaterStatus(id: Long): Int
@@ -362,7 +362,7 @@ interface LocalDataSource {
 
 interface RemoteDataSource {
 
-    //suspend fun getFeedInfo(): List<DomainFeedChannelItem>
+    //suspend fun getFeedInfo(): List<DomainItem>
     suspend fun getFeedsFromUrl(apiBaseUrl: String): RssResponse<ServerFeed>
 
 }

@@ -18,7 +18,7 @@ data class Feed constructor(
     var favorite: Int = 0,
 
     @field:Element(name = "channel", required = true)
-    var channel: FeedChannel = FeedChannel(),
+    var channel: Channel = Channel(),
 
     var version: String? = null
 )

@@ -44,7 +44,7 @@ data class Channel(
     var pubDate: Date = Date(),
 
     @Ignore
-    var channelItems: List<FeedChannelItem>? = null
+    var items: List<Item>? = null
 
 ) {
     @PrimaryKey(autoGenerate = true)

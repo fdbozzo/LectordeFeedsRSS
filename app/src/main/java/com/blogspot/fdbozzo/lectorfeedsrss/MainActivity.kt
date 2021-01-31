@@ -117,8 +117,8 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        mainSharedViewModel.selectedFeedChannelItemId.observe(this, Observer {
-            Timber.d("[Timber] (Observer) selectedFeedChannelItemId= %d", it)
+        mainSharedViewModel.selectedItemId.observe(this, Observer {
+            Timber.d("[Timber] (Observer) selectedItemId= %d", it)
         })
 
 
@@ -336,9 +336,9 @@ class MainActivity : AppCompatActivity() {
                 Timber.d("[Timber] Menu Login")
                 binding.topAppBar.visibility = View.GONE
             }
-            is SealedClassAppScreens.FeedChannelFragment -> {
-                Timber.d("[Timber] Menu FeedChannelFragment")
-                binding.topAppBar.inflateMenu(R.menu.upper_navdrawer_feedchannel_menu)
+            is SealedClassAppScreens.ChannelFragment -> {
+                Timber.d("[Timber] Menu ChannelFragment")
+                binding.topAppBar.inflateMenu(R.menu.upper_navdrawer_channel_menu)
                 binding.topAppBar.visibility = View.VISIBLE
                 binding.bottomAppBar.menu.forEach { menuItem ->
                     menuItem.isVisible = true
@@ -370,7 +370,7 @@ class MainActivity : AppCompatActivity() {
             }
             is SealedClassAppScreens.ContentsFragment -> {
                 Timber.d("[Timber] Menu ContentsFragment")
-                binding.topAppBar.inflateMenu(R.menu.upper_navdrawer_feedchannelitem_menu)
+                binding.topAppBar.inflateMenu(R.menu.upper_navdrawer_item_menu)
                 binding.topAppBar.title = ""
             }
             is SealedClassAppScreens.SettingsFragment -> {

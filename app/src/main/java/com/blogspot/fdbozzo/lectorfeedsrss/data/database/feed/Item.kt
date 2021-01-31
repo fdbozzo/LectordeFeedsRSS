@@ -1,14 +1,14 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed
 
 import androidx.room.*
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Item as DomainItem
 import java.util.*
 
 /**
- * Entidad FeedChannelItem (noticia o item del feed).
+ * Entidad Item (noticia o item del feed).
  */
 @Entity(
-    tableName = "feed_channel_item_table",
+    tableName = "item_table",
     foreignKeys = [
         ForeignKey(
             entity = Feed::class,
@@ -24,7 +24,7 @@ import java.util.*
         )
     ]
 )
-data class FeedChannelItem(
+data class Item(
 
     @ColumnInfo(name = "feed_id", index = true)
     var feedId: Long = 0L,

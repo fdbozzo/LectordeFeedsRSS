@@ -11,10 +11,10 @@ import com.blogspot.fdbozzo.lectorfeedsrss.R
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.RoomDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.FeedRepository
-import com.blogspot.fdbozzo.lectorfeedsrss.databinding.FeedChannelFragmentBinding
+import com.blogspot.fdbozzo.lectorfeedsrss.databinding.ChannelFragmentBinding
 import com.blogspot.fdbozzo.lectorfeedsrss.network.RssFeedDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.ui.SealedClassAppScreens
-import com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.FeedChannelFragment
+import com.blogspot.fdbozzo.lectorfeedsrss.ui.feed.ChannelFragment
 import timber.log.Timber
 
 class SettingsFragment : PreferenceFragmentCompat() {
@@ -23,7 +23,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         fun newInstance() = SettingsFragment()
     }
 
-    private var _binding: FeedChannelFragmentBinding? = null
+    private var _binding: ChannelFragmentBinding? = null
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -35,7 +35,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         savedInstanceState: Bundle?
     ): View? {
         Timber.d("[Timber] onCreateView")
-        //_binding = FeedChannelFragmentBinding.inflate(inflater, container, false)
+        //_binding = ChannelFragmentBinding.inflate(inflater, container, false)
 
         val localDatabase = FeedDatabase.getInstance(requireContext())
         val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())

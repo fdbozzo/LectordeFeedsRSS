@@ -8,7 +8,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItemDao
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.ItemDao
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Feed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedDao
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
@@ -33,7 +33,7 @@ class FeedDaoTableTests {
 
     private lateinit var groupDao: GroupDao
     private lateinit var feedDao: FeedDao
-    private lateinit var feedChannelItemDao: FeedChannelItemDao
+    private lateinit var itemDao: ItemDao
     private lateinit var db: FeedDatabase
     val feed_0 = Feed(groupId = 0, linkName = "HardZone", link = "https://hardzone.es")
     val context = ApplicationProvider.getApplicationContext<Context>()
@@ -57,7 +57,7 @@ class FeedDaoTableTests {
             .build()
         groupDao = db.getGroupDao()
         feedDao = db.getFeedDao()
-        feedChannelItemDao = db.getFeedChannelItemDao()
+        itemDao = db.getItemDao()
     }
 
     @After

@@ -2,18 +2,18 @@ package com.blogspot.fdbozzo.lectorfeedsrss.data
 
 import com.blogspot.fdbozzo.lectorfeedsrss.util.DateParser.Companion.stringToDate as dpStringToDate
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Feed as RoomFeed
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Channel as RoomFeedChannel
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItem as RoomFeedChannelItem
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItemWithFeed as RoomFeedChannelItemWithFeed
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Channel as RoomChannel
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Item as RoomItem
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.ItemWithFeed as RoomItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group as RoomGroup
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannel as DomainFeedChannel
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItem as DomainFeedChannelItem
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.FeedChannelItemWithFeed as DomainFeedChannelItemWithFeed
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Channel as DomainChannel
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Item as DomainItem
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.ItemWithFeed as DomainItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Group as DomainGroup
 import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
-import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannel as ServerFeedChannel
-import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.FeedChannelItem as ServerFeedChannelItem
+import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Channel as ServerChannel
+import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Item as ServerItem
 
 
 /** ROOM BBDD **/
@@ -23,14 +23,14 @@ fun RoomGroup.toDomainGroup(): DomainGroup =
 fun RoomFeed.toDomainFeed(): DomainFeed =
     DomainFeed(id, groupId, linkName, link, favorite)
 
-fun RoomFeedChannel.toDomainFeedChannel(): DomainFeedChannel =
-    DomainFeedChannel(id, feedId, title, description, copyright, link, pubDate)
+fun RoomChannel.toDomainChannel(): DomainChannel =
+    DomainChannel(id, feedId, title, description, copyright, link, pubDate)
 
-fun RoomFeedChannelItem.toDomainFeedChannelItem(): DomainFeedChannelItem =
-    DomainFeedChannelItem(id, feedId, title, link, pubDate, description, read, readLater, imageLink)
+fun RoomItem.toDomainItem(): DomainItem =
+    DomainItem(id, feedId, title, link, pubDate, description, read, readLater, imageLink)
 
-fun RoomFeedChannelItemWithFeed.toDomainFeedChannelItemWithFeed(): DomainFeedChannelItemWithFeed =
-    DomainFeedChannelItemWithFeed(linkName, id, feedId, title, link, pubDate, description, read, readLater, imageLink)
+fun RoomItemWithFeed.toDomainItemWithFeed(): DomainItemWithFeed =
+    DomainItemWithFeed(linkName, id, feedId, title, link, pubDate, description, read, readLater, imageLink)
 
 
 /** DOMAIN **/
@@ -40,21 +40,21 @@ fun DomainGroup.toRoomGroup(): RoomGroup =
 fun DomainFeed.toRoomFeed(): RoomFeed =
     RoomFeed(groupId, linkName, link, favorite).also {it.id = this.id}
 
-fun DomainFeedChannel.toRoomFeedChannel(): RoomFeedChannel =
-    RoomFeedChannel(feedId, title, description, copyright, link, pubDate)
+fun DomainChannel.toRoomChannel(): RoomChannel =
+    RoomChannel(feedId, title, description, copyright, link, pubDate)
 
-fun DomainFeedChannelItem.toRoomFeedChannelItem(): RoomFeedChannelItem =
-    RoomFeedChannelItem(feedId, title, link, pubDate, description, read, readLater, imageLink).also {it.id = this.id}
+fun DomainItem.toRoomItem(): RoomItem =
+    RoomItem(feedId, title, link, pubDate, description, read, readLater, imageLink).also {it.id = this.id}
 
 /** SERVER **/
 fun ServerFeed.toRoomFeed(): RoomFeed =
     RoomFeed(groupId, linkName, link, favorite)
 
-fun ServerFeedChannel.toRoomFeedChannel(): RoomFeedChannel =
-    RoomFeedChannel(feedId, title, description, copyright, link, pubDate)
+fun ServerChannel.toRoomChannel(): RoomChannel =
+    RoomChannel(feedId, title, description, copyright, link, pubDate)
 
-fun ServerFeedChannelItem.toRoomFeedChannelItem(): RoomFeedChannelItem =
-    RoomFeedChannelItem(
+fun ServerItem.toRoomItem(): RoomItem =
+    RoomItem(
         feedId,
         title,
         link,
@@ -65,18 +65,18 @@ fun ServerFeedChannelItem.toRoomFeedChannelItem(): RoomFeedChannelItem =
         imageLink)
 
 fun ServerFeed.toDomainFeed(): DomainFeed =
-    DomainFeed(id, groupId, linkName, link, favorite, channel.toDomainFeedChannel(), version)
+    DomainFeed(id, groupId, linkName, link, favorite, channel.toDomainChannel(), version)
 
-fun ServerFeedChannel.toDomainFeedChannel(): DomainFeedChannel =
-    DomainFeedChannel(id, feedId, title, description, copyright,
+fun ServerChannel.toDomainChannel(): DomainChannel =
+    DomainChannel(id, feedId, title, description, copyright,
         link = if (this.links.isNotEmpty()) (this.links[this.links.size - 1].text) else "https://nonexistent.com",
         pubDate,
-        (channelItems as List<ServerFeedChannelItem>).map {
-            it.toDomainFeedChannelItem()
+        (items as List<ServerItem>).map {
+            it.toDomainItem()
         })
 
-fun ServerFeedChannelItem.toDomainFeedChannelItem(): DomainFeedChannelItem =
-    DomainFeedChannelItem(
+fun ServerItem.toDomainItem(): DomainItem =
+    DomainItem(
         id,
         feedId,
         title,
@@ -120,9 +120,9 @@ fun List<DomainFeed>.asDatabaseModelFeed(): List<RoomFeed> {
 /**
  * Mapea los Channel de la base de datos a entidades del dominio
  */
-fun List<RoomFeedChannel>.asDomainModelFeedChannel(): List<DomainFeedChannel> {
+fun List<RoomChannel>.asDomainModelChannel(): List<DomainChannel> {
     return map {
-        DomainFeedChannel(
+        DomainChannel(
             id = it.id,
             title = it.title,
             description = it.description,
@@ -136,9 +136,9 @@ fun List<RoomFeedChannel>.asDomainModelFeedChannel(): List<DomainFeedChannel> {
 /**
  * Mapea los Channel del dominio a entidades de la base de datos
  */
-fun List<DomainFeedChannel>.asDatabaseModelFeedChannel(): List<RoomFeedChannel> {
+fun List<DomainChannel>.asDatabaseModelChannel(): List<RoomChannel> {
     return map {
-        RoomFeedChannel(
+        RoomChannel(
             title = it.title,
             description = it.description,
             feedId = it.feedId,
@@ -149,11 +149,11 @@ fun List<DomainFeedChannel>.asDatabaseModelFeedChannel(): List<RoomFeedChannel> 
 }
 
 /**
- * Mapea los FeedChannelItem de la base de datos a entidades del dominio
+ * Mapea los Item de la base de datos a entidades del dominio
  */
-fun List<RoomFeedChannelItem>.asDomainModelFeedChannelItem(): List<DomainFeedChannelItem> {
+fun List<RoomItem>.asDomainModelItem(): List<DomainItem> {
     return map {
-        DomainFeedChannelItem(
+        DomainItem(
             id = it.id,
             title = it.title,
             description = it.description,
@@ -168,11 +168,11 @@ fun List<RoomFeedChannelItem>.asDomainModelFeedChannelItem(): List<DomainFeedCha
 }
 
 /**
- * Mapea los FeedChannelItem del dominio a entidades de la base de datos
+ * Mapea los Item del dominio a entidades de la base de datos
  */
-fun List<DomainFeedChannelItem>.asDatabaseModelFeedChannelItem(): List<RoomFeedChannelItem> {
+fun List<DomainItem>.asDatabaseModelItem(): List<RoomItem> {
     return map {
-        RoomFeedChannelItem(
+        RoomItem(
             title = it.title,
             description = it.description,
             feedId = it.feedId,

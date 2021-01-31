@@ -35,7 +35,7 @@ class BottomSheetMarkAsReadOptionsMenuFragment(val tituloMenu: String): BottomSh
         val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
         val sharedViewModel: MainSharedViewModel by activityViewModels { MainSharedViewModel.Factory(feedRepository) }
         mainSharedViewModel = sharedViewModel
-        //mainSharedViewModel.setActiveScreen(SealedClassAppScreens.FeedChannelFragment)
+        //mainSharedViewModel.setActiveScreen(SealedClassAppScreens.ChannelFragment)
         binding.lifecycleOwner = this // Para que LiveData sea consciente del LifeCycle y se actualice la uI
 
         mainSharedViewModel.tituloMenuGroup = tituloMenu

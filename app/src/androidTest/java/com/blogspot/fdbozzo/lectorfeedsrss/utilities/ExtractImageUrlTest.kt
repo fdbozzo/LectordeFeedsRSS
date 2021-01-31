@@ -19,12 +19,11 @@ package com.demo.rssfeedreader.utilities
 //import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.FeedDatabase
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedDao
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItemDao
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.ItemDao
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.GroupDao
 import com.blogspot.fdbozzo.lectorfeedsrss.util.getSrcImage
 import kotlinx.coroutines.runBlocking
 import org.junit.*
-import org.junit.rules.TestRule
 
 class ItemDaoTableTests {
 
@@ -33,7 +32,7 @@ class ItemDaoTableTests {
 
     private lateinit var groupDao: GroupDao
     private lateinit var feedDao: FeedDao
-    private lateinit var feedChannelItemDao: FeedChannelItemDao
+    private lateinit var itemDao: ItemDao
     private lateinit var db: FeedDatabase
 
     @Before
