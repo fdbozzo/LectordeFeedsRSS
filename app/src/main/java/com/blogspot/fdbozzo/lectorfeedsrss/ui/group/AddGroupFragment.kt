@@ -58,7 +58,7 @@ class AddGroupFragment : Fragment() {
         binding.fragment = this
 
         navController = findNavController()
-        binding.editGroupName.requestFocus()
+        //binding.editGroupName.requestFocus()
 
         return binding.root
         //return inflater.inflate(R.layout.add_group_fragment, container, false)
@@ -75,7 +75,7 @@ class AddGroupFragment : Fragment() {
             binding.editGroupName.text?.clear()
         } else {
             binding.textInputGroupName.error = getString(R.string.err_name_cant_be_empty)
-            binding.editGroupName.requestFocus()
+            //binding.editGroupName.requestFocus()
         }
     }
 

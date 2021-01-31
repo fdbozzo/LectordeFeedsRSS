@@ -64,7 +64,7 @@ class EditGroupFragment() : Fragment() {
         val arguments = EditGroupFragmentArgs.fromBundle(requireArguments())
         originalGroupName = arguments.originalGroupName
         binding.editGroupName.setText(originalGroupName)
-        binding.editGroupName.requestFocus()
+        //binding.editGroupName.requestFocus()
 
         val drawerLayout = requireActivity().findViewById<DrawerLayout>(R.id.drawer_layout)
 
@@ -100,7 +100,7 @@ class EditGroupFragment() : Fragment() {
             }
         } else {
             binding.textInputGroupName.error = getString(R.string.err_name_cant_be_empty)
-            binding.editGroupName.requestFocus()
+            //binding.editGroupName.requestFocus()
         }
     }
 
@@ -110,6 +110,6 @@ class EditGroupFragment() : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        binding.editGroupName.requestFocus()
+        //binding.editGroupName.requestFocus()
     }
 }

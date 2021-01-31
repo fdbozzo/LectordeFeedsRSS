@@ -155,7 +155,7 @@ class AddFeedFragment : Fragment() {
 
         } else {
             binding.textInputLink.error = getString(R.string.err_url_cant_be_empty)
-            binding.editLink.requestFocus()
+            //binding.editLink.requestFocus()
         }
     }
 
@@ -198,6 +198,6 @@ class AddFeedFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        binding.editLink.requestFocus()
+        //binding.editLink.requestFocus()
     }
 }
