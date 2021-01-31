@@ -16,13 +16,12 @@ import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import kotlin.collections.HashMap
 
 class RoomDataSource(db: FeedDatabase) : LocalDataSource {
 
     private val feedDao = db.getFeedDao()
-    private val feedChannelDao = db.getFeedChannelDao()
+    private val feedChannelDao = db.getChannelDao()
     private val feedChannelItemDao = db.getFeedChannelItemDao()
     private val groupDao = db.getGroupDao()
 

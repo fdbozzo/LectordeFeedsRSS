@@ -30,7 +30,7 @@ abstract class FeedDatabase : RoomDatabase() {
      */
     abstract fun getGroupDao(): GroupDao
     abstract fun getFeedDao(): FeedDao
-    abstract fun getFeedChannelDao(): FeedChannelDao
+    abstract fun getChannelDao(): ChannelDao
     abstract fun getFeedChannelItemDao(): FeedChannelItemDao
     //abstract fun getGroupWithFeedsDao(): GroupWithFeedsDao
 
