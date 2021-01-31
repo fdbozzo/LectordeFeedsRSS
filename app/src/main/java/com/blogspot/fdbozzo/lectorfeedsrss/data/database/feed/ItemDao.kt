@@ -44,8 +44,6 @@ interface ItemDao {
     /**
      * Actualiza la marca de leido de los Feeds actualmnente elegidos (todos, uno, etc)
      */
-    //@Query("UPDATE item_table SET read = 1")
-    //suspend fun updateMarkAllFeedAsRead(): Int
     @Query(
         """UPDATE item_table 
             SET read = 1

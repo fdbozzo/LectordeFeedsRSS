@@ -11,6 +11,9 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.ItemWithFeed as Doma
 import com.blogspot.fdbozzo.lectorfeedsrss.databinding.ItemFragmentBinding
 import timber.log.Timber
 
+/**
+ * Adaptador para el RecyclerView principal de los Feeds
+ */
 class ChannelAdapter(
     private val list: List<DomainItemWithFeed>,
     private val sharedViewViewModel: MainSharedViewModel,

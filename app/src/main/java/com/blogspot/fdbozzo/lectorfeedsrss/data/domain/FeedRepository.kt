@@ -30,10 +30,13 @@ class FeedRepository(
         )
 
     /**
-     * Buscar los feeds en la red
+     * Buscar los feeds en la red y guardarlos
      */
     suspend fun checkNetworkFeeds(apiBaseUrl: String, groupId: Long? = null): RssResponse<ServerFeed> {
         try {
+            /**
+             * Buscar los feeds en la red
+             */
             val rssApiResponse = getNetworkFeeds(apiBaseUrl)
 
             when (rssApiResponse) {

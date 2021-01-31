@@ -158,10 +158,13 @@ class MainActivity : AppCompatActivity() {
                 )
 
                 if (message.isNotBlank()) {
+                    /**
+                     * Mostrar SnackBar
+                     */
                     Snackbar.make(
                         view,
                         message,
-                        Snackbar.LENGTH_LONG // How long to display the message.
+                        Snackbar.LENGTH_SHORT // How long to display the message.
                     ).show()
                 }
                 mainSharedViewModel.snackBarMessageDone()
@@ -171,7 +174,7 @@ class MainActivity : AppCompatActivity() {
 
 
         /**
-         * Opción Add Group
+         * Opción Drawer: Add Group
          */
         binding.drawerMenu.navAddGroup.setOnClickListener {
             addGroup()
@@ -182,7 +185,7 @@ class MainActivity : AppCompatActivity() {
 
 
         /**
-         * Opción Add Feed
+         * Opción Drawer: Add Feed
          */
         binding.drawerMenu.navAddFeed.setOnClickListener {
             addFeed()
@@ -193,7 +196,7 @@ class MainActivity : AppCompatActivity() {
 
 
         /**
-         * Opción All feeds
+         * Opción Drawer: All feeds
          */
         binding.drawerMenu.navAll.setOnClickListener {
             setSelectToAllFeeds()
@@ -204,7 +207,7 @@ class MainActivity : AppCompatActivity() {
 
 
         /**
-         * Opción Read Later
+         * Opción Drawer: Read Later
          */
         binding.drawerMenu.imgReadLater.setOnClickListener {
             setSelectToReadLater()
@@ -215,7 +218,7 @@ class MainActivity : AppCompatActivity() {
 
 
         /**
-         * Opción Favorites
+         * Opción Drawer: Favorites
          */
         binding.drawerMenu.imgNavFavorites.setOnClickListener {
             setSelectToFavorites()
@@ -226,7 +229,7 @@ class MainActivity : AppCompatActivity() {
 
 
         /**
-         * Opción Logout
+         * Opción Drawer: Logout
          */
         binding.drawerMenu.navLogout.setOnClickListener {
             logout()
@@ -237,7 +240,7 @@ class MainActivity : AppCompatActivity() {
 
 
         /**
-         * Opción Settings
+         * Opción Drawer: Settings
          */
         binding.drawerMenu.imgNavSettings.setOnClickListener {
             navigateToSettings()
@@ -260,7 +263,7 @@ class MainActivity : AppCompatActivity() {
                 showUnreadOnlyPref
             )
 
-            screenDependentConfiguration(it)
+            configureScreenDependentConfiguration(it)
         })
 
         /**
@@ -320,7 +323,10 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun screenDependentConfiguration(screen: SealedClassAppScreens? = mainSharedViewModel.selectedScreen.value) {
+    /**
+     * Configura las opciones dependendientes de la pantalla seleccionada (AppBars, opciones, título)
+     */
+    private fun configureScreenDependentConfiguration(screen: SealedClassAppScreens? = mainSharedViewModel.selectedScreen.value) {
         Timber.d("[Timber] screenDependentConfiguration")
         binding.topAppBar.menu.clear()
 
@@ -471,11 +477,13 @@ class MainActivity : AppCompatActivity() {
             }
 
             /**
-             * FEED (ITEM): Controlador de selección (click) de Feed para mostrar sus noticias
+             * FEED (MENU-ITEM): Controlador de selección (click) de Feed para mostrar sus noticias
              */
             expandableListView!!.setOnChildClickListener { parent, v, groupPosition, childPosition, id ->
                 if (expandableItemLongClick) {
-                    // LONG-CLICK
+                    /**
+                     * LONG-CLICK en Feed menú Drawer
+                     */
                     try {
                         Timber.d("[Timber] expandableListView!!.setOnChildClickListener(LONG CLICK!)")
                         expandableItemLongClick = false
@@ -502,7 +510,9 @@ class MainActivity : AppCompatActivity() {
 
                     return@setOnChildClickListener true
                 } else {
-                    // CLICK NORMAL
+                    /**
+                     * SIMPLE-CLICK en Feed menú Drawer
+                     */
                     Timber.d(
                         "[Timber] expandableListView!!.setOnChildClickListener(groupPosition = %d, childPosition = %d)",
                         groupPosition,
@@ -524,6 +534,9 @@ class MainActivity : AppCompatActivity() {
              */
             expandableListView!!.setOnGroupClickListener { parent, v, groupPosition, id ->
                 if (expandableItemLongClick) {
+                    /**
+                     * LONG-CLICK en Group menú Drawer
+                     */
                     try {
                         Timber.d("[Timber] expandableListView!!.setOnGroupClickListener(LONG CLICK!)")
                         expandableItemLongClick = false
@@ -551,6 +564,9 @@ class MainActivity : AppCompatActivity() {
 
                     return@setOnGroupClickListener true
                 } else {
+                    /**
+                     * SIMPLE-CLICK en Group menú Drawer
+                     */
                     Timber.d(
                         "[Timber] expandableListView!!.setOnGroupClickListener(groupPosition = %d)",
                         groupPosition
@@ -602,16 +618,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // MENU PRINCIPAL
+    /**
+     * MENU INFERIOR-DERECHO (ACCESOS RÁPIDOS)
+     */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         //menuInflater.inflate(R.menu.navdrawer_menu, menu)
         Timber.d("[Timber] onCreateOptionsMenu()")
         menuInflater.inflate(R.menu.bottom_nav_menu, menu)
-        screenDependentConfiguration()
+        configureScreenDependentConfiguration()
         return true // super.onCreateOptionsMenu(menu)
     }
 
-    // Opción de menu
+    /**
+     * Opción del menu seleccionada
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         Timber.d("[Timber] onOptionsItemSelected()")
         when (item.itemId) {

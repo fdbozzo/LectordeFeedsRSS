@@ -59,25 +59,6 @@ class BottomSheetMarkAsReadOptionsMenuFragment(val tituloMenu: String): BottomSh
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-        /*
-        val options = listOf<String>(
-            "Share with Friends",
-            "Bookmark",
-            "Add to Favourites",
-            "More Information"
-        )
-
-         */
-
         binding.txtTituloMenu.text = tituloMenu
-
-        /*
-        listViewOptions.adapter = ArrayAdapter<String>(
-            requireContext(),
-            android.R.layout.simple_list_item_1,
-            options
-        )
-         */
     }
 }

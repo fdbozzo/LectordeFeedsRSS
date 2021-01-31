@@ -24,8 +24,6 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
 
     var testigo: String? = ""
 
-    var vmInicializado = false
-
     private lateinit var rssApiResponse: RssResponse<NetworkFeed>
 
     private var _apiBaseUrl = MutableLiveData<String>()
@@ -42,9 +40,6 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
     val selectedFeedOptions: LiveData<SelectedFeedOptions>
         get() = _selectedFeedOptions
 
-    private var _status = MutableLiveData<RssApiStatus>()
-    val status: LiveData<RssApiStatus>
-        get() = _status
 
     /**
      * FLAGS Y MÉTODOS PARA NAVEGACIÓN A CONTENTS_FRAGMENT (la noticia)
@@ -115,11 +110,11 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
 
 
     /**
-     * Configurar el LiveData apiBaseUrl en el init para obtener los datos inmediatamente.
+     * Obtener las actualizaciones de todos los feeds inmediatamente.
      */
     init {
         viewModelScope.launch {
-            // Cargamos datos iniciales en el drawer
+            // Cargamos datos iniciales en el drawer, sólo si está vacío (la 1ra vez)
             setupInitialDrawerMenuData()
 
             // Cargar todos los feeds actualizados
@@ -128,6 +123,9 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
 
     }
 
+    /**
+     * Refrescar todos los feeds en paralelo.
+     */
     suspend fun refreshActiveFeeds() {
         val valSelectedFeedOptions = selectedFeedOptions.value
         val linkName = selectedFeedOptions.value?.linkName ?: "%"
@@ -135,11 +133,11 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
         if (valSelectedFeedOptions != null) {
             when {
                 valSelectedFeedOptions.readLater -> {
-                    // Read Later - No actualizar porque son noticias estáticas preseleccionadas
+                    // VISTA: Read Later - No actualizar porque son noticias estáticas preseleccionadas
                     Timber.d("[Timber] No se recarga por ser Read Later")
                 }
                 valSelectedFeedOptions.favorite -> {
-                    // Favorites - Actualizar las fuentes de datos favoritas
+                    // VISTA: Favorites - Actualizar las fuentes de datos favoritas
                     feedRepository.getAllFeeds()?.forEach {
                         if (it.favorite == 1) {
                             Timber.d("[Timber] Lanzar carga del feed %s", it.link)
@@ -150,7 +148,7 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
                     }
                 }
                 linkName == "%" -> {
-                    // All feeds - Actualizar todas las fuentes de datos
+                    // VISTA: All feeds - Actualizar todas las fuentes de datos
                     feedRepository.getAllFeeds()?.forEach {
                         Timber.d("[Timber] Lanzar carga del feed %s", it.link)
                         viewModelScope.launch { getFeedsFromUrl(it.link) }
@@ -158,7 +156,7 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
 
                 }
                 else -> {
-                    // Un feed en particular (linkName contiene su nombre) - Actualizar fuente de datos elegida
+                    // VISTA: Un feed en particular (linkName contiene su nombre) - Actualizar fuente de datos elegida
                     Timber.d("[Timber] Lanzar carga del feed %s", linkName)
                     feedRepository.getFeedByLinkName(linkName)
                 }
@@ -436,7 +434,6 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
 
                     if (!msgError.isNullOrBlank()) {
                         _snackBarMessage.postValue(msgError)
-                        //_snackBarMessage.postValue(R.string.msg_error_network_operation_failed_with_403)
                     }
                 }
             }
@@ -470,11 +467,9 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
 
             when (rssApiResponse) {
                 is RssResponse.Success -> {
-                    // TODO: Falta filtrar los items leidos antes de actualizar el LiveData
                     Timber.d("[Timber] RssResponse.Success!")
                 }
                 is RssResponse.Error -> {
-                    // TODO: Falta controlar errores
                     Timber.d("[Timber] RssResponse.Error = ${(rssApiResponse as RssResponse.Error).exception.message}")
                     val msgError = (rssApiResponse as RssResponse.Error).exception.message
 
