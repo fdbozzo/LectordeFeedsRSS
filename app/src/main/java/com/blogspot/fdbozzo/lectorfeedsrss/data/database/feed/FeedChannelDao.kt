@@ -14,28 +14,28 @@ interface FeedChannelDao {
      * @param feedItem nuevo valor a insertar
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(feedChannel: FeedChannel) : Long
+    suspend fun insert(channel: Channel) : Long
 
     /**
      *
      * @param feedItem nuevo valor a reemplazar
      */
     @Update
-    suspend fun update(feedChannel: FeedChannel): Int
+    suspend fun update(channel: Channel): Int
 
     /**
      *
-     * @param title Título del FeedChannel a buscar
+     * @param title Título del Channel a buscar
      */
     @Query("SELECT * FROM feed_channel_table WHERE title = :title")
-    fun get(title: String) : Flow<FeedChannel>
+    fun get(title: String) : Flow<Channel>
 
     /**
      *
      * @param feedId Id del Feed del que buscar su channel
      */
     @Query("SELECT * FROM feed_channel_table WHERE feed_id = :feedId")
-    fun get(feedId: Long) : Flow<FeedChannel>
+    fun get(feedId: Long) : Flow<Channel>
 
     /**
      *
@@ -55,6 +55,6 @@ interface FeedChannelDao {
      * ordenados por fecha de publicación descendente.
      */
     @Query("SELECT * FROM feed_channel_table ORDER BY pub_date DESC")
-    fun getAll() : Flow<List<FeedChannel>>
+    fun getAll() : Flow<List<Channel>>
 
 }

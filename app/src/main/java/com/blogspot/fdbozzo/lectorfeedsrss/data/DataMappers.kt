@@ -1,9 +1,8 @@
 package com.blogspot.fdbozzo.lectorfeedsrss.data
 
-import timber.log.Timber
 import com.blogspot.fdbozzo.lectorfeedsrss.util.DateParser.Companion.stringToDate as dpStringToDate
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Feed as RoomFeed
-import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannel as RoomFeedChannel
+import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Channel as RoomFeedChannel
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItem as RoomFeedChannelItem
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.FeedChannelItemWithFeed as RoomFeedChannelItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group as RoomGroup
@@ -119,7 +118,7 @@ fun List<DomainFeed>.asDatabaseModelFeed(): List<RoomFeed> {
 
 
 /**
- * Mapea los FeedChannel de la base de datos a entidades del dominio
+ * Mapea los Channel de la base de datos a entidades del dominio
  */
 fun List<RoomFeedChannel>.asDomainModelFeedChannel(): List<DomainFeedChannel> {
     return map {
@@ -135,7 +134,7 @@ fun List<RoomFeedChannel>.asDomainModelFeedChannel(): List<DomainFeedChannel> {
 }
 
 /**
- * Mapea los FeedChannel del dominio a entidades de la base de datos
+ * Mapea los Channel del dominio a entidades de la base de datos
  */
 fun List<DomainFeedChannel>.asDatabaseModelFeedChannel(): List<RoomFeedChannel> {
     return map {

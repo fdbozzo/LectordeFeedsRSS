@@ -39,7 +39,7 @@ data class Feed constructor(
     var favorite: Int = 0,
 
     @Ignore
-    var channel: FeedChannel? = null,
+    var channel: Channel? = null,
 
     @Ignore
     var version: String? = null

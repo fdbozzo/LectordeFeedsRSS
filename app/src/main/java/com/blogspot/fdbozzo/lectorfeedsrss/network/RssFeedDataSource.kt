@@ -25,7 +25,7 @@ class RssFeedDataSource : RemoteDataSource {
                     val feedChannel = feed.channel
                     val feedChannelItem = feedChannel.channelItems
 
-                    // Completo algunos datos faltantes del Feed con info del FeedChannel
+                    // Completo algunos datos faltantes del Feed con info del Channel
                     feed.linkName = feedChannel.title
 
                     if (feedChannel.links.isNotEmpty()) {

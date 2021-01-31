@@ -143,7 +143,7 @@ class FeedRepository(
          */
         try {
             /**
-             * Se intenta insertar el FeedChannel, pero si ya existe devolverá -1 y se recuperará su id actual
+             * Se intenta insertar el Channel, pero si ya existe devolverá -1 y se recuperará su id actual
              */
             feedChannels = localDataSource.saveFeedChannelFromServer(serverFeed.channel)
             println("[Timber] 8 feedChannels=$feedChannels")
@@ -158,7 +158,7 @@ class FeedRepository(
             )
 
         } catch (e: Exception) {
-            Timber.d(e, "[Timber] FeedRepository.saveNetworkFeeds() - ERROR - FeedChannel")
+            Timber.d(e, "[Timber] FeedRepository.saveNetworkFeeds() - ERROR - Channel")
             throw e
         }
 
@@ -333,7 +333,7 @@ interface LocalDataSource {
     suspend fun deleteFeed(feed: DomainFeed): Int
 
     /**
-     * FeedChannel
+     * Channel
      */
     //suspend fun feedChannelIsEmpty(): Boolean
     //suspend fun feedChannelSize(): Int

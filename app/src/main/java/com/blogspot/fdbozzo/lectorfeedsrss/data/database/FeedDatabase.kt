@@ -7,7 +7,6 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.*
 import com.blogspot.fdbozzo.lectorfeedsrss.util.DateConverter
-import com.blogspot.fdbozzo.lectorfeedsrss.util.DateParser
 
 /**
  * Base de datos que guarda información de feeds
@@ -17,7 +16,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.util.DateParser
     entities = [
         Group::class,
         Feed::class,
-        FeedChannel::class,
+        Channel::class,
         FeedChannelItem::class],
     version = 1,
     exportSchema = false

@@ -26,7 +26,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.*
 import org.junit.rules.TestRule
 
-class FeedChannelItemDaoTableTests {
+class ItemDaoTableTests {
 
     //@get:Rule
     //val instantTaskExecutorRule: TestRule = InstantTaskExecutorRule()
