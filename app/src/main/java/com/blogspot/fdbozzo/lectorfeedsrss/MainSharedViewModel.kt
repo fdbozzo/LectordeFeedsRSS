@@ -229,14 +229,13 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
      * Actualiza el estado del flag "read" del item elegido
      */
     fun updateMarkFeedAsRead(linkName: String) {
-
-        Timber.d("[Timber] updateMarkFeedAsRead(%s)", linkName)
-
         viewModelScope.launch {
             val feed = feedRepository.getFeedByLinkName(linkName)
 
             if (feed != null) {
-                feedRepository.updateReadStatus(feed.id, true)
+                Timber.d("[Timber] updateMarkFeedAsRead(%s) --> id=%d", feed.linkName, feed.id)
+                //feedRepository.updateReadStatus(feed.id, true)
+                feedRepository.updateMarkAllFeedAsRead(SelectedFeedOptions(linkName = linkName))
                 _snackBarMessage.postValue(R.string.msg_marked_as_read)
             }
         }
@@ -266,7 +265,7 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
         Timber.d("[Timber] updateMarkAllFeedAsRead()")
 
         viewModelScope.launch {
-            feedRepository.updateMarkAllFeedAsRead()
+            selectedFeedOptions.value?.let { feedRepository.updateMarkAllFeedAsRead(it) }
             _snackBarMessage.postValue(R.string.msg_marked_as_read)
         }
     }

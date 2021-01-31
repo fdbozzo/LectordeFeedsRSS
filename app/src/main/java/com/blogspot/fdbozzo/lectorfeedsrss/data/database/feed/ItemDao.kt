@@ -42,10 +42,29 @@ interface ItemDao {
     suspend fun updateInverseReadLaterStatus(id: Long): Int
 
     /**
-     * Actualiza la marca de leido de todos los Feeds
+     * Actualiza la marca de leido de los Feeds actualmnente elegidos (todos, uno, etc)
      */
-    @Query("UPDATE item_table SET read = 1")
-    suspend fun updateMarkAllFeedAsRead(): Int
+    //@Query("UPDATE item_table SET read = 1")
+    //suspend fun updateMarkAllFeedAsRead(): Int
+    @Query(
+        """UPDATE item_table 
+            SET read = 1
+            WHERE item_table.id IN (
+                SELECT fcit.id 
+                FROM item_table fcit 
+                INNER JOIN feed_table ft ON fcit.feed_id = ft.id 
+                WHERE fcit.read <= :read
+                AND fcit.read_later >= :readLater
+                AND ft.favorite >= :favorite
+                AND ft.link_name LIKE :linkName
+            )"""
+        )
+    suspend fun updateMarkAllFeedAsRead(
+        linkName: String,
+        favorite: Int,
+        readLater: Int,
+        read: Int
+    ): Int
 
     /**
      * Actualiza la marca de leido del Feed indicado

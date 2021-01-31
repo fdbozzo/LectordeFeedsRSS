@@ -303,7 +303,12 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
         return withContext(Dispatchers.IO) {itemDao.updateGroupFeedReadStatus(gropId)}
     }
 
-    override suspend fun updateMarkAllFeedAsRead(): Int {
-        return withContext(Dispatchers.IO) {itemDao.updateMarkAllFeedAsRead()}
+    override suspend fun updateMarkAllFeedAsRead(selectedFeedOptions: SelectedFeedOptions): Int {
+        return withContext(Dispatchers.IO) {itemDao.updateMarkAllFeedAsRead(
+            linkName = selectedFeedOptions.linkName,
+            favorite = selectedFeedOptions.favorite.toInt(),
+            readLater = selectedFeedOptions.readLater.toInt(),
+            read = selectedFeedOptions.read.toInt()
+        )}
     }
 }
