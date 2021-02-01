@@ -2,21 +2,20 @@ package com.blogspot.fdbozzo.lectorfeedsrss.data.database
 
 import com.blogspot.fdbozzo.lectorfeedsrss.data.*
 import com.blogspot.fdbozzo.lectorfeedsrss.data.database.feed.Group
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Channel as DomainChannel
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Item as DomainItem
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.ItemWithFeed as DomainItemWithFeed
-import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Group as DomainGroup
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.LocalDataSource
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.SelectedFeedOptions
 import com.blogspot.fdbozzo.lectorfeedsrss.util.toInt
-import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Item as ServerItem
-import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Channel as ServerChannel
-import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
-import kotlin.collections.HashMap
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Channel as DomainChannel
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Feed as DomainFeed
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Group as DomainGroup
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Item as DomainItem
+import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.ItemWithFeed as DomainItemWithFeed
+import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Channel as ServerChannel
+import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as ServerFeed
+import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Item as ServerItem
 
 class RoomDataSource(db: FeedDatabase) : LocalDataSource {
 
@@ -148,6 +147,7 @@ class RoomDataSource(db: FeedDatabase) : LocalDataSource {
             }
         }
 
+    @Suppress("UNCHECKED_CAST")
     override fun getGroupsWithFeeds(): Flow<HashMap<String, List<String>>> {
         return feedDao.getGroupsWithFeedPairs().map { list ->
             // Así sale ordenado

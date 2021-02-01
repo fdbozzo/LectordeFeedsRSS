@@ -22,6 +22,20 @@ import com.blogspot.fdbozzo.lectorfeedsrss.network.feed.Feed as NetworkFeed
 
 class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
 
+    /**
+     * Obtener las actualizaciones de todos los feeds inmediatamente.
+     */
+    init {
+        viewModelScope.launch {
+            // Cargamos datos iniciales en el drawer, sólo si está vacío (la 1ra vez)
+            setupInitialDrawerMenuData()
+
+            // Cargar todos los feeds actualizados
+            refreshActiveFeeds()
+        }
+
+    }
+
     var testigo: String? = ""
 
     private lateinit var rssApiResponse: RssResponse<NetworkFeed>
@@ -34,12 +48,6 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
     private var _selectedScreen = MutableLiveData<SealedClassAppScreens>()
     val selectedScreen: LiveData<SealedClassAppScreens>
         get() = _selectedScreen
-
-    // Feed seleccionado
-    private var _selectedFeedOptions = MutableLiveData(SelectedFeedOptions())
-    val selectedFeedOptions: LiveData<SelectedFeedOptions>
-        get() = _selectedFeedOptions
-
 
     /**
      * FLAGS Y MÉTODOS PARA NAVEGACIÓN A CONTENTS_FRAGMENT (la noticia)
@@ -63,6 +71,13 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
     private var _selectedItemId = MutableLiveData<Long>()
     val selectedItemId: LiveData<Long>
         get() = _selectedItemId
+
+    /**
+     * Opciones de filtro seleccionadas (linkName, favorite, read, readLater)
+     */
+    private var _selectedFeedOptions = MutableLiveData(SelectedFeedOptions())
+    val selectedFeedOptions: LiveData<SelectedFeedOptions>
+        get() = _selectedFeedOptions
 
     /**
      * Conecta el LiveData "items" a la consulta de BBDD para actualización automática cuando cambien
@@ -102,7 +117,7 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
 
 
     /**
-     * LiveData para mensajes SnackBar, donde se indica el R.string.id del mensaje
+     * LiveData para mensajes SnackBar, donde se indica el String o el R.string.id del mensaje
      */
     private var _snackBarMessage = MutableLiveData<Any?>()
     val snackBarMessage: LiveData<Any?>
@@ -110,21 +125,7 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
 
 
     /**
-     * Obtener las actualizaciones de todos los feeds inmediatamente.
-     */
-    init {
-        viewModelScope.launch {
-            // Cargamos datos iniciales en el drawer, sólo si está vacío (la 1ra vez)
-            setupInitialDrawerMenuData()
-
-            // Cargar todos los feeds actualizados
-            refreshActiveFeeds()
-        }
-
-    }
-
-    /**
-     * Refrescar todos los feeds en paralelo.
+     * Refrescar todos los feeds en paralelo, dependiendo de la vista activa (ReadLater>NO, Favorite, AllFeeds, SelectedFeed).
      */
     suspend fun refreshActiveFeeds() {
         val valSelectedFeedOptions = selectedFeedOptions.value
@@ -132,32 +133,47 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
 
         if (valSelectedFeedOptions != null) {
             when {
+                /**
+                 * Read Later
+                 */
                 valSelectedFeedOptions.readLater -> {
                     // VISTA: Read Later - No actualizar porque son noticias estáticas preseleccionadas
-                    Timber.d("[Timber] No se recarga por ser Read Later")
+                    Timber.d("[Timber] No se recarga por ser noticias aisladas para leer luego")
                 }
+
+                /**
+                 * Favorite
+                 */
                 valSelectedFeedOptions.favorite -> {
                     // VISTA: Favorites - Actualizar las fuentes de datos favoritas
                     feedRepository.getAllFeeds()?.forEach {
                         if (it.favorite == 1) {
-                            Timber.d("[Timber] Lanzar carga del feed %s", it.link)
+                            Timber.d("[Timber] Lanzar corrutina carga del feed %s", it.link)
                             viewModelScope.launch { getFeedsFromUrl(it.link) }
                         } else {
                             Timber.d("[Timber] Feed %s no se carga por no ser Favorito", it.link)
                         }
                     }
                 }
+
+                /**
+                 * All Feeds
+                 */
                 linkName == "%" -> {
                     // VISTA: All feeds - Actualizar todas las fuentes de datos
                     feedRepository.getAllFeeds()?.forEach {
-                        Timber.d("[Timber] Lanzar carga del feed %s", it.link)
+                        Timber.d("[Timber] Lanzar corrutina carga del feed %s", it.link)
                         viewModelScope.launch { getFeedsFromUrl(it.link) }
                     }
 
                 }
+
+                /**
+                 * Selected Feed
+                 */
                 else -> {
                     // VISTA: Un feed en particular (linkName contiene su nombre) - Actualizar fuente de datos elegida
-                    Timber.d("[Timber] Lanzar carga del feed %s", linkName)
+                    Timber.d("[Timber] Lanzar corrutina carga del feed %s", linkName)
                     feedRepository.getFeedByLinkName(linkName)
                 }
             }
