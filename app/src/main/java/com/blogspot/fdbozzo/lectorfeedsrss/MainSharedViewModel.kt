@@ -499,11 +499,14 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
                 feed.toString()
             )
 
-            // Cuando se clickea un feed, configura su linkName LiveData para que notifique a su observer
+            /**
+             * Cuando se clickea un feed se configura el objeto filtro "selectedFeedOptions"
+             * y se configura su linkName LiveData para que notifique a su observer
+             */
             setSelectedFeedOptions(SelectedFeedOptions().also { it.setLinkNameValue(linkName) })
 
             if (feed != null) {
-                _apiBaseUrl.value = feed.link
+                _apiBaseUrl.value = feed.link  // Fuerza actualización remota de la BBDD
             }
         }
     }

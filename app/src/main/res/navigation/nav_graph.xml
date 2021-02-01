@@ -29,6 +29,9 @@
         <action
             android:id="@+id/action_nav_feed_contents_to_nav_edit_group"
             app:destination="@id/nav_edit_group" />
+        <action
+            android:id="@+id/action_nav_feed_contents_to_nav_login"
+            app:destination="@id/nav_login" />
     </fragment>
     <fragment
         android:id="@+id/nav_contents"
