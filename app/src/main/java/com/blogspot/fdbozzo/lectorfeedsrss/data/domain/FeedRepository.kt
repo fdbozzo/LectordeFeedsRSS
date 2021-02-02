@@ -16,6 +16,7 @@ import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Item as DomainItem
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.ItemWithFeed as DomainItemWithFeed
 import com.blogspot.fdbozzo.lectorfeedsrss.data.domain.feed.Group as DomainGroup
 
+// Orquestador
 class FeedRepository(
     private val localDataSource: LocalDataSource,
     private val remoteDataSource: RemoteDataSource
@@ -37,7 +38,7 @@ class FeedRepository(
             /**
              * Buscar los feeds en la red
              */
-            val rssApiResponse = getNetworkFeeds(apiBaseUrl)
+            val rssApiResponse = getNetworkFeeds(apiBaseUrl) // Retrofit
 
             when (rssApiResponse) {
                 is RssResponse.Success -> {
@@ -49,7 +50,7 @@ class FeedRepository(
                      */
                     Timber.d("[Timber] FeedRepository.checkNetworkFeeds() - Guardar las ${serverFeed.channel.items?.size ?: 0} noticias de $apiBaseUrl")
 
-                    saveNetworkFeeds(serverFeed, groupId)
+                    saveNetworkFeeds(serverFeed, groupId) // Room + SQLite
                 }
                 is RssResponse.Error -> {
                     // No se trata aquí, sino en el ViewModel

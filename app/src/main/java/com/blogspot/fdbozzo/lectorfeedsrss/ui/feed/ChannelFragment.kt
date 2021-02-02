@@ -67,21 +67,21 @@ class ChannelFragment : Fragment() {
         Timber.d("[Timber] mAuth.currentUser = %s", mAuth.currentUser)
 
         if (mAuth.currentUser != null) {
-
+            // USUARIO AUTENTICADO
             /** Adapter para el RecyclerView **/
             binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
 
             /** Observer para los items actualizados y su reflejo en el recycler **/
-            mainSharedViewModel.items.observe(viewLifecycleOwner, Observer {
-                it?.let {
+            mainSharedViewModel.items.observe(viewLifecycleOwner, Observer { listItemWithFeed ->
+                listItemWithFeed?.let {
                     try {
                         //adapter.data = it   // Esto solo lo usa el RecyclerView.Adapter
                         //adapter.submitList(it)
                         //initRecyclerView(it)
                         Timber.i("[Timber] onViewCreated() - mainSharedViewModel.items.observe (CAMBIO)")
                         binding.recyclerView.adapter =
-                            ChannelAdapter(it, sharedViewModel, requireContext())
+                            ChannelAdapter(listItemWithFeed, sharedViewModel, requireContext())
 
                     } catch (e: Exception) {
                         Timber.d(
@@ -121,18 +121,6 @@ class ChannelFragment : Fragment() {
         return binding.root
     }
 
-    private fun swipeRefreshListener() {
-
-        lifecycleScope.launch {
-            mainSharedViewModel.refreshActiveFeeds()
-
-            if(binding.swipeRefresh.isRefreshing){
-                binding.swipeRefresh.isRefreshing = false
-            }
-        }
-    }
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Timber.i("[Timber] onViewCreated() - mainSharedViewModel.fragmento: %s", mainSharedViewModel.testigo)
@@ -142,12 +130,24 @@ class ChannelFragment : Fragment() {
          * Si el usuario no está validado, enviarlo al login
          */
         if (mAuth.currentUser == null) {
+            // USUARIO NO AUTENTICADO
             //navGraph.startDestination = R.id.nav_feed_contents
             //navController.popBackStack(R.id.navigation_login, true)
             navController.navigate(R.id.nav_login)
         }
 
 
+    }
+
+    private fun swipeRefreshListener() {
+
+        lifecycleScope.launch {
+            mainSharedViewModel.refreshActiveFeeds()
+
+            if(binding.swipeRefresh.isRefreshing){
+                binding.swipeRefresh.isRefreshing = false
+            }
+        }
     }
 
 }

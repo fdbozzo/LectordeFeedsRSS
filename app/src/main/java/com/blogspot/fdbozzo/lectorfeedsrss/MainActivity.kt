@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater) // Ver: layout, nav_graph y default fragment
         setContentView(binding.root)
 
         // Guarda las preferencias por única vez, si no estaban ya guardadas
@@ -65,9 +65,7 @@ class MainActivity : AppCompatActivity() {
         val localDatabase = FeedDatabase.getInstance(applicationContext)
         val feedRepository = FeedRepository(RoomDataSource(localDatabase), RssFeedDataSource())
         val sharedViewModel: MainSharedViewModel by viewModels {
-            MainSharedViewModel.Factory(
-                feedRepository
-            )
+            MainSharedViewModel.Factory(feedRepository) // Ver: vars UI
         }
         mainSharedViewModel = sharedViewModel
         sharedViewModel.testigo = "MainActivity"
@@ -80,10 +78,14 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
 
         navController = navHostFragment.navController
-        expandableListView = findViewById(R.id.expandableListView)
+        expandableListView =  binding.drawerMenu.expandableListView
         drawerLayout = binding.drawerLayout
-        mAuth = Firebase.auth
+        mAuth = Firebase.auth // Autenticación Firebase
 
+
+        // OBSERVERS LiveData y CLICKLISTENERS (Ver: Maqueta Drawer y app.bars)
+
+        // Ver: MD.ROOM, VM.init/SnackBar, Login, items, git.
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.

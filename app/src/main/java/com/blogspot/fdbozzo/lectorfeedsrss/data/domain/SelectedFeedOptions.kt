@@ -12,6 +12,7 @@ data class SelectedFeedOptions(
     var read: Boolean = true,
     var readLater: Boolean = false
 ) {
+
     /**
      * Feed elegido
      */

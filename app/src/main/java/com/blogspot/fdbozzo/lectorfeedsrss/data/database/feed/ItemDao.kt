@@ -42,7 +42,7 @@ interface ItemDao {
     suspend fun updateInverseReadLaterStatus(id: Long): Int
 
     /**
-     * Actualiza la marca de leido de los Feeds actualmnente elegidos (todos, uno, etc)
+     * "MarkRead" Actualiza la marca de leido de los Feeds actualmnente elegidos (todos, uno, etc)
      */
     @Query(
         """UPDATE item_table 
