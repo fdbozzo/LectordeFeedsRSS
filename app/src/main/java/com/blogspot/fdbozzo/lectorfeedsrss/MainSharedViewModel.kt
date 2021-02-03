@@ -560,8 +560,11 @@ class MainSharedViewModel(val feedRepository: FeedRepository) : ViewModel() {
      */
     fun setSelectedFeedOptionsReadFlag(read: Boolean) {
         // Sólo se hace la actualización si el dato realmente cambió
-        if (selectedFeedOptions.value != null && selectedFeedOptions.value!!.read != read) {
-            setSelectedFeedOptions(SelectedFeedOptions().also { it.read = read })
+        val newFeedOptions = selectedFeedOptions.value
+
+        if (newFeedOptions != null && newFeedOptions.read != read) {
+            setSelectedFeedOptions(newFeedOptions.also {
+                it.read = read })
         }
     }
 

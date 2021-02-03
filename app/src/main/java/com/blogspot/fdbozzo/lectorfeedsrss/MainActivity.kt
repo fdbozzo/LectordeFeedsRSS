@@ -418,7 +418,10 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.closeDrawer(GravityCompat.START)
 
         Toast.makeText(this, "Favorites...", Toast.LENGTH_SHORT).show()
-        mainSharedViewModel.setSelectedFeedOptions(SelectedFeedOptions().also { it.setFavoriteTrue() })
+        mainSharedViewModel.setSelectedFeedOptions(SelectedFeedOptions().also {
+            it.setFavoriteTrue()
+            it.read = !showUnreadOnlyPref
+        })
         binding.topAppBar.setTitle(R.string.screen_title_favorites)
     }
 
@@ -427,8 +430,20 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.closeDrawer(GravityCompat.START)
 
         Toast.makeText(this, "Read Later...", Toast.LENGTH_SHORT).show()
-        mainSharedViewModel.setSelectedFeedOptions(SelectedFeedOptions().also { it.setReadLaterTrue() })
+        mainSharedViewModel.setSelectedFeedOptions(SelectedFeedOptions().also {
+            it.setReadLaterTrue()
+            it.read = !showUnreadOnlyPref
+        })
         binding.topAppBar.setTitle(R.string.screen_title_read_later)
+    }
+
+    private fun setSelectToAllFeeds() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
+            drawerLayout.closeDrawer(GravityCompat.START)
+
+        Toast.makeText(this, "All feeds...", Toast.LENGTH_SHORT).show()
+        mainSharedViewModel.setSelectedFeedOptions(SelectedFeedOptions(read = !showUnreadOnlyPref))
+        binding.topAppBar.setTitle(R.string.screen_title_all_feeds)
     }
 
     private fun logout() {
@@ -440,15 +455,6 @@ class MainActivity : AppCompatActivity() {
         navController.popBackStack(R.id.nav_feed_contents, true)
         navController.navigate(R.id.nav_login)
         Toast.makeText(this, "Loging out...", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun setSelectToAllFeeds() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START))
-            drawerLayout.closeDrawer(GravityCompat.START)
-
-        Toast.makeText(this, "All feeds...", Toast.LENGTH_SHORT).show()
-        mainSharedViewModel.setSelectedFeedOptions(SelectedFeedOptions())
-        binding.topAppBar.setTitle(R.string.screen_title_all_feeds)
     }
 
     /**
